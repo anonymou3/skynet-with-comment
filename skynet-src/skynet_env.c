@@ -45,7 +45,7 @@ skynet_setenv(const char *key, const char *value) {
 
 	UNLOCK(E)
 }
-
+//环境初始化
 void
 skynet_env_init() {
 	E = skynet_malloc(sizeof(*E));

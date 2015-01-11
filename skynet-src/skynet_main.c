@@ -94,12 +94,12 @@ static const char * load_config = "\
 	assert(load(code,\'=(load)\',\'t\',result))()\
 	return result\
 ";
-
+//入口函数
 int
 main(int argc, char *argv[]) {
-	const char * config_file = NULL ;
+	const char * config_file = NULL ;//存放配置文件
 	if (argc > 1) {
-		config_file = argv[1];
+		config_file = argv[1];//取得配置文件
 	} else {
 		fprintf(stderr, "Need a config file. Please read skynet wiki : https://github.com/cloudwu/skynet/wiki/Config\n"
 			"usage: skynet configfilename\n");

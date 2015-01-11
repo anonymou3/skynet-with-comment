@@ -734,17 +734,19 @@ skynet_context_send(struct skynet_context * ctx, void * msg, size_t sz, uint32_t
 
 	skynet_mq_push(ctx->queue, &smsg);
 }
-
-void 
+//全局初始化
+void
 skynet_globalinit(void) {
+	//初始化全局节点G_NODE
 	G_NODE.total = 0;
 	G_NODE.monitor_exit = 0;
 	G_NODE.init = 1;
+	//线程私有数据初始化
 	if (pthread_key_create(&G_NODE.handle_key, NULL)) {
 		fprintf(stderr, "pthread_key_create failed");
 		exit(1);
 	}
-	// set mainthread's key
+	// set mainthread's key 设置主线程的key
 	skynet_initthread(THREAD_MAIN);
 }
 
