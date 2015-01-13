@@ -734,7 +734,7 @@ skynet_context_send(struct skynet_context * ctx, void * msg, size_t sz, uint32_t
 
 	skynet_mq_push(ctx->queue, &smsg);
 }
-//全局初始化
+
 void
 skynet_globalinit(void) {
 	//初始化全局节点G_NODE
@@ -746,7 +746,8 @@ skynet_globalinit(void) {
 		fprintf(stderr, "pthread_key_create failed");
 		exit(1);
 	}
-	// set mainthread's key 设置主线程的key
+	// set mainthread's key 
+	//设置主线程的key
 	skynet_initthread(THREAD_MAIN);
 }
 
@@ -757,7 +758,7 @@ skynet_globalexit(void) {
 
 void
 skynet_initthread(int m) {
-	uintptr_t v = (uint32_t)(-m);
-	pthread_setspecific(G_NODE.handle_key, (void *)v);
+	uintptr_t v = (uint32_t)(-m);//为了和 service address 显出不同来, 这个就是做 log 用的
+	pthread_setspecific(G_NODE.handle_key, (void *)v);//设置线程私有数据
 }
 

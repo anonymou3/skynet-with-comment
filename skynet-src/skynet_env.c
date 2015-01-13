@@ -45,10 +45,10 @@ skynet_setenv(const char *key, const char *value) {
 
 	UNLOCK(E)
 }
-//环境初始化
+
 void
 skynet_env_init() {
-	E = skynet_malloc(sizeof(*E));
+	E = skynet_malloc(sizeof(*E));//分配内存
 	E->lock = 0;
-	E->L = luaL_newstate();
+	E->L = luaL_newstate();//创建lua虚拟机
 }
