@@ -114,7 +114,7 @@ drop_message(struct skynet_message *msg, void *ud) {
 
 struct skynet_context * 
 skynet_context_new(const char * name, const char *param) {
-	struct skynet_module * mod = skynet_module_query(name);
+	struct skynet_module * mod = skynet_module_query(name);//根据名字查询模块
 
 	if (mod == NULL)
 		return NULL;

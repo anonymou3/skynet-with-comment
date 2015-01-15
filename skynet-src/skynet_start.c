@@ -167,9 +167,9 @@ _start(int thread) {
 		exit(1);
 	}
 
-	create_thread(&pid[0], _monitor, m);
-	create_thread(&pid[1], _timer, m);
-	create_thread(&pid[2], _socket, m);
+	create_thread(&pid[0], _monitor, m);//监视线程
+	create_thread(&pid[1], _timer, m);//定时器线程
+	create_thread(&pid[2], _socket, m);//socket线程
 
 	static int weight[] = { 
 		-1, -1, -1, -1, 0, 0, 0, 0,
@@ -185,7 +185,7 @@ _start(int thread) {
 		} else {
 			wp[i].weight = 0;
 		}
-		create_thread(&pid[i+3], _worker, &wp[i]);
+		create_thread(&pid[i+3], _worker, &wp[i]);//工作线程
 	}
 
 	for (i=0;i<thread+3;i++) {
@@ -211,32 +211,32 @@ bootstrap(struct skynet_context * logger, const char * cmdline) {
 
 void 
 skynet_start(struct skynet_config * config) {
-	if (config->daemon) {
+	if (config->daemon) {//守护进程处理
 		if (daemon_init(config->daemon)) {
 			exit(1);
 		}
 	}
-	skynet_harbor_init(config->harbor);
-	skynet_handle_init(config->harbor);
-	skynet_mq_init();
-	skynet_module_init(config->module_path);
-	skynet_timer_init();
-	skynet_socket_init();
+	skynet_harbor_init(config->harbor);//harbor初始化
+	skynet_handle_init(config->harbor);//handle初始化
+	skynet_mq_init();//消息队列初始化
+	skynet_module_init(config->module_path);//模块初始化
+	skynet_timer_init();//定时器初始化
+	skynet_socket_init();//socket初始化
 
-	struct skynet_context *ctx = skynet_context_new("logger", config->logger);
+	struct skynet_context *ctx = skynet_context_new("logger", config->logger);//加载日志模块
 	if (ctx == NULL) {
 		fprintf(stderr, "Can't launch logger service\n");
 		exit(1);
 	}
 
-	bootstrap(ctx, config->bootstrap);
+	bootstrap(ctx, config->bootstrap);//加载引导模块
 
-	_start(config->thread);
+	_start(config->thread);//启动
 
 	// harbor_exit may call socket send, so it should exit before socket_free
-	skynet_harbor_exit();
-	skynet_socket_free();
+	skynet_harbor_exit();//harbor退出
+	skynet_socket_free();//释放socket
 	if (config->daemon) {
-		daemon_exit(config->daemon);
+		daemon_exit(config->daemon);//守护进程退出
 	}
 }

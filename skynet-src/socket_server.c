@@ -1,7 +1,7 @@
 #include "skynet.h"
 
 #include "socket_server.h"
-#include "socket_poll.h"
+#include "socket_poll.h"//根据不同的平台使用epoll或kqueue
 
 #include <sys/types.h>
 #include <sys/socket.h>
