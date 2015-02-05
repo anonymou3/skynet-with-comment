@@ -4,57 +4,70 @@ local socket = require "clientsocket"
 local crypt = require "crypt"
 local bit32 = require "bit32"
 
+--连接到登陆服
 local fd = assert(socket.connect("127.0.0.1", 8001))
 
+--向socket写入一行函数
 local function writeline(fd, text)
-	socket.send(fd, text .. "\n")
+	socket.send(fd, text .. "\n")--text加一个换行符
 end
 
+--从接收到的数据中解包出一行
 local function unpack_line(text)
-	local from = text:find("\n", 1, true)
-	if from then
-		return text:sub(1, from-1), text:sub(from+1)
+	local from = text:find("\n", 1, true)--找到一行
+	if from then--找到换行符
+		return text:sub(1, from-1), text:sub(from+1)--返回一行和剩余的text
 	end
-	return nil, text
+	return nil, text--返回空和传入的text
 end
 
-local last = ""
+local last = ""--收到的数据
 
+--使用解包函数f从数据中解出一条完整数据（完整的定义由协议确定，比如unpack_line是以一个换行符分隔）
+--每调用一次unpack_f返回的匿名函数时，都会用传入的解包函数f从数据中解包出一条完整的数据
+--如果没有解包到一条完整的数据，会不断循环接收数据->解包->休眠，直到解包出一条完整的数据
 local function unpack_f(f)
-	local function try_recv(fd, last)
+	local function try_recv(fd, last)--尝试接收数据函数
 		local result
-		result, last = f(last)
-		if result then
-			return result, last
+		result, last = f(last)--解包数据
+		if result then--拿到一条完整的数据
+			return result, last--返回完整的数据和剩余数据
 		end
-		local r = socket.recv(fd)
-		if not r then
-			return nil, last
+		local r = socket.recv(fd)--读取数据
+		if not r then--如果数据为空
+			return nil, last--返回nil和当前的数据
 		end
-		if r == "" then
-			error "Server closed"
+		if r == "" then--如果r为空字符串
+			error "Server closed"--报告服务器关闭
 		end
-		return f(last .. r)
+		return f(last .. r)--将剩余数据和收到的数据合并并继续解包
 	end
 
 	return function()
-		while true do
+		while true do--循环直到拿到一条完整的数据
 			local result
 			result, last = try_recv(fd, last)
-			if result then
-				return result
+			if result then--拿到一条完整的数据
+				return result--返回
 			end
-			socket.usleep(100)
+			socket.usleep(100)--休眠一会儿
 		end
 	end
 end
 
+--读取一行函数
 local readline = unpack_f(unpack_line)
 
-local challenge = crypt.base64decode(readline())
+local challenge = crypt.base64decode(readline())--获取服务器发送过来的挑战码（8字节长的随机串，用于后续的握手验证）
 
-local clientkey = crypt.randomkey()
+local clientkey = crypt.randomkey()--生成一个随机的key
+
+--1.利用 DH 密钥交换算法加密生成的clientkey
+--2.再用base64编码
+--3.发送到服务器
 writeline(fd, crypt.base64encode(crypt.dhexchange(clientkey)))
+
+
 local secret = crypt.dhsecret(crypt.base64decode(readline()), clientkey)
 
 print("sceret is ", crypt.hexencode(secret))
