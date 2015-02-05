@@ -45,11 +45,11 @@ function server.login_handler(server, uid, secret)
 end
 
 local CMD = {}
-
+--注册新的登陆点
 function CMD.register_gate(server, address)
 	server_list[server] = address
 end
-
+--登陆点通知玩家下线了
 function CMD.logout(uid, subid)
 	local u = user_online[uid]
 	if u then
