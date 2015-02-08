@@ -15,14 +15,15 @@
 
 static int
 optint(const char *key, int opt) {
-	const char * str = skynet_getenv(key);
-	if (str == NULL) {
+	const char * str = skynet_getenv(key);//从环境中获取key对应的value
+	if (str == NULL) {//如果为空的话	
+		//将opt的值存入到环境中
 		char tmp[20];
 		sprintf(tmp,"%d",opt);
 		skynet_setenv(key, tmp);
 		return opt;
 	}
-	return strtol(str, NULL, 10);
+	return strtol(str, NULL, 10);//将字符串转换成整数
 }
 
 /*
@@ -38,7 +39,7 @@ optboolean(const char *key, int opt) {
 */
 
 static const char *
-optstring(const char *key,const char * opt) {
+optstring(const char *key,const char * opt) {//作用同optint,区别是这里取字符串
 	const char * str = skynet_getenv(key);
 	if (str == NULL) {
 		if (opt) {
@@ -50,30 +51,35 @@ optstring(const char *key,const char * opt) {
 	return str;
 }
 
+// lua_next() 这个函数的工作过程是：
+// 1) 先从栈顶弹出一个 key(所以在遍历table的时候先压入一个空值，key为空代表取第一对key-value)
+// 2) 从栈指定位置的 table 里取下一对 key-value，先将 key 入栈再将 value 入栈
+// 3) 如果第 2 步成功则返回非 0 值，否则返回 0，并且不向栈中压入任何值
+ 
 static void
 _init_env(lua_State *L) {
-	lua_pushnil(L);  /* first key */
-	while (lua_next(L, -2) != 0) {
-		int keyt = lua_type(L, -2);
-		if (keyt != LUA_TSTRING) {
-			fprintf(stderr, "Invalid config table\n");
-			exit(1);
+	lua_pushnil(L);  /* first key */	//压入一个空值
+	while (lua_next(L, -2) != 0) {//遍历table					
+		int keyt = lua_type(L, -2);//检查key的类型
+		if (keyt != LUA_TSTRING) {//key的类型不是字符串
+			fprintf(stderr, "Invalid config table\n");//报错
+			exit(1);//退出程序
 		}
-		const char * key = lua_tostring(L,-2);
-		if (lua_type(L,-1) == LUA_TBOOLEAN) {
-			int b = lua_toboolean(L,-1);
-			skynet_setenv(key,b ? "true" : "false" );
+		const char * key = lua_tostring(L,-2);//取得key
+		if (lua_type(L,-1) == LUA_TBOOLEAN) {//如果值是BOOL
+			int b = lua_toboolean(L,-1);//取得值
+			skynet_setenv(key,b ? "true" : "false" );//设置到环境中
 		} else {
-			const char * value = lua_tostring(L,-1);
+			const char * value = lua_tostring(L,-1);//取得值
 			if (value == NULL) {
 				fprintf(stderr, "Invalid config table key = %s\n", key);
 				exit(1);
 			}
-			skynet_setenv(key,value);
+			skynet_setenv(key,value);//设置到环境中
 		}
-		lua_pop(L,1);
+		lua_pop(L,1);//弹出value,继续遍历
 	}
-	lua_pop(L,1);
+	lua_pop(L,1);//弹出table(load_config中的result)
 }
 
 int sigign() {
@@ -82,6 +88,8 @@ int sigign() {
 	sigaction(SIGPIPE, &sa, 0);//重载信号处理方法，屏蔽SIGPIPE,防止进程退出
 	return 0;
 }
+
+//函数作用：
 //1.获取配置文件名
 //2.打开文件
 //3.读取文件
@@ -107,7 +115,7 @@ static const char * load_config = "\
 int
 main(int argc, char *argv[]) {
 	const char * config_file = NULL ;//存放配置文件名
-	if (argc > 1) {
+	if (argc > 1) {//argc包括可执行文件名和后续的参数
 		config_file = argv[1];//取得配置文件名
 	} else {
 		fprintf(stderr, "Need a config file. Please read skynet wiki : https://github.com/cloudwu/skynet/wiki/Config\n"
@@ -119,22 +127,22 @@ main(int argc, char *argv[]) {
 
 	sigign();//SIGPIPE信号处理
 
-	struct skynet_config config;
+	struct skynet_config config;//skynet配置
 
-	struct lua_State *L = lua_newstate(skynet_lalloc, NULL);//创建lua虚拟机，并提供内存分配器函数（为何提供还不知道）
+	struct lua_State *L = lua_newstate(skynet_lalloc, NULL);//创建lua虚拟机，并提供内存分配器函数（为何提供还不知道),该虚拟机用于解析配置文件
 	luaL_openlibs(L);	// link lua lib（打开标准库）
 
-	int err = luaL_loadstring(L, load_config);//将读取配置文件功能的代码作为函数压栈
+	int err = luaL_loadstring(L, load_config);//将解析配置文件功能的代码作为函数压栈
 	assert(err == LUA_OK);
 	lua_pushstring(L, config_file);//压入配置文件名
 	
-	err = lua_pcall(L, 1, 1, 0);//调用函数读取配置文件
+	err = lua_pcall(L, 1, 1, 0);//调用函数解析配置文件
 	if (err) {
 		fprintf(stderr,"%s\n",lua_tostring(L,-1));
 		lua_close(L);
 		return 1;
 	} 
-	_init_env(L);//将配置存入环境
+	_init_env(L);//将配置存入环境(其实是存到了lua虚拟机)
 
 	//从环境读取配置
 	config.thread =  optint("thread",8);

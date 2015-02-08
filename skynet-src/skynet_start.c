@@ -146,11 +146,11 @@ _worker(void *p) {
 
 static void
 _start(int thread) {
-	pthread_t pid[thread+3];
+	pthread_t pid[thread+3];//保存线程ID的数组
 
-	struct monitor *m = skynet_malloc(sizeof(*m));
-	memset(m, 0, sizeof(*m));
-	m->count = thread;
+	struct monitor *m = skynet_malloc(sizeof(*m));//分配monitor内存
+	memset(m, 0, sizeof(*m));//清空monitor内存
+	m->count = thread;//线程数
 	m->sleep = 0;
 
 	m->m = skynet_malloc(thread * sizeof(struct skynet_monitor *));

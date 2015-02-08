@@ -51,7 +51,7 @@ struct skynet_context {
 
 	CHECKCALLING_DECL
 };
-
+//skynet节点数据结构定义
 struct skynet_node {
 	int total;
 	int init;
@@ -741,7 +741,7 @@ skynet_globalinit(void) {
 	G_NODE.total = 0;
 	G_NODE.monitor_exit = 0;
 	G_NODE.init = 1;
-	//线程私有数据初始化
+	//创建线程私有数据
 	if (pthread_key_create(&G_NODE.handle_key, NULL)) {
 		fprintf(stderr, "pthread_key_create failed");
 		exit(1);
@@ -753,6 +753,7 @@ skynet_globalinit(void) {
 
 void 
 skynet_globalexit(void) {
+	//注销线程私有数据
 	pthread_key_delete(G_NODE.handle_key);
 }
 
