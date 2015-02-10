@@ -1,3 +1,4 @@
+//简单的客户端 socket 封装
 // simple lua socket library for client
 // It's only for demo, limited feature. Don't use it in your project.
 // Rewrite socket library by yourself .

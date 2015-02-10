@@ -1,3 +1,4 @@
+//核心库， 封装 skynet 给 lua 使用
 #include "skynet.h"
 #include "lua-seri.h"
 

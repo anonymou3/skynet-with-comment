@@ -1,3 +1,4 @@
+//网络封包， 协议使用。
 #include "skynet_malloc.h"
 
 #include "skynet_socket.h"

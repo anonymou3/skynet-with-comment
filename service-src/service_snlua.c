@@ -1,3 +1,4 @@
+//加载 lua 编写的服务
 #include "skynet.h"
 
 #include <lua.h>

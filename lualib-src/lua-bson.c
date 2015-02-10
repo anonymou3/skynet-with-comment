@@ -1,3 +1,4 @@
+//一种类 json 的一种二进制形式的存储格式
 #include <lua.h>
 #include <lauxlib.h>
 

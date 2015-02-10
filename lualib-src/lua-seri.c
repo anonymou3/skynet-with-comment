@@ -1,3 +1,4 @@
+//序列化
 /*
 	modify from https://github.com/cloudwu/lua-serialize
  */

@@ -1,3 +1,4 @@
+//网关服务， 管理 Socket
 #include "skynet.h"
 #include "skynet_socket.h"
 #include "databuffer.h"

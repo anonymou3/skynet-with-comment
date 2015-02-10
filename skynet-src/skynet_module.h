@@ -1,3 +1,4 @@
+//动态链接库(模块)加载
 #ifndef SKYNET_MODULE_H
 #define SKYNET_MODULE_H
 
@@ -7,12 +8,13 @@ typedef void * (*skynet_dl_create)(void);
 typedef int (*skynet_dl_init)(void * inst, struct skynet_context *, const char * parm);
 typedef void (*skynet_dl_release)(void * inst);
 
+//skynet模块数据结构定义
 struct skynet_module {
-	const char * name;
-	void * module;
-	skynet_dl_create create;
-	skynet_dl_init init;
-	skynet_dl_release release;
+	const char * name;//名字
+	void * module;//模块
+	skynet_dl_create create;//创建函数
+	skynet_dl_init init;//初始化函数
+	skynet_dl_release release;//释放函数
 };
 
 void skynet_module_insert(struct skynet_module *mod);

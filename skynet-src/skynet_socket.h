@@ -1,3 +1,4 @@
+//网络接口
 #ifndef skynet_socket_h
 #define skynet_socket_h
 

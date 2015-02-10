@@ -1,3 +1,4 @@
+//Skynet 主要功能， 初始化组件、加载服务和通知服务
 #include "skynet.h"
 
 #include "skynet_server.h"
@@ -34,7 +35,7 @@
 #define CHECKCALLING_DECL
 
 #endif
-
+//skynet上下文数据结构定义
 struct skynet_context {
 	void * instance;
 	struct skynet_module * mod;
@@ -759,7 +760,7 @@ skynet_globalexit(void) {
 
 void
 skynet_initthread(int m) {
-	uintptr_t v = (uint32_t)(-m);//为了和 service address 显出不同来, 这个就是做 log 用的
+	uintptr_t v = (uint32_t)(-m);//为了和service address显出不同来，这个就是做 log 用的
 	pthread_setspecific(G_NODE.handle_key, (void *)v);//设置线程私有数据
 }
 

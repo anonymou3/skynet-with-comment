@@ -1,3 +1,4 @@
+//Skynet 主要功能， 初始化组件、加载服务和通知服务
 #ifndef SKYNET_H
 #define SKYNET_H
 

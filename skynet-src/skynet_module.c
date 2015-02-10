@@ -1,3 +1,4 @@
+//动态链接库(模块)加载
 #include "skynet.h"
 
 #include "skynet_module.h"
@@ -10,7 +11,7 @@
 #include <stdio.h>
 
 #define MAX_MODULE_TYPE 32
-
+//模块数据结构定义
 struct modules {
 	int count;
 	int lock;
@@ -152,10 +153,11 @@ skynet_module_instance_release(struct skynet_module *m, void *inst) {
 
 void 
 skynet_module_init(const char *path) {
-	struct modules *m = skynet_malloc(sizeof(*m));
+	struct modules *m = skynet_malloc(sizeof(*m));//分配内存
+	//赋值
 	m->count = 0;
 	m->path = skynet_strdup(path);
 	m->lock = 0;
-
+	//保存指针
 	M = m;
 }

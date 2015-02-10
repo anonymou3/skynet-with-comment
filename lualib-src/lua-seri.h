@@ -1,3 +1,4 @@
+//序列化
 #ifndef LUA_SERIALIZE_H
 #define LUA_SERIALIZE_H
 

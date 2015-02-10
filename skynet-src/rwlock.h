@@ -1,3 +1,4 @@
+//读写锁
 #ifndef _RWLOCK_H_
 #define _RWLOCK_H_
 
@@ -46,3 +47,4 @@ rwlock_runlock(struct rwlock *lock) {
 }
 
 #endif
+

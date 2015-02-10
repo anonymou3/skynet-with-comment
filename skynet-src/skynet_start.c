@@ -1,3 +1,4 @@
+//启动流程
 #include "skynet.h"
 #include "skynet_server.h"
 #include "skynet_imp.h"
@@ -211,8 +212,8 @@ bootstrap(struct skynet_context * logger, const char * cmdline) {
 
 void 
 skynet_start(struct skynet_config * config) {
-	if (config->daemon) {//守护进程处理
-		if (daemon_init(config->daemon)) {
+	if (config->daemon) {//如果以守护进程启动
+		if (daemon_init(config->daemon)) {//初始化
 			exit(1);
 		}
 	}
@@ -234,9 +235,10 @@ skynet_start(struct skynet_config * config) {
 	_start(config->thread);//启动
 
 	// harbor_exit may call socket send, so it should exit before socket_free
+	// harbor_exit 可能会调用 socket send,所以他应该在socket_free之前退出
 	skynet_harbor_exit();//harbor退出
 	skynet_socket_free();//释放socket
-	if (config->daemon) {
+	if (config->daemon) {//如果以守护进程启动
 		daemon_exit(config->daemon);//守护进程退出
 	}
 }

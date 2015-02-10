@@ -1,3 +1,4 @@
+//启动流程
 #include "skynet.h"
 
 #include "skynet_imp.h"
@@ -142,15 +143,15 @@ main(int argc, char *argv[]) {
 		lua_close(L);
 		return 1;
 	} 
-	_init_env(L);//将配置存入环境(其实是存到了lua虚拟机)
+	_init_env(L);//将配置存入环境(其实是存到了一个lua虚拟机中)
 
-	//从环境读取配置
-	config.thread =  optint("thread",8);
-	config.module_path = optstring("cpath","./cservice/?.so");
-	config.harbor = optint("harbor", 1);
-	config.bootstrap = optstring("bootstrap","snlua bootstrap");
-	config.daemon = optstring("daemon", NULL);
-	config.logger = optstring("logger", NULL);
+	//从环境读取配置存入skynet_config数据结构中
+	config.thread =  optint("thread",8);	//工作线程数
+	config.module_path = optstring("cpath","./cservice/?.so");	//模块地址：用C编写的服务模块的位置
+	config.harbor = optint("harbor", 1);	//节点编号，为零代表单节点模式
+	config.bootstrap = optstring("bootstrap","snlua bootstrap");// skynet 启动的第一个lua服务以及其启动参数
+	config.daemon = optstring("daemon", NULL);//配置是否以守护进程启动
+	config.logger = optstring("logger", NULL);//配置 skynet_error 输出到什么地方
 
 	lua_close(L);//关闭虚拟机
 

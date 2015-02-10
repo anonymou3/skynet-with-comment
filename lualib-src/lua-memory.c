@@ -1,3 +1,4 @@
+//分配内存
 #include <lua.h>
 #include <lauxlib.h>
 

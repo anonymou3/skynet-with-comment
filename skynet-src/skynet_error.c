@@ -1,3 +1,4 @@
+//错误处理
 #include "skynet.h"
 #include "skynet_handle.h"
 #include "skynet_mq.h"

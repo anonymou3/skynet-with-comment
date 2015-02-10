@@ -1,3 +1,4 @@
+//节点服务， 与其他节点互通
 #include "skynet.h"
 #include "skynet_harbor.h"
 #include "skynet_socket.h"

@@ -1,3 +1,4 @@
+//设置和获得 lua 的环境变量
 #include "skynet.h"
 #include "skynet_env.h"
 

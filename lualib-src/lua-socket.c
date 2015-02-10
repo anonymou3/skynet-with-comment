@@ -1,3 +1,4 @@
+//封装了 socket-server 给 lua 使用
 #include "skynet_malloc.h"
 
 #include <stdlib.h>

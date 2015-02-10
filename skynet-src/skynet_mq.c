@@ -1,3 +1,4 @@
+//消息队列
 #include "skynet.h"
 #include "skynet_mq.h"
 #include "skynet_handle.h"
@@ -211,9 +212,9 @@ skynet_mq_push(struct message_queue *q, struct skynet_message *message) {
 
 void 
 skynet_mq_init() {
-	struct global_queue *q = skynet_malloc(sizeof(*q));
-	memset(q,0,sizeof(*q));
-	Q=q;
+	struct global_queue *q = skynet_malloc(sizeof(*q));//分配内存
+	memset(q,0,sizeof(*q));//清空内存
+	Q=q;//保存指针
 }
 
 void 

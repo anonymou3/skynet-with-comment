@@ -1,3 +1,4 @@
+//服务编号管理
 #include "skynet.h"
 
 #include "skynet_handle.h"
@@ -10,23 +11,23 @@
 
 #define DEFAULT_SLOT_SIZE 4
 #define MAX_SLOT_SIZE 0x40000000
-
+//每个模块（模块被称为服务）都有一个永不重复（即使模块退出）的数字 id，这个概念叫做handle,类似windows内的句柄概念
 struct handle_name {
 	char * name;
 	uint32_t handle;
 };
-
+//handle存储数据结构定义
 struct handle_storage {
-	struct rwlock lock;
+	struct rwlock lock;	//读写锁
 
-	uint32_t harbor;
-	uint32_t handle_index;
-	int slot_size;
-	struct skynet_context ** slot;
+	uint32_t harbor;	//节点号
+	uint32_t handle_index;//handle索引
+	int slot_size;//槽大小
+	struct skynet_context ** slot;//槽
 	
-	int name_cap;
-	int name_count;
-	struct handle_name *name;
+	int name_cap;//名字容量
+	int name_count;//名字计数
+	struct handle_name *name;//名字
 };
 
 static struct handle_storage *H = NULL;
@@ -236,13 +237,14 @@ skynet_handle_namehandle(uint32_t handle, const char *name) {
 void 
 skynet_handle_init(int harbor) {
 	assert(H==NULL);
-	struct handle_storage * s = skynet_malloc(sizeof(*H));
-	s->slot_size = DEFAULT_SLOT_SIZE;
-	s->slot = skynet_malloc(s->slot_size * sizeof(struct skynet_context *));
-	memset(s->slot, 0, s->slot_size * sizeof(struct skynet_context *));
+	struct handle_storage * s = skynet_malloc(sizeof(*H));//分配内存
+	s->slot_size = DEFAULT_SLOT_SIZE;//设置槽大小
+	s->slot = skynet_malloc(s->slot_size * sizeof(struct skynet_context *));//为槽分配内存
+	memset(s->slot, 0, s->slot_size * sizeof(struct skynet_context *));//清空内存
 
-	rwlock_init(&s->lock);
+	rwlock_init(&s->lock);//读写锁初始化
 	// reserve 0 for system
+	//初始化handle存储相关数据
 	s->harbor = (uint32_t) (harbor & 0xff) << HANDLE_REMOTE_SHIFT;
 	s->handle_index = 1;
 	s->name_cap = 2;

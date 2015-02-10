@@ -1,3 +1,4 @@
+//消息队列
 #ifndef SKYNET_MESSAGE_QUEUE_H
 #define SKYNET_MESSAGE_QUEUE_H
 

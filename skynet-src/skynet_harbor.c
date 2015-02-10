@@ -1,3 +1,4 @@
+//节点管理
 #include "skynet.h"
 #include "skynet_harbor.h"
 #include "skynet_server.h"
@@ -26,7 +27,7 @@ skynet_harbor_message_isremote(uint32_t handle) {
 
 void
 skynet_harbor_init(int harbor) {
-	HARBOR = (unsigned int)harbor << HANDLE_REMOTE_SHIFT;
+	HARBOR = (unsigned int)harbor << HANDLE_REMOTE_SHIFT;//右移24位	服务地址(32位)的高8位代表了它所属的节点,高8位即是harbor：1-255	0代表单节点模式
 }
 
 void

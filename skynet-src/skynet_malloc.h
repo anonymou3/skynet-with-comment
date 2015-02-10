@@ -1,3 +1,4 @@
+//功能：内存分配，默认使用 jemalloc
 #ifndef skynet_malloc_h
 #define skynet_malloc_h
 

@@ -1,3 +1,4 @@
+//数据缓冲
 #ifndef skynet_databuffer_h
 #define skynet_databuffer_h
 

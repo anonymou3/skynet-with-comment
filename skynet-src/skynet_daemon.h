@@ -1,3 +1,4 @@
+//守护进程
 #ifndef skynet_daemon_h
 #define skynet_daemon_h
 

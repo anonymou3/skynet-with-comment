@@ -1,3 +1,4 @@
+//时钟
 #include "skynet.h"
 
 #include "skynet_timer.h"
@@ -41,7 +42,7 @@ struct link_list {
 	struct timer_node head;
 	struct timer_node *tail;
 };
-
+//定时器数据结构
 struct timer {
 	struct link_list near[TIME_NEAR];
 	struct link_list t[4][TIME_LEVEL];

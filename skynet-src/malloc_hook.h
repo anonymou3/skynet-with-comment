@@ -1,3 +1,4 @@
+//功能：内存分配，默认使用 jemalloc
 #ifndef __MALLOC_HOOK_H
 #define __MALLOC_HOOK_H
 
@@ -11,4 +12,3 @@ extern int    mallctl_opt(const char* name, int* newval);
 extern void   dump_c_mem(void);
 
 #endif /* __MALLOC_HOOK_H */
-
