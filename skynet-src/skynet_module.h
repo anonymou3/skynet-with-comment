@@ -10,8 +10,8 @@ typedef void (*skynet_dl_release)(void * inst);
 
 //skynet模块数据结构定义
 struct skynet_module {
-	const char * name;//名字
-	void * module;//模块
+	const char * name;//模块名字
+	void * module;//模块句柄
 	skynet_dl_create create;//创建函数
 	skynet_dl_init init;//初始化函数
 	skynet_dl_release release;//释放函数

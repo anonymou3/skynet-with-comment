@@ -22,10 +22,15 @@
 
 #ifdef CALLING_CHECK
 
-#define CHECKCALLING_BEGIN(ctx) assert(__sync_lock_test_and_set(&ctx->calling,1) == 0);
-#define CHECKCALLING_END(ctx) __sync_lock_release(&ctx->calling);
-#define CHECKCALLING_INIT(ctx) ctx->calling = 0;
-#define CHECKCALLING_DECL int calling;
+//type __sync_lock_test_and_set (type *ptr, type value, ...)
+//将*ptr设为value并返回*ptr操作之前的值
+
+//void __sync_lock_release (type *ptr, ...)
+//将*ptr置0
+#define CHECKCALLING_BEGIN(ctx) assert(__sync_lock_test_and_set(&ctx->calling,1) == 0);	//检查调用开始
+#define CHECKCALLING_END(ctx) __sync_lock_release(&ctx->calling);//检查调用结束
+#define CHECKCALLING_INIT(ctx) ctx->calling = 0;//检查调用初始化
+#define CHECKCALLING_DECL int calling;//检查调用声明
 
 #else
 
@@ -120,15 +125,15 @@ skynet_context_new(const char * name, const char *param) {
 	if (mod == NULL)
 		return NULL;
 
-	void *inst = skynet_module_instance_create(mod);
+	void *inst = skynet_module_instance_create(mod);//创建模块实例
 	if (inst == NULL)
 		return NULL;
-	struct skynet_context * ctx = skynet_malloc(sizeof(*ctx));
-	CHECKCALLING_INIT(ctx)
+	struct skynet_context * ctx = skynet_malloc(sizeof(*ctx));//为skynet上下文分配内存
+	CHECKCALLING_INIT(ctx)//检查调用初始化
 
-	ctx->mod = mod;
-	ctx->instance = inst;
-	ctx->ref = 2;
+	ctx->mod = mod;//保存模块引用
+	ctx->instance = inst;//保存模块实例
+	ctx->ref = 2;//引用计数？
 	ctx->cb = NULL;
 	ctx->cb_ud = NULL;
 	ctx->session_id = 0;

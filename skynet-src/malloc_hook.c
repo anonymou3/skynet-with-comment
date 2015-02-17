@@ -209,11 +209,11 @@ dump_c_mem() {
 }
 
 char *
-skynet_strdup(const char *str) {
-	size_t sz = strlen(str);
-	char * ret = skynet_malloc(sz+1);
-	memcpy(ret, str, sz+1);
-	return ret;
+skynet_strdup(const char *str) {//将串拷贝到新建的位置处
+	size_t sz = strlen(str);//字符串大小
+	char * ret = skynet_malloc(sz+1);//分配内存
+	memcpy(ret, str, sz+1);//拷贝数据
+	return ret;//返回新串的地址
 }
 
 void * 

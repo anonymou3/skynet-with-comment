@@ -24,7 +24,7 @@ optint(const char *key, int opt) {
 		skynet_setenv(key, tmp);
 		return opt;
 	}
-	return strtol(str, NULL, 10);//将字符串转换成整数
+	return strtol(str, NULL, 10);//将字符串转换成长整数
 }
 
 /*

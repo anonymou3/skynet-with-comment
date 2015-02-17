@@ -1,4 +1,7 @@
 //日志服务
+//模块规则：
+//模块包含create函数，init函数，release函数
+//函数名为：模块名_函数名，例如：create函数为logger_create
 #include "skynet.h"
 
 #include <stdio.h>
