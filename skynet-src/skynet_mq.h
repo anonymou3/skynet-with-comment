@@ -5,11 +5,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+//消息数据结构定义
 struct skynet_message {
-	uint32_t source;
-	int session;
-	void * data;
-	size_t sz;
+	uint32_t source;//消息源
+	int session;	//消息标识
+	void * data;	//数据
+	size_t sz;		//大小
 };
 
 struct message_queue;

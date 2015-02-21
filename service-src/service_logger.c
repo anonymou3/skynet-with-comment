@@ -8,9 +8,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+//logger数据结构
 struct logger {
-	FILE * handle;
-	int close;
+	FILE * handle;//日志文件指针
+	int close;//release时是否需要调用fclose
 };
 
 struct logger *
@@ -42,19 +43,19 @@ _logger(struct skynet_context * context, void *ud, int type, int session, uint32
 
 int
 logger_init(struct logger * inst, struct skynet_context *ctx, const char * parm) {
-	if (parm) {
-		inst->handle = fopen(parm,"w");
-		if (inst->handle == NULL) {
-			return 1;
+	if (parm) {//如果param不为空，则将日志输出到文件
+		inst->handle = fopen(parm,"w");//以可写模式打开文件
+		if (inst->handle == NULL) {//打开文件失败
+			return 1;//失败
 		}
-		inst->close = 1;
-	} else {
+		inst->close = 1;//release时需要调用fclose
+	} else {//如果param为空，则将日志输出到标准输出
 		inst->handle = stdout;
 	}
-	if (inst->handle) {
-		skynet_callback(ctx, inst, _logger);
-		skynet_command(ctx, "REG", ".logger");
-		return 0;
+	if (inst->handle) {//或者输出到文件，或者输出到标准输出
+		skynet_callback(ctx, inst, _logger);//设置回调
+		skynet_command(ctx, "REG", ".logger");//注册日志全局名字
+		return 0;//成功
 	}
-	return 1;
+	return 1;//失败
 }

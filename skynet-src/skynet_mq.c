@@ -18,22 +18,23 @@
 #define MQ_IN_GLOBAL 1
 #define MQ_OVERLOAD 1024
 
+//消息队列数据结构定义
 struct message_queue {
-	uint32_t handle;
-	int cap;
-	int head;
-	int tail;
-	int lock;
-	int release;
+	uint32_t handle;//句柄号
+	int cap;		//容量
+	int head;		//头
+	int tail;		//尾
+	int lock;		//锁
+	int release;	
 	int in_global;
 	int overload;
 	int overload_threshold;
-	struct skynet_message *queue;
-	struct message_queue *next;
+	struct skynet_message *queue;	//存储消息
+	struct message_queue *next;		
 };
-
+//全局队列数据结构定义
 struct global_queue {
-	struct message_queue *head;
+	struct message_queue *head;	
 	struct message_queue *tail;
 	int lock;
 };
@@ -79,12 +80,12 @@ skynet_globalmq_pop() {
 
 struct message_queue * 
 skynet_mq_create(uint32_t handle) {
-	struct message_queue *q = skynet_malloc(sizeof(*q));
-	q->handle = handle;
-	q->cap = DEFAULT_QUEUE_SIZE;
-	q->head = 0;
-	q->tail = 0;
-	q->lock = 0;
+	struct message_queue *q = skynet_malloc(sizeof(*q));//为消息队列分配内存
+	q->handle = handle;//设置句柄号
+	q->cap = DEFAULT_QUEUE_SIZE;//默认队列大小64
+	q->head = 0;//头
+	q->tail = 0;//尾
+	q->lock = 0;//锁
 	// When the queue is create (always between service create and service init) ,
 	// set in_global flag to avoid push it to global queue .
 	// If the service init success, skynet_context_new will call skynet_mq_force_push to push it to global queue.
@@ -212,9 +213,9 @@ skynet_mq_push(struct message_queue *q, struct skynet_message *message) {
 
 void 
 skynet_mq_init() {
-	struct global_queue *q = skynet_malloc(sizeof(*q));//分配内存
+	struct global_queue *q = skynet_malloc(sizeof(*q));//为全局队列分配内存
 	memset(q,0,sizeof(*q));//清空内存
-	Q=q;//保存指针
+	Q=q;//保存分配的指针
 }
 
 void 

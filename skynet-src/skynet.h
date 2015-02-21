@@ -7,8 +7,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define PTYPE_TEXT 0
-#define PTYPE_RESPONSE 1
+//消息类别定义
+//其实更准确的说法应该是消息使用何种协议来编码
+//所以这里开头的P的含义为protocol
+#define PTYPE_TEXT 0 	//以文本方式编码消息的消息类别
+#define PTYPE_RESPONSE 1 
 #define PTYPE_MULTICAST 2
 #define PTYPE_CLIENT 3
 #define PTYPE_SYSTEM 4
@@ -26,7 +29,7 @@
 #define PTYPE_TAG_ALLOCSESSION 0x20000
 
 struct skynet_context;
-
+ 
 void skynet_error(struct skynet_context * context, const char *msg, ...);
 const char * skynet_command(struct skynet_context * context, const char * cmd , const char * parm);
 uint32_t skynet_queryname(struct skynet_context * context, const char * name);

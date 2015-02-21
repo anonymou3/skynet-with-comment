@@ -9,6 +9,7 @@
 #define REMOTE_MAX 256
 
 // reserve high 8 bits for remote id
+// 保留高8位用于远程ID
 #define HANDLE_MASK 0xffffff
 #define HANDLE_REMOTE_SHIFT 24
 

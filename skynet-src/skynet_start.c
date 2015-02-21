@@ -217,11 +217,12 @@ skynet_start(struct skynet_config * config) {
 			exit(1);
 		}
 	}
+	//初始化各个组件
 	skynet_harbor_init(config->harbor);//harbor初始化
-	skynet_handle_init(config->harbor);//handle初始化
+	skynet_handle_init(config->harbor);//句柄初始化
 	skynet_mq_init();//消息队列初始化
 	skynet_module_init(config->module_path);//模块初始化
-	skynet_timer_init();//定时器初始化
+	skynet_timer_init();//时钟初始化
 	skynet_socket_init();//socket初始化
 
 	struct skynet_context *ctx = skynet_context_new("logger", config->logger);//加载日志模块

@@ -14,11 +14,11 @@
 
 //模块集合数据结构定义
 struct modules {
-	int count;//模块计数器
+	int count;//模块数
 	int lock;//锁
 	const char * path;//模块所在路径
-	struct skynet_module m[MAX_MODULE_TYPE];//存储具体的各个模块
-};
+	struct skynet_module m[MAX_MODULE_TYPE];//存储具体模块的数组
+}; 
 
 static struct modules * M = NULL;
 
@@ -142,6 +142,7 @@ skynet_module_instance_create(struct skynet_module *m) {
 
 int
 skynet_module_instance_init(struct skynet_module *m, void * inst, struct skynet_context *ctx, const char * parm) {
+	//返回0代表成功，返回1代表失败
 	return m->init(inst, ctx, parm);
 }
 

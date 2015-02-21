@@ -27,6 +27,7 @@
 
 //void __sync_lock_release (type *ptr, ...)
 //将*ptr置0
+
 #define CHECKCALLING_BEGIN(ctx) assert(__sync_lock_test_and_set(&ctx->calling,1) == 0);	//检查调用开始
 #define CHECKCALLING_END(ctx) __sync_lock_release(&ctx->calling);//检查调用结束
 #define CHECKCALLING_INIT(ctx) ctx->calling = 0;//检查调用初始化
@@ -41,25 +42,26 @@
 
 #endif
 //skynet上下文数据结构定义
+//上下文可以理解为一种环境，包含了许多东西
 struct skynet_context {
-	void * instance;
-	struct skynet_module * mod;
-	void * cb_ud;
-	skynet_cb cb;
-	struct message_queue *queue;
-	FILE * logfile;
-	char result[32];
-	uint32_t handle;
-	int session_id;
-	int ref;
-	bool init;
-	bool endless;
+	void * instance;			//模块实例引用
+	struct skynet_module * mod;	//模块引用
+	void * cb_ud;				//回调的用户数据(userdata)
+	skynet_cb cb;				//skynet回调
+	struct message_queue *queue;	//消息队列
+	FILE * logfile;					//日志文件句柄
+	char result[32];				//结果缓冲区
+	uint32_t handle;				//句柄号
+	int session_id;					//会话id
+	int ref;						//引用计数？
+	bool init;						//是否初始化
+	bool endless;					//是否回绕
 
-	CHECKCALLING_DECL
+	CHECKCALLING_DECL				//检查调用声明
 };
 //skynet节点数据结构定义
 struct skynet_node {
-	int total;
+	int total;			//上下文计数器
 	int init;
 	uint32_t monitor_exit;
 	pthread_key_t handle_key;
@@ -73,13 +75,13 @@ skynet_context_total() {
 }
 
 static void
-context_inc() {
-	__sync_fetch_and_add(&G_NODE.total,1);
+context_inc() {//上下文计数增加
+	__sync_fetch_and_add(&G_NODE.total,1);//原子操作	先fetch，然后自加，返回的是自加以前的值
 }
 
 static void
-context_dec() {
-	__sync_fetch_and_sub(&G_NODE.total,1);
+context_dec() {//上下文计数减少
+	__sync_fetch_and_sub(&G_NODE.total,1);//原子操作
 }
 
 uint32_t 
@@ -131,25 +133,27 @@ skynet_context_new(const char * name, const char *param) {
 	struct skynet_context * ctx = skynet_malloc(sizeof(*ctx));//为skynet上下文分配内存
 	CHECKCALLING_INIT(ctx)//检查调用初始化
 
+	//初始化skynet上下文相关的一些数据
 	ctx->mod = mod;//保存模块引用
-	ctx->instance = inst;//保存模块实例
+	ctx->instance = inst;//保存模块实例引用
 	ctx->ref = 2;//引用计数？
 	ctx->cb = NULL;
 	ctx->cb_ud = NULL;
 	ctx->session_id = 0;
 	ctx->logfile = NULL;
 
-	ctx->init = false;
-	ctx->endless = false;
+	ctx->init = false;//标志是否已经初始化
+	ctx->endless = false;//是否回绕？
 	// Should set to 0 first to avoid skynet_handle_retireall get an uninitialized handle
-	ctx->handle = 0;	
-	ctx->handle = skynet_handle_register(ctx);
-	struct message_queue * queue = ctx->queue = skynet_mq_create(ctx->handle);
+	ctx->handle = 0;//初始化句柄号为0	
+
+	ctx->handle = skynet_handle_register(ctx);//注册句柄
+	struct message_queue * queue = ctx->queue = skynet_mq_create(ctx->handle);//创建消息队列
 	// init function maybe use ctx->handle, so it must init at last
-	context_inc();
+	context_inc();//上下文计数增加
 
 	CHECKCALLING_BEGIN(ctx)
-	int r = skynet_module_instance_init(mod, inst, ctx, param);
+	int r = skynet_module_instance_init(mod, inst, ctx, param);//调用模块实例的初始化函数
 	CHECKCALLING_END(ctx)
 	if (r == 0) {
 		struct skynet_context * ret = skynet_context_release(ctx);
@@ -185,7 +189,7 @@ skynet_context_newsession(struct skynet_context *ctx) {
 
 void 
 skynet_context_grab(struct skynet_context *ctx) {
-	__sync_add_and_fetch(&ctx->ref,1);
+	__sync_add_and_fetch(&ctx->ref,1);//上下文引用计数加1
 }
 
 void
@@ -218,12 +222,12 @@ skynet_context_release(struct skynet_context *ctx) {
 
 int
 skynet_context_push(uint32_t handle, struct skynet_message *message) {
-	struct skynet_context * ctx = skynet_handle_grab(handle);
+	struct skynet_context * ctx = skynet_handle_grab(handle);//获取上下文引用
 	if (ctx == NULL) {
 		return -1;
 	}
-	skynet_mq_push(ctx->queue, message);
-	skynet_context_release(ctx);
+	skynet_mq_push(ctx->queue, message);//将消息放入队列
+	skynet_context_release(ctx);//释放上下文，因为在skynet_handle_grab中调用了skynet_context_grab增加了上下文的引用计数
 
 	return 0;
 }
@@ -368,10 +372,10 @@ handle_exit(struct skynet_context * context, uint32_t handle) {
 }
 
 // skynet command
-
+//skynet命令数据结构定义
 struct command_func {
-	const char *name;
-	const char * (*func)(struct skynet_context * context, const char * param);
+	const char *name;	//命令名
+	const char * (*func)(struct skynet_context * context, const char * param);	//命令函数
 };
 
 static const char *
@@ -386,12 +390,12 @@ cmd_timeout(struct skynet_context * context, const char * param) {
 
 static const char *
 cmd_reg(struct skynet_context * context, const char * param) {
-	if (param == NULL || param[0] == '\0') {
-		sprintf(context->result, ":%x", context->handle);
-		return context->result;
-	} else if (param[0] == '.') {
-		return skynet_handle_namehandle(context->handle, param + 1);
-	} else {
+	if (param == NULL || param[0] == '\0') {//param为空或者为空字符串
+		sprintf(context->result, ":%x", context->handle);//按十六进制将句柄号写入结果内
+		return context->result;//返回结果
+	} else if (param[0] == '.') {//param以字符'.'开头
+		return skynet_handle_namehandle(context->handle, param + 1);//命名句柄
+	} else {//其他情况非法
 		skynet_error(context, "Can't register global name %s in C", param);
 		return NULL;
 	}
@@ -594,10 +598,10 @@ cmd_logoff(struct skynet_context * context, const char * param) {
 	skynet_context_release(ctx);
 	return NULL;
 }
-
+//命令名-》命令函数 映射表
 static struct command_func cmd_funcs[] = {
 	{ "TIMEOUT", cmd_timeout },
-	{ "REG", cmd_reg },
+	{ "REG", cmd_reg },//注册命令
 	{ "QUERY", cmd_query },
 	{ "NAME", cmd_name },
 	{ "NOW", cmd_now },
@@ -618,12 +622,12 @@ static struct command_func cmd_funcs[] = {
 
 const char * 
 skynet_command(struct skynet_context * context, const char * cmd , const char * param) {
-	struct command_func * method = &cmd_funcs[0];
-	while(method->name) {
-		if (strcmp(cmd, method->name) == 0) {
-			return method->func(context, param);
+	struct command_func * method = &cmd_funcs[0];//初始化指针，指向映射表的第一项
+	while(method->name) {//如果该项名字不为空
+		if (strcmp(cmd, method->name) == 0) {//比较名字是否匹配
+			return method->func(context, param);//调用命令函数
 		}
-		++method;
+		++method;//指向到下一项
 	}
 
 	return NULL;
@@ -719,6 +723,7 @@ skynet_sendname(struct skynet_context * context, uint32_t source, const char * a
 	return skynet_send(context, source, des, type, session, data, sz);
 }
 
+//获取上下文的句柄
 uint32_t 
 skynet_context_handle(struct skynet_context *ctx) {
 	return ctx->handle;
