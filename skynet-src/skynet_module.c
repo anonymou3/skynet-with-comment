@@ -148,8 +148,8 @@ skynet_module_instance_init(struct skynet_module *m, void * inst, struct skynet_
 
 void 
 skynet_module_instance_release(struct skynet_module *m, void *inst) {
-	if (m->release) {
-		m->release(inst);
+	if (m->release) {//如果存在release函数
+		m->release(inst);//调用release函数
 	}
 }
 

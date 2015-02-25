@@ -8,11 +8,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+//监视者数据结构定义
 struct skynet_monitor {
-	int version;
-	int check_version;
-	uint32_t source;
-	uint32_t destination;
+	int version;		//版本
+	int check_version;	//检查版本
+	uint32_t source;	//源
+	uint32_t destination;	//目标
 };
 
 struct skynet_monitor * 

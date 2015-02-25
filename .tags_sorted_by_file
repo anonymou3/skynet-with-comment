@@ -7965,14 +7965,14 @@ logger	service-src/service_logger.c	/^struct logger {$/;"	s	file:
 logger_create	service-src/service_logger.c	/^logger_create(void) {$/;"	f
 logger_init	service-src/service_logger.c	/^logger_init(struct logger * inst, struct skynet_context *ctx, const char * parm) {$/;"	f
 logger_release	service-src/service_logger.c	/^logger_release(struct logger * inst) {$/;"	f
-L	service-src/service_snlua.c	/^	lua_State * L;$/;"	m	struct:snlua	file:
+L	service-src/service_snlua.c	/^	lua_State * L;\/\/一个lua虚拟机$/;"	m	struct:snlua	file:
 _init	service-src/service_snlua.c	/^_init(struct snlua *l, struct skynet_context *ctx, const char * args, size_t sz) {$/;"	f	file:
 _launch	service-src/service_snlua.c	/^_launch(struct skynet_context * context, void *ud, int type, int session, uint32_t source , const void * msg, size_t sz) {$/;"	f	file:
 _report_launcher_error	service-src/service_snlua.c	/^_report_launcher_error(struct skynet_context *ctx) {$/;"	f	file:
 cleardummy	service-src/service_snlua.c	/^cleardummy(lua_State *L) {$/;"	f	file:
 codecache	service-src/service_snlua.c	/^#define codecache /;"	d	file:
 codecache	service-src/service_snlua.c	/^codecache(lua_State *L) {$/;"	f	file:
-ctx	service-src/service_snlua.c	/^	struct skynet_context * ctx;$/;"	m	struct:snlua	typeref:struct:snlua::skynet_context	file:
+ctx	service-src/service_snlua.c	/^	struct skynet_context * ctx;\/\/skynet上下文$/;"	m	struct:snlua	typeref:struct:snlua::skynet_context	file:
 optstring	service-src/service_snlua.c	/^optstring(struct skynet_context *ctx, const char *key, const char * str) {$/;"	f	file:
 snlua	service-src/service_snlua.c	/^struct snlua {$/;"	s	file:
 snlua_create	service-src/service_snlua.c	/^snlua_create(void) {$/;"	f
@@ -8234,11 +8234,11 @@ THREAD_MONITOR	skynet-src/skynet_imp.h	/^#define THREAD_MONITOR /;"	d
 THREAD_SOCKET	skynet-src/skynet_imp.h	/^#define THREAD_SOCKET /;"	d
 THREAD_TIMER	skynet-src/skynet_imp.h	/^#define THREAD_TIMER /;"	d
 THREAD_WORKER	skynet-src/skynet_imp.h	/^#define THREAD_WORKER /;"	d
-bootstrap	skynet-src/skynet_imp.h	/^	const char * bootstrap;$/;"	m	struct:skynet_config
-daemon	skynet-src/skynet_imp.h	/^	const char * daemon;$/;"	m	struct:skynet_config
-harbor	skynet-src/skynet_imp.h	/^	int harbor;$/;"	m	struct:skynet_config
-logger	skynet-src/skynet_imp.h	/^	const char * logger;$/;"	m	struct:skynet_config
-module_path	skynet-src/skynet_imp.h	/^	const char * module_path;$/;"	m	struct:skynet_config
+bootstrap	skynet-src/skynet_imp.h	/^	const char * bootstrap;		\/\/引导配置$/;"	m	struct:skynet_config
+daemon	skynet-src/skynet_imp.h	/^	const char * daemon;		\/\/守护进程配置$/;"	m	struct:skynet_config
+harbor	skynet-src/skynet_imp.h	/^	int harbor;					\/\/节点号$/;"	m	struct:skynet_config
+logger	skynet-src/skynet_imp.h	/^	const char * logger;		\/\/日志配置$/;"	m	struct:skynet_config
+module_path	skynet-src/skynet_imp.h	/^	const char * module_path;	\/\/模块目录配置$/;"	m	struct:skynet_config
 skynet_config	skynet-src/skynet_imp.h	/^struct skynet_config {$/;"	s
 thread	skynet-src/skynet_imp.h	/^	int thread;					\/\/工作线程数$/;"	m	struct:skynet_config
 log_blob	skynet-src/skynet_log.c	/^log_blob(FILE *f, void * buffer, size_t sz) {$/;"	f	file:
@@ -8284,15 +8284,15 @@ skynet_dl_create	skynet-src/skynet_module.h	/^typedef void * (*skynet_dl_create)
 skynet_dl_init	skynet-src/skynet_module.h	/^typedef int (*skynet_dl_init)(void * inst, struct skynet_context *, const char * parm);$/;"	t
 skynet_dl_release	skynet-src/skynet_module.h	/^typedef void (*skynet_dl_release)(void * inst);$/;"	t
 skynet_module	skynet-src/skynet_module.h	/^struct skynet_module {$/;"	s
-check_version	skynet-src/skynet_monitor.c	/^	int check_version;$/;"	m	struct:skynet_monitor	file:
-destination	skynet-src/skynet_monitor.c	/^	uint32_t destination;$/;"	m	struct:skynet_monitor	file:
+check_version	skynet-src/skynet_monitor.c	/^	int check_version;	\/\/检查版本$/;"	m	struct:skynet_monitor	file:
+destination	skynet-src/skynet_monitor.c	/^	uint32_t destination;	\/\/目标$/;"	m	struct:skynet_monitor	file:
 skynet_monitor	skynet-src/skynet_monitor.c	/^struct skynet_monitor {$/;"	s	file:
 skynet_monitor_check	skynet-src/skynet_monitor.c	/^skynet_monitor_check(struct skynet_monitor *sm) {$/;"	f
 skynet_monitor_delete	skynet-src/skynet_monitor.c	/^skynet_monitor_delete(struct skynet_monitor *sm) {$/;"	f
 skynet_monitor_new	skynet-src/skynet_monitor.c	/^skynet_monitor_new() {$/;"	f
 skynet_monitor_trigger	skynet-src/skynet_monitor.c	/^skynet_monitor_trigger(struct skynet_monitor *sm, uint32_t source, uint32_t destination) {$/;"	f
-source	skynet-src/skynet_monitor.c	/^	uint32_t source;$/;"	m	struct:skynet_monitor	file:
-version	skynet-src/skynet_monitor.c	/^	int version;$/;"	m	struct:skynet_monitor	file:
+source	skynet-src/skynet_monitor.c	/^	uint32_t source;	\/\/源$/;"	m	struct:skynet_monitor	file:
+version	skynet-src/skynet_monitor.c	/^	int version;		\/\/版本$/;"	m	struct:skynet_monitor	file:
 SKYNET_MONITOR_H	skynet-src/skynet_monitor.h	/^#define SKYNET_MONITOR_H$/;"	d
 DEFAULT_QUEUE_SIZE	skynet-src/skynet_mq.c	/^#define DEFAULT_QUEUE_SIZE /;"	d	file:
 LOCK	skynet-src/skynet_mq.c	/^#define LOCK(/;"	d	file:
@@ -8388,9 +8388,9 @@ mod	skynet-src/skynet_server.c	/^	struct skynet_module * mod;	\/\/模块引用$/
 monitor_exit	skynet-src/skynet_server.c	/^	uint32_t monitor_exit;$/;"	m	struct:skynet_node	file:
 name	skynet-src/skynet_server.c	/^	const char *name;	\/\/命令名$/;"	m	struct:command_func	file:
 queue	skynet-src/skynet_server.c	/^	struct message_queue *queue;	\/\/消息队列$/;"	m	struct:skynet_context	typeref:struct:skynet_context::message_queue	file:
-ref	skynet-src/skynet_server.c	/^	int ref;						\/\/引用计数？$/;"	m	struct:skynet_context	file:
+ref	skynet-src/skynet_server.c	/^	int ref;						\/\/引用计数$/;"	m	struct:skynet_context	file:
 result	skynet-src/skynet_server.c	/^	char result[32];				\/\/结果缓冲区$/;"	m	struct:skynet_context	file:
-session_id	skynet-src/skynet_server.c	/^	int session_id;					\/\/会话id$/;"	m	struct:skynet_context	file:
+session_id	skynet-src/skynet_server.c	/^	int session_id;					\/\/会话id，用于产生会话$/;"	m	struct:skynet_context	file:
 skynet_callback	skynet-src/skynet_server.c	/^skynet_callback(struct skynet_context * context, void *ud, skynet_cb cb) {$/;"	f
 skynet_command	skynet-src/skynet_server.c	/^skynet_command(struct skynet_context * context, const char * cmd , const char * param) {$/;"	f
 skynet_context	skynet-src/skynet_server.c	/^struct skynet_context {$/;"	s	file:
@@ -8457,16 +8457,16 @@ _timer	skynet-src/skynet_start.c	/^_timer(void *p) {$/;"	f	file:
 _worker	skynet-src/skynet_start.c	/^_worker(void *p) {$/;"	f	file:
 bootstrap	skynet-src/skynet_start.c	/^bootstrap(struct skynet_context * logger, const char * cmdline) {$/;"	f	file:
 cond	skynet-src/skynet_start.c	/^	pthread_cond_t cond;$/;"	m	struct:monitor	file:
-count	skynet-src/skynet_start.c	/^	int count;$/;"	m	struct:monitor	file:
+count	skynet-src/skynet_start.c	/^	int count;\/\/监视者计数$/;"	m	struct:monitor	file:
 create_thread	skynet-src/skynet_start.c	/^create_thread(pthread_t *thread, void *(*start_routine) (void *), void *arg) {$/;"	f	file:
 free_monitor	skynet-src/skynet_start.c	/^free_monitor(struct monitor *m) {$/;"	f	file:
 id	skynet-src/skynet_start.c	/^	int id;$/;"	m	struct:worker_parm	file:
 m	skynet-src/skynet_start.c	/^	struct monitor *m;$/;"	m	struct:worker_parm	typeref:struct:worker_parm::monitor	file:
-m	skynet-src/skynet_start.c	/^	struct skynet_monitor ** m;$/;"	m	struct:monitor	typeref:struct:monitor::skynet_monitor	file:
+m	skynet-src/skynet_start.c	/^	struct skynet_monitor ** m;\/\/存储具体的监视者$/;"	m	struct:monitor	typeref:struct:monitor::skynet_monitor	file:
 monitor	skynet-src/skynet_start.c	/^struct monitor {$/;"	s	file:
 mutex	skynet-src/skynet_start.c	/^	pthread_mutex_t mutex;$/;"	m	struct:monitor	file:
 skynet_start	skynet-src/skynet_start.c	/^skynet_start(struct skynet_config * config) {$/;"	f
-sleep	skynet-src/skynet_start.c	/^	int sleep;$/;"	m	struct:monitor	file:
+sleep	skynet-src/skynet_start.c	/^	int sleep;\/\/睡眠$/;"	m	struct:monitor	file:
 wakeup	skynet-src/skynet_start.c	/^wakeup(struct monitor *m, int busy) {$/;"	f	file:
 weight	skynet-src/skynet_start.c	/^	int weight;$/;"	m	struct:worker_parm	file:
 worker_parm	skynet-src/skynet_start.c	/^struct worker_parm {$/;"	s	file:

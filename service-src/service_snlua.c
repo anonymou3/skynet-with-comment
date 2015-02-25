@@ -10,17 +10,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+//snlua数据结构定义
 struct snlua {
-	lua_State * L;
-	struct skynet_context * ctx;
+	lua_State * L;//一个lua虚拟机
+	struct skynet_context * ctx;//skynet上下文
 };
 
 // LUA_CACHELIB may defined in patched lua for shared proto
+// LUA_CACHELIB	可能定义在打过补丁的lua中用于共享proto
 #ifdef LUA_CACHELIB
 
-#define codecache luaopen_cache
+#define codecache luaopen_cache	//使用lua中的函数
 
-#else
+#else	//使用自定义的函数
 
 static int
 cleardummy(lua_State *L) {
@@ -117,7 +119,7 @@ _init(struct snlua *l, struct skynet_context *ctx, const char * args, size_t sz)
 
 	return 0;
 }
-
+//上下文回调函数
 static int
 _launch(struct skynet_context * context, void *ud, int type, int session, uint32_t source , const void * msg, size_t sz) {
 	assert(type == 0 && session == 0);
@@ -133,27 +135,30 @@ _launch(struct skynet_context * context, void *ud, int type, int session, uint32
 
 int
 snlua_init(struct snlua *l, struct skynet_context *ctx, const char * args) {
-	int sz = strlen(args);
-	char * tmp = skynet_malloc(sz);
-	memcpy(tmp, args, sz);
-	skynet_callback(ctx, l , _launch);
-	const char * self = skynet_command(ctx, "REG", NULL);
-	uint32_t handle_id = strtoul(self+1, NULL, 16);
+	int sz = strlen(args);//参数长度
+	char * tmp = skynet_malloc(sz);//分配内存存储参数
+	memcpy(tmp, args, sz);//拷贝参数数据 不包含"\0"
+	skynet_callback(ctx, l , _launch);//设置上下文回调函数
+	const char * self = skynet_command(ctx, "REG", NULL);//self为服务句柄号十六进制表示
+
+	//str to unsigned long  将字符串转换成无符号长整型数
+	uint32_t handle_id = strtoul(self+1, NULL, 16);//计算出该snlua服务的句柄号
 	// it must be first message
-	skynet_send(ctx, 0, handle_id, PTYPE_TAG_DONTCOPY,0, tmp, sz);
+	// 发送第一个消息 其实第一个消息就是"bootstrap"
+	skynet_send(ctx, 0, handle_id, PTYPE_TAG_DONTCOPY,0, tmp, sz);//源地址为0，目的地址是自己，自己给自己发送一个消息
 	return 0;
 }
 
 struct snlua *
 snlua_create(void) {
-	struct snlua * l = skynet_malloc(sizeof(*l));
-	memset(l,0,sizeof(*l));
-	l->L = lua_newstate(skynet_lalloc, NULL);
-	return l;
+	struct snlua * l = skynet_malloc(sizeof(*l));//先为snlua数据结构分配内存
+	memset(l,0,sizeof(*l));//清空内存
+	l->L = lua_newstate(skynet_lalloc, NULL);//创建一个虚拟机
+	return l;//返回snlua引用
 }
 
 void
 snlua_release(struct snlua *l) {
-	lua_close(l->L);
-	skynet_free(l);
+	lua_close(l->L);//关闭虚拟机
+	skynet_free(l);//释放snlua内存
 }

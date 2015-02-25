@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-//logger数据结构
+//logger数据结构定义
 struct logger {
 	FILE * handle;//日志文件指针
 	int close;//release时是否需要调用fclose
@@ -32,11 +32,12 @@ logger_release(struct logger * inst) {
 
 static int
 _logger(struct skynet_context * context, void *ud, int type, int session, uint32_t source, const void * msg, size_t sz) {
-	struct logger * inst = ud;
-	fprintf(inst->handle, "[:%08x] ",source);
-	fwrite(msg, sz , 1, inst->handle);
-	fprintf(inst->handle, "\n");
-	fflush(inst->handle);
+	struct logger * inst = ud;//从用户数据中获取实例引用
+	//fprintf是C/C++中的一个格式化写
+	fprintf(inst->handle, "[:%08x] ",source);//将log来源（源地址）写入
+	fwrite(msg, sz , 1, inst->handle);//写入消息数据
+	fprintf(inst->handle, "\n");//写入一个换行符号
+	fflush(inst->handle);//清除读写缓冲区，立即把输出缓冲区的数据进行物理写入
 
 	return 0;
 }

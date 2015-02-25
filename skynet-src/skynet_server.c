@@ -43,6 +43,11 @@
 #endif
 //skynet上下文数据结构定义
 //上下文可以理解为一种环境，包含了许多东西
+//因为skynet是基于actor模型的，所以这里的skynet_context其实也就是actor
+//关于actor说明如下：
+// Actor，可以看作是一个个独立的实体，他们之间是毫无关联的。但是，他们可以通过消息来通信。一个Actor收到其他Actor的信息后，它可以根据需要作出各种相应。消息的类型可以是任意的，消息的内容也可以是任意的。这点有点像webservice了。只提供接口服务，你不必了解我是如何实现的。
+ 
+// 一个Actor如何处理多个Actor的请求呢？它先建立一个消息队列，每次收到消息后，就放入队列，而它每次也从队列中取出消息体来处理。通常我们都使得这个过程是循环的。让Actor可以时刻处理发送来的消息。
 struct skynet_context {
 	void * instance;			//模块实例引用
 	struct skynet_module * mod;	//模块引用
@@ -52,8 +57,8 @@ struct skynet_context {
 	FILE * logfile;					//日志文件句柄
 	char result[32];				//结果缓冲区
 	uint32_t handle;				//句柄号
-	int session_id;					//会话id
-	int ref;						//引用计数？
+	int session_id;					//会话id，用于产生会话
+	int ref;						//引用计数
 	bool init;						//是否初始化
 	bool endless;					//是否回绕
 
@@ -71,7 +76,7 @@ static struct skynet_node G_NODE;
 
 int 
 skynet_context_total() {
-	return G_NODE.total;
+	return G_NODE.total;//获取全局的所有上下文数目
 }
 
 static void
@@ -119,7 +124,10 @@ drop_message(struct skynet_message *msg, void *ud) {
 	// report error to the message source
 	skynet_send(NULL, source, msg->source, PTYPE_ERROR, 0, NULL, 0);
 }
-
+//创建一个新的上下文
+//参数为：
+//name：模块名
+//param：模块初始化时使用的参数
 struct skynet_context * 
 skynet_context_new(const char * name, const char *param) {
 	struct skynet_module * mod = skynet_module_query(name);//根据名字查询模块
@@ -136,7 +144,7 @@ skynet_context_new(const char * name, const char *param) {
 	//初始化skynet上下文相关的一些数据
 	ctx->mod = mod;//保存模块引用
 	ctx->instance = inst;//保存模块实例引用
-	ctx->ref = 2;//引用计数？
+	ctx->ref = 2;//引用计数
 	ctx->cb = NULL;
 	ctx->cb_ud = NULL;
 	ctx->session_id = 0;
@@ -150,41 +158,41 @@ skynet_context_new(const char * name, const char *param) {
 	ctx->handle = skynet_handle_register(ctx);//注册句柄
 	struct message_queue * queue = ctx->queue = skynet_mq_create(ctx->handle);//创建消息队列
 	// init function maybe use ctx->handle, so it must init at last
-	context_inc();//上下文计数增加
+	context_inc();//全局上下文计数增加
 
 	CHECKCALLING_BEGIN(ctx)
 	int r = skynet_module_instance_init(mod, inst, ctx, param);//调用模块实例的初始化函数
 	CHECKCALLING_END(ctx)
-	if (r == 0) {
-		struct skynet_context * ret = skynet_context_release(ctx);
-		if (ret) {
-			ctx->init = true;
+	if (r == 0) {//初始化成功
+		struct skynet_context * ret = skynet_context_release(ctx);//因为上下文的引用计数初始化为2,所以这里调用一次release减1
+		if (ret) {//如果返回值不为空
+			ctx->init = true;//设置标志，标志完成初始化
 		}
-		skynet_globalmq_push(queue);
+		skynet_globalmq_push(queue);//将队列push到全局队列中
 		if (ret) {
-			skynet_error(ret, "LAUNCH %s %s", name, param ? param : "");
+			skynet_error(ret, "LAUNCH %s %s", name, param ? param : "");//打印日志
 		}
 		return ret;
 	} else {
-		skynet_error(ctx, "FAILED launch %s", name);
-		uint32_t handle = ctx->handle;
-		skynet_context_release(ctx);
-		skynet_handle_retire(handle);
+		skynet_error(ctx, "FAILED launch %s", name);//报错
+		uint32_t handle = ctx->handle;//获取句柄
+		skynet_context_release(ctx);//释放上下文
+		skynet_handle_retire(handle);//回收句柄
 		struct drop_t d = { handle };
-		skynet_mq_release(queue, drop_message, &d);
-		return NULL;
+		skynet_mq_release(queue, drop_message, &d);//释放队列
+		return NULL;//返回空
 	}
 }
 
 int
 skynet_context_newsession(struct skynet_context *ctx) {
 	// session always be a positive number
-	int session = ++ctx->session_id;
-	if (session <= 0) {
-		ctx->session_id = 1;
-		return 1;
+	int session = ++ctx->session_id;//自增会话ID产生一个会话
+	if (session <= 0) {//如果会话小于0
+		ctx->session_id = 1;//重置会话ID为1
+		return 1;//返回会话1
 	}
-	return session;
+	return session;//返回产生的会话
 }
 
 void 
@@ -199,30 +207,30 @@ skynet_context_reserve(struct skynet_context *ctx) {
 	// the reserved context will be release at last.
 	context_dec();
 }
-
+//删除上下文
 static void 
 delete_context(struct skynet_context *ctx) {
-	if (ctx->logfile) {
-		fclose(ctx->logfile);
+	if (ctx->logfile) {//如果有日志文件句柄
+		fclose(ctx->logfile);//关闭文件
 	}
-	skynet_module_instance_release(ctx->mod, ctx->instance);
-	skynet_mq_mark_release(ctx->queue);
-	skynet_free(ctx);
-	context_dec();
+	skynet_module_instance_release(ctx->mod, ctx->instance);//释放模块实例
+	skynet_mq_mark_release(ctx->queue);//释放队列
+	skynet_free(ctx);//释放上下文
+	context_dec();//全局上下文减少
 }
 
 struct skynet_context * 
 skynet_context_release(struct skynet_context *ctx) {
-	if (__sync_sub_and_fetch(&ctx->ref,1) == 0) {
-		delete_context(ctx);
-		return NULL;
+	if (__sync_sub_and_fetch(&ctx->ref,1) == 0) {//引用计数为0
+		delete_context(ctx);//删除上下文
+		return NULL;//返回空
 	}
-	return ctx;
+	return ctx;//返回上下文
 }
 
 int
 skynet_context_push(uint32_t handle, struct skynet_message *message) {
-	struct skynet_context * ctx = skynet_handle_grab(handle);//获取上下文引用
+	struct skynet_context * ctx = skynet_handle_grab(handle);//根据句柄获取上下文引用
 	if (ctx == NULL) {
 		return -1;
 	}
@@ -253,27 +261,30 @@ skynet_isremote(struct skynet_context * ctx, uint32_t handle, int * harbor) {
 
 static void
 dispatch_message(struct skynet_context *ctx, struct skynet_message *msg) {
-	assert(ctx->init);
-	CHECKCALLING_BEGIN(ctx)
-	pthread_setspecific(G_NODE.handle_key, (void *)(uintptr_t)(ctx->handle));
-	int type = msg->sz >> HANDLE_REMOTE_SHIFT;
-	size_t sz = msg->sz & HANDLE_MASK;
-	if (ctx->logfile) {
-		skynet_log_output(ctx->logfile, msg->source, type, msg->session, msg->data, sz);
+	assert(ctx->init);//断言此时上下文已经成功初始化
+	CHECKCALLING_BEGIN(ctx)//检查调用开始
+	pthread_setspecific(G_NODE.handle_key, (void *)(uintptr_t)(ctx->handle));//??????
+	int type = msg->sz >> HANDLE_REMOTE_SHIFT;//获取消息类别
+	size_t sz = msg->sz & HANDLE_MASK;//获取消息大小
+	if (ctx->logfile) {//如果存在log文件
+		skynet_log_output(ctx->logfile, msg->source, type, msg->session, msg->data, sz);//输出日志
 	}
-	if (!ctx->cb(ctx, ctx->cb_ud, type, msg->session, msg->source, msg->data, sz)) {
-		skynet_free(msg->data);
-	} 
-	CHECKCALLING_END(ctx)
+	if (!ctx->cb(ctx, ctx->cb_ud, type, msg->session, msg->source, msg->data, sz)) {//调用服务的回到函数
+		skynet_free(msg->data);//回调调用成功，释放消息承载的数据
+	}
+	CHECKCALLING_END(ctx)//检查调用结束
 }
 
+//分发上下文所有的消息
+//说是分发，其实并没有发给别人，所有的消息已经在上下文内的队列里了
+//只是等待时机从队列里把消息POP出来，调用上下文内服务的回调函数进行处理
 void 
 skynet_context_dispatchall(struct skynet_context * ctx) {
 	// for skynet_error
-	struct skynet_message msg;
-	struct message_queue *q = ctx->queue;
-	while (!skynet_mq_pop(q,&msg)) {
-		dispatch_message(ctx, &msg);
+	struct skynet_message msg;//定义一个skynet消息用于存储pop的消息
+	struct message_queue *q = ctx->queue;//上下文内的队列
+	while (!skynet_mq_pop(q,&msg)) {//一直从队列中pop消息，直到没有消息
+		dispatch_message(ctx, &msg);//分发消息
 	}
 }
 
@@ -397,6 +408,8 @@ cmd_reg(struct skynet_context * context, const char * param) {
 		return skynet_handle_namehandle(context->handle, param + 1);//命名句柄
 	} else {//其他情况非法
 		skynet_error(context, "Can't register global name %s in C", param);
+		//这里存在点问题，如果日志服务没有成功注册句柄名字，那在skynet_error里查找日志服务的句柄将找不到
+		//那么该条错误信息就看不到了,不过该情况一般不会发生，除非你改了C的代码，因为日志服务注册的句柄名字为.logger
 		return NULL;
 	}
 }
@@ -619,7 +632,7 @@ static struct command_func cmd_funcs[] = {
 	{ "LOGOFF", cmd_logoff },
 	{ NULL, NULL },
 };
-
+//从命令表中找到一个命令执行
 const char * 
 skynet_command(struct skynet_context * context, const char * cmd , const char * param) {
 	struct command_func * method = &cmd_funcs[0];//初始化指针，指向映射表的第一项
@@ -632,63 +645,63 @@ skynet_command(struct skynet_context * context, const char * cmd , const char * 
 
 	return NULL;
 }
-
+//过滤参数
 static void
 _filter_args(struct skynet_context * context, int type, int *session, void ** data, size_t * sz) {
-	int needcopy = !(type & PTYPE_TAG_DONTCOPY);
-	int allocsession = type & PTYPE_TAG_ALLOCSESSION;
-	type &= 0xff;
+	int needcopy = !(type & PTYPE_TAG_DONTCOPY);//判断是否需要复制数据
+	int allocsession = type & PTYPE_TAG_ALLOCSESSION;//判断是否需要分配会话
+	type &= 0xff;//type的低8位表示了消息的类型
 
-	if (allocsession) {
-		assert(*session == 0);
-		*session = skynet_context_newsession(context);
+	if (allocsession) {//如果需要分配会话
+		assert(*session == 0);//断言传入的session为0
+		*session = skynet_context_newsession(context);//分配一个会话
 	}
 
-	if (needcopy && *data) {
-		char * msg = skynet_malloc(*sz+1);
-		memcpy(msg, *data, *sz);
-		msg[*sz] = '\0';
-		*data = msg;
+	if (needcopy && *data) {//如果需要复制数据并且指向数据的指针不为空
+		char * msg = skynet_malloc(*sz+1);//分配内存
+		memcpy(msg, *data, *sz);//内存复制
+		msg[*sz] = '\0';//添加一个字符串结束符
+		*data = msg;//让指向数据的指针指向新的内存地址
 	}
 
-	*sz |= type << HANDLE_REMOTE_SHIFT;
+	*sz |= type << HANDLE_REMOTE_SHIFT;//设置消息的大小
 }
-
+//skynet发送消息
 int
 skynet_send(struct skynet_context * context, uint32_t source, uint32_t destination , int type, int session, void * data, size_t sz) {
-	if ((sz & HANDLE_MASK) != sz) {
+	if ((sz & HANDLE_MASK) != sz) {//判断消息是否过大
 		skynet_error(context, "The message to %x is too large (sz = %lu)", destination, sz);
 		skynet_free(data);
 		return -1;
 	}
-	_filter_args(context, type, &session, (void **)&data, &sz);
+	_filter_args(context, type, &session, (void **)&data, &sz);//过滤参数
 
-	if (source == 0) {
-		source = context->handle;
+	if (source == 0) {//如果源地址为0
+		source = context->handle;//设置源地址为上下文的句柄，那么源就是自己
 	}
 
-	if (destination == 0) {
-		return session;
+	if (destination == 0) {//如果目的地址为0
+		return session;//则返回会话
 	}
-	if (skynet_harbor_message_isremote(destination)) {
+	if (skynet_harbor_message_isremote(destination)) {//判断消息是否是远程消息
 		struct remote_message * rmsg = skynet_malloc(sizeof(*rmsg));
 		rmsg->destination.handle = destination;
 		rmsg->message = data;
 		rmsg->sz = sz;
-		skynet_harbor_send(rmsg, source, session);
-	} else {
-		struct skynet_message smsg;
-		smsg.source = source;
-		smsg.session = session;
-		smsg.data = data;
-		smsg.sz = sz;
+		skynet_harbor_send(rmsg, source, session);//用harbor将消息发送出去
+	} else {//消息为本地消息
+		struct skynet_message smsg;//定义一个skynet消息
+		smsg.source = source;//设置源地址
+		smsg.session = session;//设置会话
+		smsg.data = data;//设置数据
+		smsg.sz = sz;//设置数据大小
 
-		if (skynet_context_push(destination, &smsg)) {
-			skynet_free(data);
+		if (skynet_context_push(destination, &smsg)) {//发送消息到目标的队列中
+			skynet_free(data);//push消息到队列失败，则释放数据
 			return -1;
 		}
 	}
-	return session;
+	return session;//返回会话
 }
 
 int

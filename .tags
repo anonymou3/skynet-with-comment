@@ -820,7 +820,7 @@ L	lualib-src/lua-sharedata.c	/^	lua_State * L;$/;"	m	struct:table	file:
 L	lualib-src/lua-skynet.c	/^	lua_State * L;$/;"	m	struct:snlua	file:
 L	lualib-src/sproto/lsproto.c	/^	lua_State *L;$/;"	m	struct:decode_ud	file:
 L	lualib-src/sproto/lsproto.c	/^	lua_State *L;$/;"	m	struct:encode_ud	file:
-L	service-src/service_snlua.c	/^	lua_State * L;$/;"	m	struct:snlua	file:
+L	service-src/service_snlua.c	/^	lua_State * L;\/\/一个lua虚拟机$/;"	m	struct:snlua	file:
 L	skynet-src/skynet_env.c	/^	lua_State *L;		\/\/LUA虚拟机$/;"	m	struct:skynet_env	file:
 LARGE_PAGE_NODE	lualib-src/lua-socket.c	/^#define LARGE_PAGE_NODE /;"	d	file:
 LClosure	3rd/lua/lobject.h	/^typedef struct LClosure {$/;"	s
@@ -3283,7 +3283,7 @@ body	3rd/lua/lparser.c	/^static void body (LexState *ls, expdesc *e, int ismetho
 bool	3rd/jemalloc/include/msvc_compat/stdbool.h	/^#define bool /;"	d
 boolK	3rd/lua/lcode.c	/^static int boolK (FuncState *fs, int b) {$/;"	f	file:
 boolean	lualib-src/lua-sharedata.c	/^	int boolean;$/;"	m	union:value	file:
-bootstrap	skynet-src/skynet_imp.h	/^	const char * bootstrap;$/;"	m	struct:skynet_config
+bootstrap	skynet-src/skynet_imp.h	/^	const char * bootstrap;		\/\/引导配置$/;"	m	struct:skynet_config
 bootstrap	skynet-src/skynet_start.c	/^bootstrap(struct skynet_context * logger, const char * cmdline) {$/;"	f	file:
 boxreader	lualib-src/lua-stm.c	/^struct boxreader {$/;"	s	file:
 boxstm	lualib-src/lua-stm.c	/^struct boxstm {$/;"	s	file:
@@ -3434,7 +3434,7 @@ check_next	3rd/lua/llex.c	/^static int check_next (LexState *ls, const char *set
 check_pid	skynet-src/skynet_daemon.c	/^check_pid(const char *pidfile) {$/;"	f	file:
 check_reader	lualib-src/lua-bson.c	/^check_reader(lua_State *L, struct bson_reader *br, int sz) {$/;"	f	file:
 check_sep	lualib-src/lua-socket.c	/^check_sep(struct buffer_node * node, int from, const char *sep, int seplen) {$/;"	f	file:
-check_version	skynet-src/skynet_monitor.c	/^	int check_version;$/;"	m	struct:skynet_monitor	file:
+check_version	skynet-src/skynet_monitor.c	/^	int check_version;	\/\/检查版本$/;"	m	struct:skynet_monitor	file:
 check_watch	service/sharedatad.lua	/^local function check_watch(queue)$/;"	f
 check_wb_list	skynet-src/socket_server.c	/^check_wb_list(struct wb_list *s) {$/;"	f	file:
 check_wsz	skynet-src/skynet_socket.c	/^check_wsz(struct skynet_context *ctx, int id, void *buffer, int64_t wsz) {$/;"	f	file:
@@ -3817,7 +3817,7 @@ count	lualib-src/lsha1.c	/^	uint32_t count[2];$/;"	m	struct:__anon37	file:
 count	lualib/snax/interface.lua	/^		local function count( _, name, func)$/;"	f
 count	service-src/hashid.h	/^	int count;$/;"	m	struct:hashid
 count	skynet-src/skynet_module.c	/^	int count;\/\/模块数$/;"	m	struct:modules	file:
-count	skynet-src/skynet_start.c	/^	int count;$/;"	m	struct:monitor	file:
+count	skynet-src/skynet_start.c	/^	int count;\/\/监视者计数$/;"	m	struct:monitor	file:
 count_array	lualib-src/sproto/sproto.c	/^count_array(const uint8_t * stream) {$/;"	f	file:
 count_lines	lualib/sprotoparser.lua	/^local function count_lines(_,pos, parser_state)$/;"	f
 countint	3rd/lua/ltable.c	/^static int countint (const TValue *key, int *nums) {$/;"	f	file:
@@ -3897,7 +3897,7 @@ ctx	3rd/lua/lstate.h	/^      int ctx;  \/* context info. in case of yields *\/$/
 ctx	lualib-src/lua-skynet.c	/^	struct skynet_context * ctx;$/;"	m	struct:snlua	typeref:struct:snlua::skynet_context	file:
 ctx	service-src/service_gate.c	/^	struct skynet_context *ctx;$/;"	m	struct:gate	typeref:struct:gate::skynet_context	file:
 ctx	service-src/service_harbor.c	/^	struct skynet_context *ctx;$/;"	m	struct:harbor	typeref:struct:harbor::skynet_context	file:
-ctx	service-src/service_snlua.c	/^	struct skynet_context * ctx;$/;"	m	struct:snlua	typeref:struct:snlua::skynet_context	file:
+ctx	service-src/service_snlua.c	/^	struct skynet_context * ctx;\/\/skynet上下文$/;"	m	struct:snlua	typeref:struct:snlua::skynet_context	file:
 ctx_locks	3rd/jemalloc/src/prof.c	/^static malloc_mutex_t	*ctx_locks;$/;"	v	file:
 cum_ctxs	3rd/jemalloc/src/prof.c	/^static unsigned		cum_ctxs; \/* Atomic counter. *\/$/;"	v	file:
 curbytes	3rd/jemalloc/include/jemalloc/internal/prof.h	/^	int64_t		curbytes;$/;"	m	struct:prof_cnt_s
@@ -3923,7 +3923,7 @@ cursor	3rd/jemalloc/bin/pprof	/^  cursor: pointer;$/;"	l
 cursor_id	lualib-src/lua-mongo.c	/^	int32_t cursor_id[2];$/;"	m	struct:response	file:
 d2s	3rd/jemalloc/src/util.c	/^d2s(intmax_t x, char sign, char *s, size_t *slen_p)$/;"	f	file:
 d_	3rd/lua/lobject.h	/^#define d_(/;"	d
-daemon	skynet-src/skynet_imp.h	/^	const char * daemon;$/;"	m	struct:skynet_config
+daemon	skynet-src/skynet_imp.h	/^	const char * daemon;		\/\/守护进程配置$/;"	m	struct:skynet_config
 daemon_exit	skynet-src/skynet_daemon.c	/^daemon_exit(const char *pidfile) {$/;"	f
 daemon_init	skynet-src/skynet_daemon.c	/^daemon_init(const char *pidfile) {$/;"	f
 dalloc	3rd/jemalloc/include/jemalloc/internal/rtree.h	/^	rtree_dalloc_t	*dalloc;$/;"	m	struct:rtree_s
@@ -3997,7 +3997,7 @@ des_key	lualib-src/lua-crypt.c	/^des_key(lua_State *L, uint32_t SK[32]) {$/;"	f	
 des_main_ks	lualib-src/lua-crypt.c	/^des_main_ks( uint32_t SK[32], const uint8_t key[8] ) {$/;"	f	file:
 destination	service-src/service_harbor.c	/^	uint32_t destination;$/;"	m	struct:remote_message_header	file:
 destination	skynet-src/skynet_harbor.h	/^	struct remote_name destination;$/;"	m	struct:remote_message	typeref:struct:remote_message::remote_name
-destination	skynet-src/skynet_monitor.c	/^	uint32_t destination;$/;"	m	struct:skynet_monitor	file:
+destination	skynet-src/skynet_monitor.c	/^	uint32_t destination;	\/\/目标$/;"	m	struct:skynet_monitor	file:
 detected_redzone_corruption	3rd/jemalloc/test/unit/junk.c	/^static bool detected_redzone_corruption;$/;"	v	file:
 detected_redzone_corruption	3rd/jemalloc/test/unit/quarantine.c	/^static bool detected_redzone_corruption;$/;"	v	file:
 did_prof_dump_open	3rd/jemalloc/test/unit/prof_gdump.c	/^static bool did_prof_dump_open;$/;"	v	file:
@@ -4579,7 +4579,7 @@ handshake	service-src/service_harbor.c	/^handshake(struct harbor *h, int id) {$/
 handshake	service/cmaster.lua	/^local function handshake(fd)$/;"	f
 harbor	service-src/service_harbor.c	/^struct harbor {$/;"	s	file:
 harbor	skynet-src/skynet_handle.c	/^	uint32_t harbor;	\/\/节点号$/;"	m	struct:handle_storage	file:
-harbor	skynet-src/skynet_imp.h	/^	int harbor;$/;"	m	struct:skynet_config
+harbor	skynet-src/skynet_imp.h	/^	int harbor;					\/\/节点号$/;"	m	struct:skynet_config
 harbor.CONNECT	service/cdummy.lua	/^function harbor.CONNECT(id)$/;"	f
 harbor.CONNECT	service/cslave.lua	/^function harbor.CONNECT(fd, id)$/;"	f
 harbor.LINK	service/cdummy.lua	/^function harbor.LINK(id)$/;"	f
@@ -5500,7 +5500,7 @@ log_blob	skynet-src/skynet_log.c	/^log_blob(FILE *f, void * buffer, size_t sz) {
 log_socket	skynet-src/skynet_log.c	/^log_socket(FILE * f, struct skynet_socket_message * message, size_t sz) {$/;"	f	file:
 logfile	skynet-src/skynet_server.c	/^	FILE * logfile;					\/\/日志文件句柄$/;"	m	struct:skynet_context	file:
 logger	service-src/service_logger.c	/^struct logger {$/;"	s	file:
-logger	skynet-src/skynet_imp.h	/^	const char * logger;$/;"	m	struct:skynet_config
+logger	skynet-src/skynet_imp.h	/^	const char * logger;		\/\/日志配置$/;"	m	struct:skynet_config
 logger_create	service-src/service_logger.c	/^logger_create(void) {$/;"	f
 logger_init	service-src/service_logger.c	/^logger_init(struct logger * inst, struct skynet_context *ctx, const char * parm) {$/;"	f
 logger_release	service-src/service_logger.c	/^logger_release(struct logger * inst) {$/;"	f
@@ -6158,7 +6158,7 @@ lzio_c	3rd/lua/lzio.c	/^#define lzio_c$/;"	d	file:
 lzio_h	3rd/lua/lzio.h	/^#define lzio_h$/;"	d
 m	skynet-src/skynet_module.c	/^	struct skynet_module m[MAX_MODULE_TYPE];\/\/存储具体模块的数组$/;"	m	struct:modules	typeref:struct:modules::skynet_module	file:
 m	skynet-src/skynet_start.c	/^	struct monitor *m;$/;"	m	struct:worker_parm	typeref:struct:worker_parm::monitor	file:
-m	skynet-src/skynet_start.c	/^	struct skynet_monitor ** m;$/;"	m	struct:monitor	typeref:struct:monitor::skynet_monitor	file:
+m	skynet-src/skynet_start.c	/^	struct skynet_monitor ** m;\/\/存储具体的监视者$/;"	m	struct:monitor	typeref:struct:monitor::skynet_monitor	file:
 magic	3rd/jemalloc/test/unit/rb.c	/^	uint32_t magic;$/;"	m	struct:node_s	file:
 main	3rd/jemalloc/config.guess	/^		main()$/;"	f
 main	3rd/jemalloc/config.guess	/^	main ()$/;"	f
@@ -6438,7 +6438,7 @@ mod	skynet-src/skynet_server.c	/^	struct skynet_module * mod;	\/\/模块引用$/
 mode	3rd/lua/ldo.c	/^  const char *mode;$/;"	m	struct:SParser	file:
 modinit	3rd/lua/loadlib.c	/^static void modinit (lua_State *L, const char *modname) {$/;"	f	file:
 module	skynet-src/skynet_module.h	/^	void * module;\/\/模块句柄，此句柄不是skynet中handle$/;"	m	struct:skynet_module
-module_path	skynet-src/skynet_imp.h	/^	const char * module_path;$/;"	m	struct:skynet_config
+module_path	skynet-src/skynet_imp.h	/^	const char * module_path;	\/\/模块目录配置$/;"	m	struct:skynet_config
 modules	skynet-src/skynet_module.c	/^struct modules {$/;"	s	file:
 mongo.client	lualib/mongo.lua	/^function mongo.client( conf	)$/;"	f
 mongo_auth	lualib/mongo.lua	/^local function mongo_auth(mongoc)$/;"	f
@@ -7380,7 +7380,7 @@ redis.watch	lualib/redis.lua	/^function redis.watch(db_conf)$/;"	f
 redis_login	lualib/redis.lua	/^local function redis_login(auth, db)$/;"	f
 redzone_size	3rd/jemalloc/include/jemalloc/internal/arena.h	/^	size_t		redzone_size;$/;"	m	struct:arena_bin_info_s
 ref	lualib-src/lua-sharedata.c	/^	int ref;$/;"	m	struct:state	file:
-ref	skynet-src/skynet_server.c	/^	int ref;						\/\/引用计数？$/;"	m	struct:skynet_context	file:
+ref	skynet-src/skynet_server.c	/^	int ref;						\/\/引用计数$/;"	m	struct:skynet_context	file:
 ref 	3rd/lpeg/test.lua	/^function ref (s, i, a, b)$/;"	f
 ref 	3rd/lpeg/test.lua	/^local function ref (s, i, x)$/;"	f
 ref 	3rd/lpeg/test.lua	/^ref = function (s,i,x) return i == tonumber(x) and i, 'xuxu' end$/;"	f
@@ -7606,7 +7606,7 @@ service_name	lualib/snax.lua	/^local function service_name(global, name, ...)$/;
 session	service-src/service_harbor.c	/^	uint32_t session;$/;"	m	struct:remote_message_header	file:
 session	skynet-src/skynet_mq.h	/^	int session;	\/\/消息标识$/;"	m	struct:skynet_message
 session	skynet-src/skynet_timer.c	/^	int session;$/;"	m	struct:timer_event	file:
-session_id	skynet-src/skynet_server.c	/^	int session_id;					\/\/会话id$/;"	m	struct:skynet_context	file:
+session_id	skynet-src/skynet_server.c	/^	int session_id;					\/\/会话id，用于产生会话$/;"	m	struct:skynet_context	file:
 set2	3rd/lua/ltablib.c	/^static void set2 (lua_State *L, int i, int j) {$/;"	f	file:
 set_env	3rd/lua/loadlib.c	/^static void set_env (lua_State *L) {$/;"	f	file:
 set_errno	3rd/jemalloc/include/jemalloc/internal/private_namespace.h	/^#define	set_errno /;"	d
@@ -7884,7 +7884,7 @@ skynet_timer_init	skynet-src/skynet_timer.c	/^skynet_timer_init(void) {$/;"	f
 skynet_updatetime	skynet-src/skynet_timer.c	/^skynet_updatetime(void) {$/;"	f
 slave	service-src/service_harbor.c	/^	uint32_t slave;$/;"	m	struct:harbor	file:
 slave	service-src/service_harbor.c	/^struct slave {$/;"	s	file:
-sleep	skynet-src/skynet_start.c	/^	int sleep;$/;"	m	struct:monitor	file:
+sleep	skynet-src/skynet_start.c	/^	int sleep;\/\/睡眠$/;"	m	struct:monitor	file:
 slot	skynet-src/skynet_handle.c	/^	struct skynet_context ** slot;\/\/槽$/;"	m	struct:handle_storage	typeref:struct:handle_storage::skynet_context	file:
 slot	skynet-src/socket_server.c	/^	struct socket slot[MAX_SOCKET];$/;"	m	struct:socket_server	typeref:struct:socket_server::socket	file:
 slot_size	skynet-src/skynet_handle.c	/^	int slot_size;\/\/槽大小$/;"	m	struct:handle_storage	file:
@@ -7978,7 +7978,7 @@ source	3rd/lua/llex.h	/^  TString *source;  \/* current source name *\/$/;"	m	st
 source	3rd/lua/lobject.h	/^  TString  *source;  \/* used for debug information *\/$/;"	m	struct:SharedProto
 source	3rd/lua/lua.h	/^  const char *source;	\/* (S) *\/$/;"	m	struct:lua_Debug
 source	service-src/service_harbor.c	/^	uint32_t source;$/;"	m	struct:remote_message_header	file:
-source	skynet-src/skynet_monitor.c	/^	uint32_t source;$/;"	m	struct:skynet_monitor	file:
+source	skynet-src/skynet_monitor.c	/^	uint32_t source;	\/\/源$/;"	m	struct:skynet_monitor	file:
 source	skynet-src/skynet_mq.h	/^	uint32_t source;\/\/消息源$/;"	m	struct:skynet_message
 sp	3rd/lua/lobject.h	/^  struct SharedProto *sp;$/;"	m	struct:Proto	typeref:struct:Proto::SharedProto
 sp_add	skynet-src/socket_epoll.h	/^sp_add(int efd, int sock, void *ud) {$/;"	f
@@ -8677,7 +8677,7 @@ verifyerror	3rd/lpeg/lptree.c	/^static int verifyerror (lua_State *L, int *passe
 verifygrammar	3rd/lpeg/lptree.c	/^static void verifygrammar (lua_State *L, TTree *grammar) {$/;"	f	file:
 verifyrule	3rd/lpeg/lptree.c	/^static int verifyrule (lua_State *L, TTree *tree, int *passed, int npassed,$/;"	f	file:
 version	3rd/lua/lstate.h	/^  const lua_Number *version;  \/* pointer to version number *\/$/;"	m	struct:global_State
-version	skynet-src/skynet_monitor.c	/^	int version;$/;"	m	struct:skynet_monitor	file:
+version	skynet-src/skynet_monitor.c	/^	int version;		\/\/版本$/;"	m	struct:skynet_monitor	file:
 version_string	3rd/jemalloc/bin/pprof	/^sub version_string {$/;"	s
 vkisinreg	3rd/lua/lparser.h	/^#define vkisinreg(/;"	d
 vkisvar	3rd/lua/lparser.h	/^#define vkisvar(/;"	d
