@@ -77,7 +77,7 @@ struct socket {
 		uint8_t udp_address[UDP_ADDRESS_SIZE];
 	} p;
 };
-
+//socket服务器数据结构定义
 struct socket_server {
 	int recvctrl_fd;
 	int sendctrl_fd;

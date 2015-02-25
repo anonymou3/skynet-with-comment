@@ -16,7 +16,7 @@ static struct socket_server * SOCKET_SERVER = NULL;
 
 void 
 skynet_socket_init() {
-	SOCKET_SERVER = socket_server_create();
+	SOCKET_SERVER = socket_server_create();//新建一个socket服务器
 }
 
 void

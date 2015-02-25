@@ -21,8 +21,10 @@
 struct monitor {
 	int count;//监视者计数
 	struct skynet_monitor ** m;//存储具体的监视者
-	pthread_cond_t cond;//条件锁
+	pthread_cond_t cond;//条件锁	
 	pthread_mutex_t mutex;//互斥锁
+	//为了防止竞争，条件锁的使用总是和一个互斥锁结合在一起
+	//条件锁是用来线程通讯的，但是互斥锁是为了保护这种通讯不会产生逻辑错误，可以正常工作。
 	int sleep;//睡眠
 };
 
@@ -35,6 +37,7 @@ struct worker_parm {
 
 #define CHECK_ABORT if (skynet_context_total()==0) break;//检查是否停止，根据上下文的数目
 
+//创建线程包装函数
 static void
 create_thread(pthread_t *thread, void *(*start_routine) (void *), void *arg) {
 	if (pthread_create(thread,NULL, start_routine, arg)) {
@@ -43,6 +46,7 @@ create_thread(pthread_t *thread, void *(*start_routine) (void *), void *arg) {
 	}
 }
 
+//唤醒函数
 static void
 wakeup(struct monitor *m, int busy) {
 	if (m->sleep >= m->count - busy) {
@@ -54,9 +58,9 @@ wakeup(struct monitor *m, int busy) {
 //socket工作函数
 static void *
 _socket(void *p) {
-	struct monitor * m = p;
-	skynet_initthread(THREAD_SOCKET);
-	for (;;) {
+	struct monitor * m = p;//获取到监视者们
+	skynet_initthread(THREAD_SOCKET);//初始化线程私有数据
+	for (;;) {//死循环
 		int r = skynet_socket_poll();
 		if (r==0)
 			break;
@@ -88,15 +92,15 @@ _monitor(void *p) {
 	struct monitor * m = p;//先从p中获得监视者们引用
 	int i;
 	int n = m->count;//获取监视者数目
-	skynet_initthread(THREAD_MONITOR);
-	for (;;) {
-		CHECK_ABORT//检查是否跳出循环
-		for (i=0;i<n;i++) {
-			skynet_monitor_check(m->m[i]);
+	skynet_initthread(THREAD_MONITOR);//初始化线程私有数据
+	for (;;) {//死循环
+		CHECK_ABORT//检查是否跳出死循环
+		for (i=0;i<n;i++) {//遍历具体的监视者
+			skynet_monitor_check(m->m[i]);//具体的监视者检查
 		}
-		for (i=0;i<5;i++) {
-			CHECK_ABORT
-			sleep(1);
+		for (i=0;i<5;i++) {//循环5次
+			CHECK_ABORT//检查是否跳出死循环
+			sleep(1);//本线程休眠1毫秒，放弃CPU，让其他线程得到执行
 		}
 	}
 
@@ -124,16 +128,16 @@ _timer(void *p) {
 //工作线程工作函数
 static void *
 _worker(void *p) {
-	struct worker_parm *wp = p;
-	int id = wp->id;
-	int weight = wp->weight;
-	struct monitor *m = wp->m;
-	struct skynet_monitor *sm = m->m[id];
-	skynet_initthread(THREAD_WORKER);
-	struct message_queue * q = NULL;
-	for (;;) {
+	struct worker_parm *wp = p;//获取工作线程参数引用
+	int id = wp->id;//获取id
+	int weight = wp->weight;//获取权重
+	struct monitor *m = wp->m;//获取到监视者们
+	struct skynet_monitor *sm = m->m[id];//根据id从监视者们获取到具体的监视者引用
+	skynet_initthread(THREAD_WORKER);//线程私有数据初始化
+	struct message_queue * q = NULL;//定义消息队列指针
+	for (;;) {//死循环
 		q = skynet_context_message_dispatch(sm, q, weight);
-		if (q == NULL) {
+		if (q == NULL) {//如果返回的消息队列为空
 			if (pthread_mutex_lock(&m->mutex) == 0) {
 				++ m->sleep;
 				// "spurious wakeup" is harmless,
@@ -146,7 +150,7 @@ _worker(void *p) {
 				}
 			}
 		} 
-		CHECK_ABORT
+		CHECK_ABORT//检查是否跳出死循环
 	}
 	return NULL;
 }
@@ -200,7 +204,7 @@ _start(int thread) {
 		pthread_join(pid[i], NULL);//等待线程们退出 
 	}
 
-	free_monitor(m);
+	free_monitor(m);//释放监视者们和具体的监视者
 }
 
 static void
@@ -240,7 +244,7 @@ skynet_start(struct skynet_config * config) {
 
 	bootstrap(ctx, config->bootstrap);//加载引导模块,传入的ctx是日志模块的上下文
 
-	_start(config->thread);//启动
+	_start(config->thread);//启动各个线程
 
 	// harbor_exit may call socket send, so it should exit before socket_free
 	// harbor_exit 可能会调用 socket send,所以他应该在socket_free之前退出

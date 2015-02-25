@@ -263,10 +263,10 @@ static void
 dispatch_message(struct skynet_context *ctx, struct skynet_message *msg) {
 	assert(ctx->init);//断言此时上下文已经成功初始化
 	CHECKCALLING_BEGIN(ctx)//检查调用开始
-	pthread_setspecific(G_NODE.handle_key, (void *)(uintptr_t)(ctx->handle));//??????
+	pthread_setspecific(G_NODE.handle_key, (void *)(uintptr_t)(ctx->handle));//设置线程私有数据
 	int type = msg->sz >> HANDLE_REMOTE_SHIFT;//获取消息类别
 	size_t sz = msg->sz & HANDLE_MASK;//获取消息大小
-	if (ctx->logfile) {//如果存在log文件
+	if (ctx->logfile) {//如果上下文内存在log文件
 		skynet_log_output(ctx->logfile, msg->source, type, msg->session, msg->data, sz);//输出日志
 	}
 	if (!ctx->cb(ctx, ctx->cb_ud, type, msg->session, msg->source, msg->data, sz)) {//调用服务的回到函数
@@ -275,7 +275,7 @@ dispatch_message(struct skynet_context *ctx, struct skynet_message *msg) {
 	CHECKCALLING_END(ctx)//检查调用结束
 }
 
-//分发上下文所有的消息
+//分发上下文的所有消息
 //说是分发，其实并没有发给别人，所有的消息已经在上下文内的队列里了
 //只是等待时机从队列里把消息POP出来，调用上下文内服务的回调函数进行处理
 void 
@@ -290,16 +290,16 @@ skynet_context_dispatchall(struct skynet_context * ctx) {
 
 struct message_queue * 
 skynet_context_message_dispatch(struct skynet_monitor *sm, struct message_queue *q, int weight) {
-	if (q == NULL) {
-		q = skynet_globalmq_pop();
-		if (q==NULL)
-			return NULL;
+	if (q == NULL) {//如果传入的消息队列为空
+		q = skynet_globalmq_pop();//从全局的队列中pop一个出来
+		if (q==NULL)//如果消息队列还为空
+			return NULL;//直接返回空
 	}
 
-	uint32_t handle = skynet_mq_handle(q);
+	uint32_t handle = skynet_mq_handle(q);//从消息队列中取得句柄号
 
-	struct skynet_context * ctx = skynet_handle_grab(handle);
-	if (ctx == NULL) {
+	struct skynet_context * ctx = skynet_handle_grab(handle);//从句柄号取得上下文
+	if (ctx == NULL) {//如果取得的上下文为空
 		struct drop_t d = { handle };
 		skynet_mq_release(q, drop_message, &d);
 		return skynet_globalmq_pop();

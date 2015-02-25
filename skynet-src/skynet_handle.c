@@ -35,6 +35,7 @@ struct handle_storage {
 
 static struct handle_storage *H = NULL;
 
+//注册句柄(取得一个句柄)
 uint32_t
 skynet_handle_register(struct skynet_context *ctx) {
 	struct handle_storage *s = H;//获取句柄存储引用
@@ -71,6 +72,7 @@ skynet_handle_register(struct skynet_context *ctx) {
 	}
 }
 
+//句柄回收
 int
 skynet_handle_retire(uint32_t handle) {
 	int ret = 0;

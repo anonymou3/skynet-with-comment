@@ -6,6 +6,7 @@
 #include <string.h>
 #include <time.h>
 
+//skynet日志开启
 FILE * 
 skynet_log_open(struct skynet_context * ctx, uint32_t handle) {
 	const char * logpath = skynet_getenv("logpath");
@@ -28,6 +29,7 @@ skynet_log_open(struct skynet_context * ctx, uint32_t handle) {
 	return f;
 }
 
+//skynet日志关闭
 void
 skynet_log_close(struct skynet_context * ctx, FILE *f, uint32_t handle) {
 	skynet_error(ctx, "Close log file :%08x", handle);
@@ -66,12 +68,12 @@ log_socket(FILE * f, struct skynet_socket_message * message, size_t sz) {
 
 void 
 skynet_log_output(FILE *f, uint32_t source, int type, int session, void * buffer, size_t sz) {
-	if (type == PTYPE_SOCKET) {
-		log_socket(f, buffer, sz);
+	if (type == PTYPE_SOCKET) {//如果类型是socket
+		log_socket(f, buffer, sz);//调用log_socket记录socket
 	} else {
 		uint32_t ti = skynet_gettime();
 		fprintf(f, ":%08x %d %d %u ", source, type, session, ti);
-		log_blob(f, buffer, sz);
+		log_blob(f, buffer, sz);//否则调用log_blob记录
 		fprintf(f,"\n");
 		fflush(f);
 	}

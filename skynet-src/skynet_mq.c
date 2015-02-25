@@ -81,7 +81,7 @@ skynet_globalmq_pop() {
 struct message_queue * 
 skynet_mq_create(uint32_t handle) {
 	struct message_queue *q = skynet_malloc(sizeof(*q));//为消息队列分配内存
-	q->handle = handle;//设置句柄号
+	q->handle = handle;//将句柄号存入消息队列的handle字段中
 	q->cap = DEFAULT_QUEUE_SIZE;//默认队列大小64
 	q->head = 0;//头
 	q->tail = 0;//尾
