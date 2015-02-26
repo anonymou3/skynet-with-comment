@@ -48,6 +48,9 @@
 // Actor，可以看作是一个个独立的实体，他们之间是毫无关联的。但是，他们可以通过消息来通信。一个Actor收到其他Actor的信息后，它可以根据需要作出各种相应。消息的类型可以是任意的，消息的内容也可以是任意的。这点有点像webservice了。只提供接口服务，你不必了解我是如何实现的。
  
 // 一个Actor如何处理多个Actor的请求呢？它先建立一个消息队列，每次收到消息后，就放入队列，而它每次也从队列中取出消息体来处理。通常我们都使得这个过程是循环的。让Actor可以时刻处理发送来的消息。
+
+//但是在该blog(http://blog.codingnow.com/2013/12/skynet_monitor.html)中，云风说：“而且 skynet 借助 lua 的 coroutine 机制，事实上在同一个 lua service 里跑着多个 actor 。一个 lua coroutine 才是一个 actor ”
+
 struct skynet_context {
 	void * instance;			//模块实例引用
 	struct skynet_module * mod;	//模块引用
@@ -68,7 +71,7 @@ struct skynet_context {
 struct skynet_node {
 	int total;			//上下文计数器
 	int init;
-	uint32_t monitor_exit;
+	uint32_t monitor_exit;//监视服务退出的句柄号
 	pthread_key_t handle_key;
 };
 
@@ -294,7 +297,7 @@ skynet_context_message_dispatch(struct skynet_monitor *sm, struct message_queue 
 		q = skynet_globalmq_pop();//从全局的队列中pop一个出来
 		if (q==NULL)//如果消息队列还为空
 			return NULL;//直接返回空
-	}
+	}//如果传入的消息队列不为空
 
 	uint32_t handle = skynet_mq_handle(q);//从消息队列中取得句柄号
 
@@ -368,18 +371,19 @@ skynet_queryname(struct skynet_context * context, const char * name) {
 	return 0;
 }
 
+//处理退出
 static void
 handle_exit(struct skynet_context * context, uint32_t handle) {
-	if (handle == 0) {
-		handle = context->handle;
-		skynet_error(context, "KILL self");
+	if (handle == 0) {//如果传入的句柄为0
+		handle = context->handle;//设置句柄为当前上下文的句柄
+		skynet_error(context, "KILL self");//输出日志 杀掉自己
 	} else {
-		skynet_error(context, "KILL :%0x", handle);
+		skynet_error(context, "KILL :%0x", handle);//输出日志 杀掉句柄号为handle的服务
 	}
-	if (G_NODE.monitor_exit) {
-		skynet_send(context,  handle, G_NODE.monitor_exit, PTYPE_CLIENT, 0, NULL, 0);
+	if (G_NODE.monitor_exit) {//如果存在监视服务退出的服务
+		skynet_send(context,  handle, G_NODE.monitor_exit, PTYPE_CLIENT, 0, NULL, 0);//向该服务发送消息
 	}
-	skynet_handle_retire(handle);
+	skynet_handle_retire(handle);//回收句柄
 }
 
 // skynet command
@@ -453,7 +457,7 @@ cmd_now(struct skynet_context * context, const char * param) {
 	sprintf(context->result,"%u",ti);
 	return context->result;
 }
-
+//退出命令
 static const char *
 cmd_exit(struct skynet_context * context, const char * param) {
 	handle_exit(context, 0);
@@ -618,7 +622,7 @@ static struct command_func cmd_funcs[] = {
 	{ "QUERY", cmd_query },
 	{ "NAME", cmd_name },
 	{ "NOW", cmd_now },
-	{ "EXIT", cmd_exit },
+	{ "EXIT", cmd_exit },//退出命令
 	{ "KILL", cmd_kill },
 	{ "LAUNCH", cmd_launch },
 	{ "GETENV", cmd_getenv },

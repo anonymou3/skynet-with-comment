@@ -1,4 +1,5 @@
 //监视服务
+//作用：处理 service 生命期监控
 #include "skynet.h"
 
 #include "skynet_monitor.h"
@@ -7,6 +8,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+
 
 //监视者数据结构定义
 struct skynet_monitor {

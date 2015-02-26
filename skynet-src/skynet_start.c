@@ -76,14 +76,14 @@ _socket(void *p) {
 static void
 free_monitor(struct monitor *m) {
 	int i;
-	int n = m->count;
-	for (i=0;i<n;i++) {
-		skynet_monitor_delete(m->m[i]);
+	int n = m->count;//从监视者们获取监视着的数目
+	for (i=0;i<n;i++) {//遍历监视者
+		skynet_monitor_delete(m->m[i]);//删除监视者
 	}
-	pthread_mutex_destroy(&m->mutex);
-	pthread_cond_destroy(&m->cond);
-	skynet_free(m->m);
-	skynet_free(m);
+	pthread_mutex_destroy(&m->mutex);//销毁互斥锁
+	pthread_cond_destroy(&m->cond);//销毁条件锁
+	skynet_free(m->m);//释放指针数组
+	skynet_free(m);//释放监视者们
 }
 
 //监视线程工作函数
@@ -126,6 +126,7 @@ _timer(void *p) {
 }
 
 //工作线程工作函数
+//工作线程是有多个的
 static void *
 _worker(void *p) {
 	struct worker_parm *wp = p;//获取工作线程参数引用
@@ -136,7 +137,7 @@ _worker(void *p) {
 	skynet_initthread(THREAD_WORKER);//线程私有数据初始化
 	struct message_queue * q = NULL;//定义消息队列指针
 	for (;;) {//死循环
-		q = skynet_context_message_dispatch(sm, q, weight);
+		q = skynet_context_message_dispatch(sm, q, weight);//不断的从 globalmq 里取出二级 mq
 		if (q == NULL) {//如果返回的消息队列为空
 			if (pthread_mutex_lock(&m->mutex) == 0) {
 				++ m->sleep;
@@ -164,7 +165,7 @@ _start(int thread) {
 	m->count = thread;//监视者们的数目同线程数相同
 	m->sleep = 0;//睡眠？
 
-	m->m = skynet_malloc(thread * sizeof(struct skynet_monitor *));//为存储具体的监视者分配内存
+	m->m = skynet_malloc(thread * sizeof(struct skynet_monitor *));//为存储具体的监视者分配内存,实际上是指针数组，所以是线程数*指针的大小
 	int i;
 	for (i=0;i<thread;i++) {
 		m->m[i] = skynet_monitor_new();//创建监视者并存储
@@ -242,7 +243,8 @@ skynet_start(struct skynet_config * config) {
 		exit(1);
 	}
 
-	bootstrap(ctx, config->bootstrap);//加载引导模块,传入的ctx是日志模块的上下文
+	bootstrap(ct
+	x, config->bootstrap);//加载引导模块,传入的ctx是日志模块的上下文
 
 	_start(config->thread);//启动各个线程
 
