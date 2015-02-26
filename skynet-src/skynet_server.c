@@ -309,10 +309,10 @@ skynet_context_message_dispatch(struct skynet_monitor *sm, struct message_queue 
 	}
 
 	int i,n=1;
-	struct skynet_message msg;
+	struct skynet_message msg;//定义一个skynet消息用于存放收到的消息
 
 	for (i=0;i<n;i++) {
-		if (skynet_mq_pop(q,&msg)) {
+		if (skynet_mq_pop(q,&msg)) {//
 			skynet_context_release(ctx);
 			return skynet_globalmq_pop();
 		} else if (i==0 && weight >= 0) {
