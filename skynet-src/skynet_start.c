@@ -18,6 +18,7 @@
 #include <string.h>
 
 //监视者们数据结构定义
+//好听点儿的叫法可以叫做监视者 ！！！容器！！！之前的什么们也可以叫做什么容器
 struct monitor {
 	int count;//监视者计数
 	struct skynet_monitor ** m;//存储具体的监视者
@@ -25,7 +26,7 @@ struct monitor {
 	pthread_mutex_t mutex;//互斥锁
 	//为了防止竞争，条件锁的使用总是和一个互斥锁结合在一起
 	//条件锁是用来线程通讯的，但是互斥锁是为了保护这种通讯不会产生逻辑错误，可以正常工作。
-	int sleep;//睡眠
+	int sleep;//睡眠线程数
 };
 
 //工作者参数数据结构定义
@@ -138,13 +139,23 @@ _worker(void *p) {
 	struct message_queue * q = NULL;//定义消息队列指针
 	for (;;) {//死循环
 		q = skynet_context_message_dispatch(sm, q, weight);//不断的从 globalmq 里取出二级 mq
-		if (q == NULL) {//如果返回的消息队列为空
+		if (q == NULL) {//如果返回的消息队列为空，则代表当前没有队列有消息要分发
+			//pthread_mutex_lock在成功完成之后会返回零
+			//下面的语句在返回时，互斥锁已经被锁定
 			if (pthread_mutex_lock(&m->mutex) == 0) {
-				++ m->sleep;
+				++ m->sleep;//自增睡眠线程数
 				// "spurious wakeup" is harmless,
 				// because skynet_context_message_dispatch() can be call at any time.
-				pthread_cond_wait(&m->cond, &m->mutex);
-				-- m->sleep;
+
+
+				// 在调用pthread_cond_wait()前必须由本线程加锁（pthread_mutex_lock()）
+				// 而在更新条件等待队列以前，mutex保持锁定状态，并在线程挂起进入等待前解锁(其他线程就可以继续使用互斥锁了)
+				// 在条件满足从而离开pthread_cond_wait()之前，mutex将被重新加锁，以与进入pthread_cond_wait()前的加锁动作对应
+				// 所以下面的代码中还有一个解锁的动作
+
+				// 激发条件有两种形式，pthread_cond_signal()激活一个等待该条件的线程，存在多个等待线程时按入队顺序激活其中一个；而pthread_cond_broadcast()则激活所有等待线程。
+				pthread_cond_wait(&m->cond, &m->mutex);//等待条件
+				-- m->sleep;//自减睡眠线程数
 				if (pthread_mutex_unlock(&m->mutex)) {
 					fprintf(stderr, "unlock mutex error");
 					exit(1);

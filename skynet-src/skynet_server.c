@@ -297,7 +297,7 @@ skynet_context_message_dispatch(struct skynet_monitor *sm, struct message_queue 
 		q = skynet_globalmq_pop();//从全局的队列中pop一个出来
 		if (q==NULL)//如果消息队列还为空
 			return NULL;//直接返回空
-	}//如果传入的消息队列不为空
+	}//如果传入的消息队列不为空，则是分发该消息队列的消息
 
 	uint32_t handle = skynet_mq_handle(q);//从消息队列中取得句柄号
 
