@@ -15,7 +15,16 @@ struct skynet_env {
 
 static struct skynet_env *E = NULL;
 
+// type __sync_lock_test_and_set (type *ptr, type value, ...)
+//    将*ptr设为value并返回*ptr操作之前的值。
+
+// void __sync_lock_release (type *ptr, ...)
+//      将*ptr置0
+
 #define LOCK(q) while (__sync_lock_test_and_set(&(q)->lock,1)) {}//上锁	（用__sync_lock_test_and_set实现的自旋锁）
+//原理：当其他线程已经获取到锁,那么lock值为1，当前线程再去获取锁的时候，__sync_lock_test_and_set就会返回1，
+//那么就会一直在while循环里，这就是自旋锁，自己在那打转
+//当其他线程释放锁时，当前线程获取锁时就会把lock设置为1,并且返回0，则会跳出while循环
 #define UNLOCK(q) __sync_lock_release(&(q)->lock);//解锁
 
 const char * 

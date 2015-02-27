@@ -47,29 +47,36 @@ create_thread(pthread_t *thread, void *(*start_routine) (void *), void *arg) {
 	}
 }
 
-//唤醒函数
+//唤醒休眠的线程
+//busy代表需要保持忙的线程数
+//当busy=0时：
+//条件为m->sleep>=m->count，代表全部线程都睡眠的情况下才唤醒一个工作线程
+//当busy=m->count-1时：
+//条件为m->sleep>=1,代表只要有一个工作线程休眠了，就唤醒一个线程
 static void
 wakeup(struct monitor *m, int busy) {
-	if (m->sleep >= m->count - busy) {
+	if (m->sleep >= m->count - busy) {//如果睡眠线程数大于等于总工作线程数-busy（代表需要保持忙的线程数）
+		// m->count为监视者数等于工作线程数
 		// signal sleep worker, "spurious wakeup" is harmless
-		pthread_cond_signal(&m->cond);
+		pthread_cond_signal(&m->cond);//唤醒一个线程
 	}
 }
 
-//socket工作函数
+//socket线程工作函数
 static void *
 _socket(void *p) {
 	struct monitor * m = p;//获取到监视者们
 	skynet_initthread(THREAD_SOCKET);//初始化线程私有数据
 	for (;;) {//死循环
 		int r = skynet_socket_poll();
-		if (r==0)
-			break;
-		if (r<0) {
-			CHECK_ABORT
-			continue;
+		if (r==0)//SOCKET_EXIT的情况下
+			break;//跳出死循环
+		if (r<0) {//返回值小于0的情况下
+			CHECK_ABORT//检查是否跳出死循环
+			continue;//继续循环，不用唤醒睡眠线程
 		}
-		wakeup(m,0);
+		wakeup(m,0);//唤醒睡眠线程
+		// 全部线程都睡眠的情况下才唤醒一个工作线程(即只要有工作线程处于工作状态，则不需要唤醒)
 	}
 	return NULL;
 }
@@ -88,6 +95,7 @@ free_monitor(struct monitor *m) {
 }
 
 //监视线程工作函数
+// 用于监控是否有消息没有即时处理
 static void *
 _monitor(void *p) {
 	struct monitor * m = p;//先从p中获得监视者们引用
@@ -97,11 +105,11 @@ _monitor(void *p) {
 	for (;;) {//死循环
 		CHECK_ABORT//检查是否跳出死循环
 		for (i=0;i<n;i++) {//遍历具体的监视者
-			skynet_monitor_check(m->m[i]);//具体的监视者检查
+			skynet_monitor_check(m->m[i]);//检查监视器
 		}
 		for (i=0;i<5;i++) {//循环5次
 			CHECK_ABORT//检查是否跳出死循环
-			sleep(1);//本线程休眠1毫秒，放弃CPU，让其他线程得到执行
+			sleep(1);//本线程休眠1秒，放弃CPU，让其他线程得到执行
 		}
 	}
 
@@ -111,18 +119,18 @@ _monitor(void *p) {
 //时钟线程工作函数
 static void *
 _timer(void *p) {
-	struct monitor * m = p;
-	skynet_initthread(THREAD_TIMER);
-	for (;;) {
-		skynet_updatetime();
-		CHECK_ABORT
-		wakeup(m,m->count-1);
-		usleep(2500);
+	struct monitor * m = p;//获取监视者容器
+	skynet_initthread(THREAD_TIMER);//初始化线程私有数据
+	for (;;) {//死循环
+		skynet_updatetime();//更新时钟
+		CHECK_ABORT//检查是否跳出循环
+		wakeup(m,m->count-1);//唤醒休眠线程 只要有一个睡眠线程就唤醒，让工作线程热起来
+		usleep(2500);//休眠2500微妙
 	}
 	// wakeup socket thread
 	skynet_socket_exit();
 	// wakeup all worker thread
-	pthread_cond_broadcast(&m->cond);
+	pthread_cond_broadcast(&m->cond);//唤醒所有工作线程
 	return NULL;
 }
 
@@ -146,7 +154,6 @@ _worker(void *p) {
 				++ m->sleep;//自增睡眠线程数
 				// "spurious wakeup" is harmless,
 				// because skynet_context_message_dispatch() can be call at any time.
-
 
 				// 在调用pthread_cond_wait()前必须由本线程加锁（pthread_mutex_lock()）
 				// 而在更新条件等待队列以前，mutex保持锁定状态，并在线程挂起进入等待前解锁(其他线程就可以继续使用互斥锁了)
@@ -173,8 +180,8 @@ _start(int thread) {
 
 	struct monitor *m = skynet_malloc(sizeof(*m));//分配monitor内存
 	memset(m, 0, sizeof(*m));//清空monitor内存
-	m->count = thread;//监视者们的数目同线程数相同
-	m->sleep = 0;//睡眠？
+	m->count = thread;//监视者的数目同线程数相同
+	m->sleep = 0;//睡眠线程数
 
 	m->m = skynet_malloc(thread * sizeof(struct skynet_monitor *));//为存储具体的监视者分配内存,实际上是指针数组，所以是线程数*指针的大小
 	int i;
@@ -194,7 +201,7 @@ _start(int thread) {
 	create_thread(&pid[1], _timer, m);//创建时钟线程
 	create_thread(&pid[2], _socket, m);//创建socket线程
 
-	static int weight[] = {//权重
+	static int weight[] = {//权重数组 大小为8*4=32
 		-1, -1, -1, -1, 0, 0, 0, 0,
 		1, 1, 1, 1, 1, 1, 1, 1, 
 		2, 2, 2, 2, 2, 2, 2, 2, 

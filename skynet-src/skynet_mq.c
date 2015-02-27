@@ -247,7 +247,7 @@ skynet_mq_init() {
 	Q=q;//保存分配的指针
 }
 
-//标记消息队列将要释放
+//标记消息队列释放标记
 void 
 skynet_mq_mark_release(struct message_queue *q) {
 	LOCK(q)//加锁队列
@@ -263,22 +263,22 @@ skynet_mq_mark_release(struct message_queue *q) {
 static void
 _drop_queue(struct message_queue *q, message_drop drop_func, void *ud) {
 	struct skynet_message msg;
-	while(!skynet_mq_pop(q, &msg)) {
-		drop_func(&msg, ud);
+	while(!skynet_mq_pop(q, &msg)) {//不断从队列中pop出消息直到没有消息
+		drop_func(&msg, ud);//将消息传入给丢弃函数
 	}
-	_release(q);
+	_release(q);//最终释放队列
 }
 
 //释放消息队列
 void 
 skynet_mq_release(struct message_queue *q, message_drop drop_func, void *ud) {
-	LOCK(q)
+	LOCK(q)//先加锁队列
 	
-	if (q->release) {
-		UNLOCK(q)
-		_drop_queue(q, drop_func, ud);
-	} else {
-		skynet_globalmq_push(q);
-		UNLOCK(q)
+	if (q->release) {//如果释放标记为true，才会释放队列
+		UNLOCK(q)//解锁队列
+		_drop_queue(q, drop_func, ud);//丢弃队列
+	} else {//如果释放标记为false
+		skynet_globalmq_push(q);//将消息队列push到全局队列中
+		UNLOCK(q)//解锁队列
 	}
 }

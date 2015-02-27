@@ -63,7 +63,7 @@ struct skynet_context {
 	int session_id;					//会话id，用于产生会话
 	int ref;						//引用计数
 	bool init;						//是否初始化
-	bool endless;					//是否回绕
+	bool endless;					//消息分发陷入死循环
 
 	CHECKCALLING_DECL				//检查调用声明
 };
@@ -118,13 +118,17 @@ struct drop_t {
 	uint32_t handle;
 };
 
+//丢弃消息函数
 static void
 drop_message(struct skynet_message *msg, void *ud) {
-	struct drop_t *d = ud;
-	skynet_free(msg->data);
-	uint32_t source = d->handle;
-	assert(source);
+	struct drop_t *d = ud;//从用户数据中获取到丢弃类型
+	skynet_free(msg->data);//释放掉消息中的数据
+	uint32_t source = d->handle;//从丢弃类型中获取到句柄号
+	assert(source);//断言源地址是合法的
+	//其实这里的source是该条消息的目的地
+	//因为目的地的消息队列释放掉了，这些消息还没有来得及处理，所以要向消息的来源报告错误
 	// report error to the message source
+	//向消息来源(msg->source)报告错误
 	skynet_send(NULL, source, msg->source, PTYPE_ERROR, 0, NULL, 0);
 }
 //创建一个新的上下文
@@ -245,12 +249,12 @@ skynet_context_push(uint32_t handle, struct skynet_message *message) {
 
 void 
 skynet_context_endless(uint32_t handle) {
-	struct skynet_context * ctx = skynet_handle_grab(handle);
-	if (ctx == NULL) {
-		return;
+	struct skynet_context * ctx = skynet_handle_grab(handle);//获取上下文
+	if (ctx == NULL) {//如果上下文为空
+		return;//直接返回
 	}
-	ctx->endless = true;
-	skynet_context_release(ctx);
+	ctx->endless = true;//设置标志
+	skynet_context_release(ctx);//释放上下文
 }
 
 int 
@@ -272,7 +276,7 @@ dispatch_message(struct skynet_context *ctx, struct skynet_message *msg) {
 	if (ctx->logfile) {//如果上下文内存在log文件
 		skynet_log_output(ctx->logfile, msg->source, type, msg->session, msg->data, sz);//输出日志
 	}
-	if (!ctx->cb(ctx, ctx->cb_ud, type, msg->session, msg->source, msg->data, sz)) {//调用服务的回到函数
+	if (!ctx->cb(ctx, ctx->cb_ud, type, msg->session, msg->source, msg->data, sz)) {//调用服务的回调函数处理消息
 		skynet_free(msg->data);//回调调用成功，释放消息承载的数据
 	}
 	CHECKCALLING_END(ctx)//检查调用结束
@@ -294,58 +298,61 @@ skynet_context_dispatchall(struct skynet_context * ctx) {
 struct message_queue * 
 skynet_context_message_dispatch(struct skynet_monitor *sm, struct message_queue *q, int weight) {
 	if (q == NULL) {//如果传入的消息队列为空
-		q = skynet_globalmq_pop();//从全局的队列中pop一个出来
-		if (q==NULL)//如果消息队列还为空
-			return NULL;//直接返回空
+		q = skynet_globalmq_pop();//先从全局的队列中pop一个队列出来
+		if (q==NULL)//如果全局队列中没有消息队列
+			return NULL;//直接返回空，将会导致工作线程休眠
 	}//如果传入的消息队列不为空，则是分发该消息队列的消息
 
 	uint32_t handle = skynet_mq_handle(q);//从消息队列中取得句柄号
 
 	struct skynet_context * ctx = skynet_handle_grab(handle);//从句柄号取得上下文
-	if (ctx == NULL) {//如果取得的上下文为空
+	if (ctx == NULL) {//如果取得的上下文为空 什么情况下会发生这种情况呢？
 		struct drop_t d = { handle };
-		skynet_mq_release(q, drop_message, &d);
-		return skynet_globalmq_pop();
+		skynet_mq_release(q, drop_message, &d);//释放掉该队列
+		return skynet_globalmq_pop();//再从全局队列中pop一个队列出来并返回
 	}
 
 	int i,n=1;
 	struct skynet_message msg;//定义一个skynet消息用于存放收到的消息
 
+	//分发当前队列的消息
 	for (i=0;i<n;i++) {
-		if (skynet_mq_pop(q,&msg)) {//
-			skynet_context_release(ctx);
-			return skynet_globalmq_pop();
-		} else if (i==0 && weight >= 0) {
-			n = skynet_mq_length(q);
-			n >>= weight;
+		if (skynet_mq_pop(q,&msg)) {//队列中没有消息了
+			skynet_context_release(ctx);//释放上下文，减少上下文的引用计数 为什么？因为skynet_handle_grab会增加上下文的引用计数
+			return skynet_globalmq_pop();//再从全局队列中pop一个队列出来并返回
+		} else if (i==0 && weight >= 0) {//第一次进入循环，并且权重大于等于0
+			n = skynet_mq_length(q);//获取消息队列的长度
+			n >>= weight;//权重值比较大时，对长度进行右移操作，也就是减少处理的消息数目
 		}
-		int overload = skynet_mq_overload(q);
-		if (overload) {
-			skynet_error(ctx, "May overload, message queue length = %d", overload);
+		int overload = skynet_mq_overload(q);//获取超载值
+		if (overload) {//超载值不为零，代表超载了
+			skynet_error(ctx, "May overload, message queue length = %d", overload);//将日志输出到logger
 		}
 
-		skynet_monitor_trigger(sm, msg.source , handle);
+		skynet_monitor_trigger(sm, msg.source , handle);//触发监视器
 
-		if (ctx->cb == NULL) {
-			skynet_free(msg.data);
+		if (ctx->cb == NULL) {//如果上下文的回调函数为空
+			skynet_free(msg.data);//释放掉消息的数据
 		} else {
-			dispatch_message(ctx, &msg);
+			dispatch_message(ctx, &msg);//派发消息，实际上是调用上下文的回调函数处理消息
 		}
 
-		skynet_monitor_trigger(sm, 0,0);
+		skynet_monitor_trigger(sm, 0,0);//重置监视器
 	}
 
-	assert(q == ctx->queue);
-	struct message_queue *nq = skynet_globalmq_pop();
+	assert(q == ctx->queue);//断言当前的q必然等于上下文内的queue
+	struct message_queue *nq = skynet_globalmq_pop();//再从全局队列pop一个队列出来
 	if (nq) {
 		// If global mq is not empty , push q back, and return next queue (nq)
 		// Else (global mq is empty or block, don't push q back, and return q again (for next dispatch)
-		skynet_globalmq_push(q);
-		q = nq;
+		//如果全局队列不为空，那么把分发过消息的 q push回去，然后返回下一个队列做分发
+		//否则(全局队列为空，那么就不要把q push回去了，直接返回用于下一次分发)
+		skynet_globalmq_push(q);//将q push回去
+		q = nq;//将要返回的是下一个队列
 	} 
-	skynet_context_release(ctx);
+	skynet_context_release(ctx);//释放上下文，减少上下文引用计数
 
-	return q;
+	return q;//返回队列
 }
 
 static void
