@@ -1,4 +1,4 @@
-//网络接口
+//封装了socket server
 #include "skynet.h"
 
 #include "skynet_socket.h"
@@ -69,7 +69,7 @@ forward_message(int type, bool padding, struct socket_message * result) {
 
 int 
 skynet_socket_poll() {
-	struct socket_server *ss = SOCKET_SERVER;
+	struct socket_server *ss = SOCKET_SERVER;//获取socket服务器引用
 	assert(ss);
 	struct socket_message result;
 	int more = 1;

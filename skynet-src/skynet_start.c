@@ -232,7 +232,7 @@ bootstrap(struct skynet_context * logger, const char * cmdline) {
 	char name[sz+1];//存储“snlua”
 	char args[sz+1];//存储"bootstrap"
 	sscanf(cmdline, "%s %s", name, args);//拆解参数
-	struct skynet_context *ctx = skynet_context_new(name, args)//新建上下文(这里为snlua)
+	struct skynet_context *ctx = skynet_context_new(name, args);//新建上下文(这里为snlua)
 	if (ctx == NULL) {
 		skynet_error(NULL, "Bootstrap error : %s\n", cmdline);
 		skynet_context_dispatchall(logger);//分发logger服务的所有消息
@@ -261,8 +261,7 @@ skynet_start(struct skynet_config * config) {
 		exit(1);
 	}
 
-	bootstrap(ct
-	x, config->bootstrap);//加载引导模块,传入的ctx是日志模块的上下文
+	bootstrap(ctx, config->bootstrap);//加载引导模块,传入的ctx是日志模块的上下文
 
 	_start(config->thread);//启动各个线程
 

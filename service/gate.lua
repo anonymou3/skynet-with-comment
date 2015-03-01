@@ -1,3 +1,5 @@
+--基于snax.gateserver实现的完整的网关服务器 作为 snax.gateserver 的使用范例
+--examples/watchdog.lua 是一个可以参考的例子，它启动了一个 server/gate.lua 服务，并将处理外部连接的消息转发处理
 local skynet = require "skynet"
 local gateserver = require "snax.gateserver"
 local netpack = require "netpack"

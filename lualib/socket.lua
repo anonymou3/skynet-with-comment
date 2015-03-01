@@ -1,3 +1,6 @@
+--对socketdriver(位于lua-socket.c)的封装
+--提供了一组阻塞模式的 lua API 用于 TCP socket 的读写
+
 local driver = require "socketdriver"
 local skynet = require "skynet"
 local assert = assert
@@ -320,7 +323,7 @@ function socket.listen(host, port, backlog)
 		host, port = string.match(host, "([^:]+):(.+)$")
 		port = tonumber(port)
 	end
-	return driver.listen(host, port, backlog)
+	return driver.listen(host, port, backlog)--调用lua-socket.c导出的接口
 end
 
 function socket.lock(id)

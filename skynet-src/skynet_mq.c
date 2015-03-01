@@ -37,7 +37,7 @@ struct message_queue {
 //全局队列数据结构定义
 struct global_queue {
 	struct message_queue *head;	//消息队列头指针
-	struct amessage_queue *til;	//消息队列尾指针
+	struct message_queue *tail;	//消息队列尾指针
 	int lock;					//锁
 };
 

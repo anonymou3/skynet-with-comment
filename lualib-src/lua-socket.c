@@ -1,4 +1,5 @@
-//封装了 socket-server 给 lua 使用
+//封装了skynet socket,并导出接口给 lua 使用
+
 #include "skynet_malloc.h"
 
 #include <stdlib.h>
@@ -465,7 +466,8 @@ llisten(lua_State *L) {
 	int port = luaL_checkinteger(L,2);
 	int backlog = luaL_optinteger(L,3,BACKLOG);
 	struct skynet_context * ctx = lua_touserdata(L, lua_upvalueindex(1));
-	int id = skynet_socket_listen(ctx, host,port,backlog);
+	int id = skynet_socket_listen(ctx, host,port,backlog);//这里是C启动socket监听的入口
+	//从这里->skynet_socket.c->socket_server.c
 	if (id < 0) {
 		return luaL_error(L, "Listen error");
 	}

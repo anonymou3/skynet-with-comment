@@ -1,3 +1,4 @@
+--网关服务器 通用模板
 local skynet = require "skynet"
 local netpack = require "netpack"
 local socketdriver = require "socketdriver"
@@ -38,7 +39,7 @@ function gateserver.start(handler)
 		maxclient = conf.maxclient or 1024
 		nodelay = conf.nodelay
 		skynet.error(string.format("Listen on %s:%d", address, port))
-		socket = socketdriver.listen(address, port)
+		socket = socketdriver.listen(address, port)--这里是lua启动socket监听的入口
 		socketdriver.start(socket)
 		if handler.open then
 			return handler.open(source, conf)

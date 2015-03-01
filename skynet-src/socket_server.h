@@ -14,6 +14,7 @@
 
 struct socket_server;
 
+//socket消息结构定义
 struct socket_message {
 	int id;
 	uintptr_t opaque;
