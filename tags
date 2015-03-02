@@ -291,7 +291,7 @@ CHECKCALLING_END	skynet-src/skynet_server.c	32;"	d	file:
 CHECKCALLING_END	skynet-src/skynet_server.c	39;"	d	file:
 CHECKCALLING_INIT	skynet-src/skynet_server.c	33;"	d	file:
 CHECKCALLING_INIT	skynet-src/skynet_server.c	40;"	d	file:
-CHECK_ABORT	skynet-src/skynet_start.c	36;"	d	file:
+CHECK_ABORT	skynet-src/skynet_start.c	39;"	d	file:
 CHILD	3rd/jemalloc/src/ctl.c	185;"	d	file:
 CHILD	3rd/jemalloc/src/ctl.c	417;"	d	file:
 CHUNK	3rd/jemalloc/test/integration/aligned_alloc.c	3;"	d	file:
@@ -464,7 +464,7 @@ DATA_INIT	3rd/jemalloc/test/unit/tsd.c	21;"	d	file:
 DEFAULT_CAP	lualib-src/lua-bson.c	31;"	d	file:
 DEFAULT_CAP	lualib-src/lua-mongo.c	25;"	d	file:
 DEFAULT_QUEUE_SIZE	service-src/service_harbor.c	25;"	d	file:
-DEFAULT_QUEUE_SIZE	skynet-src/skynet_mq.c	12;"	d	file:
+DEFAULT_QUEUE_SIZE	skynet-src/skynet_mq.c	13;"	d	file:
 DEFAULT_SLOT_SIZE	skynet-src/skynet_handle.c	12;"	d	file:
 DESTDIR	3rd/jemalloc/Makefile	/^DESTDIR =$/;"	m
 DES_FP	lualib-src/lua-crypt.c	214;"	d	file:
@@ -953,8 +953,8 @@ LIB_O	3rd/lua/Makefile	/^LIB_O=	lauxlib.o lbaselib.o lbitlib.o lcorolib.o ldblib
 LL	3rd/lua/lobject.c	244;"	d	file:
 LOCK	3rd/lua/lauxlib.c	962;"	d	file:
 LOCK	lualib-src/lua-clientsocket.c	132;"	d	file:
-LOCK	skynet-src/skynet_env.c	18;"	d	file:
-LOCK	skynet-src/skynet_mq.c	44;"	d	file:
+LOCK	skynet-src/skynet_env.c	24;"	d	file:
+LOCK	skynet-src/skynet_mq.c	46;"	d	file:
 LOCK	skynet-src/skynet_timer.c	21;"	d	file:
 LOG_MESSAGE_SIZE	skynet-src/skynet_error.c	12;"	d	file:
 LONG	3rd/jemalloc/include/jemalloc/internal/jemalloc_internal.h	289;"	d
@@ -1343,7 +1343,7 @@ MAX_COOKIE	lualib-src/lua-seri.c	26;"	d	file:
 MAX_DEPTH	lualib-src/lua-seri.c	30;"	d	file:
 MAX_EVENT	skynet-src/socket_server.c	22;"	d	file:
 MAX_FORMAT	3rd/lua/lstrlib.c	830;"	d	file:
-MAX_GLOBAL_MQ	skynet-src/skynet_mq.c	13;"	d	file:
+MAX_GLOBAL_MQ	skynet-src/skynet_mq.c	14;"	d	file:
 MAX_INFO	skynet-src/socket_server.c	19;"	d	file:
 MAX_INT	3rd/lua/llimits.h	37;"	d
 MAX_ITEM	3rd/lua/lstrlib.c	823;"	d	file:
@@ -1373,8 +1373,8 @@ MINSIZEARRAY	3rd/lua/lmem.c	43;"	d	file:
 MINSTRTABSIZE	3rd/lua/llimits.h	144;"	d
 MIN_READ_BUFFER	skynet-src/socket_server.c	23;"	d	file:
 MKLIB	3rd/jemalloc/Makefile	/^MKLIB = $/;"	m
-MQ_IN_GLOBAL	skynet-src/skynet_mq.c	18;"	d	file:
-MQ_OVERLOAD	skynet-src/skynet_mq.c	19;"	d	file:
+MQ_IN_GLOBAL	skynet-src/skynet_mq.c	19;"	d	file:
+MQ_OVERLOAD	skynet-src/skynet_mq.c	20;"	d	file:
 MSG.close	lualib/snax/gateserver.lua	/^	function MSG.close(fd)$/;"	f
 MSG.error	lualib/snax/gateserver.lua	/^	function MSG.error(fd, msg)$/;"	f
 MSG.open	lualib/snax/gateserver.lua	/^	function MSG.open(fd, msg)$/;"	f
@@ -1830,7 +1830,7 @@ ProcessProfile	3rd/jemalloc/bin/pprof	/^sub ProcessProfile {$/;"	s
 Protect	3rd/lua/lvm.c	511;"	d	file:
 Proto	3rd/lua/lobject.h	/^typedef struct Proto {$/;"	s
 Proto	3rd/lua/lobject.h	/^} Proto;$/;"	t	typeref:struct:Proto
-Q	skynet-src/skynet_mq.c	/^static struct global_queue *Q = NULL;$/;"	v	typeref:struct:global_queue	file:
+Q	skynet-src/skynet_mq.c	/^static struct global_queue *Q = NULL;	\/\/全局队列引用$/;"	v	typeref:struct:global_queue	file:
 QI	3rd/jemalloc/include/jemalloc/internal/jemalloc_internal_macros.h	43;"	d
 QU	3rd/jemalloc/include/jemalloc/internal/jemalloc_internal_macros.h	42;"	d
 QUANTUM	3rd/jemalloc/include/jemalloc/internal/jemalloc_internal.h	282;"	d
@@ -2568,8 +2568,8 @@ UMAX	3rd/jemalloc/test/unit/util.c	56;"	d	file:
 UNARY_PRIORITY	3rd/lua/lparser.c	1033;"	d	file:
 UNLOCK	3rd/lua/lauxlib.c	963;"	d	file:
 UNLOCK	lualib-src/lua-clientsocket.c	133;"	d	file:
-UNLOCK	skynet-src/skynet_env.c	19;"	d	file:
-UNLOCK	skynet-src/skynet_mq.c	45;"	d	file:
+UNLOCK	skynet-src/skynet_env.c	28;"	d	file:
+UNLOCK	skynet-src/skynet_mq.c	47;"	d	file:
 UNLOCK	skynet-src/skynet_timer.c	22;"	d	file:
 UNUSED	3rd/jemalloc/include/jemalloc/internal/jemalloc_internal_macros.h	36;"	d
 UNUSED	3rd/jemalloc/include/jemalloc/internal/jemalloc_internal_macros.h	38;"	d
@@ -3982,7 +3982,7 @@ compose_message	lualib/redis.lua	/^local function compose_message(cmd, msg)$/;"	
 computesizes	3rd/lua/ltable.c	/^static int computesizes (int nums[], int *narray) {$/;"	f	file:
 concattable	3rd/lpeg/lptree.c	/^static int concattable (lua_State *L, int idx1, int idx2) {$/;"	f	file:
 cond	3rd/lua/lparser.c	/^static int cond (LexState *ls) {$/;"	f	file:
-cond	skynet-src/skynet_start.c	/^	pthread_cond_t cond;\/\/条件锁$/;"	m	struct:monitor	file:
+cond	skynet-src/skynet_start.c	/^	pthread_cond_t cond;\/\/条件锁	$/;"	m	struct:monitor	file:
 condchangemem	3rd/lua/llimits.h	303;"	d
 condchangemem	3rd/lua/llimits.h	305;"	d
 condjump	3rd/lua/lcode.c	/^static int condjump (FuncState *fs, OpCode op, int A, int B, int C) {$/;"	f	file:
@@ -4341,7 +4341,7 @@ encode_ud	lualib-src/sproto/lsproto.c	/^struct encode_ud {$/;"	s	file:
 encode_uint64	lualib-src/sproto/sproto.c	/^encode_uint64(uint64_t v, uint8_t * data, int size) {$/;"	f	file:
 encodeall	lualib/sprotoparser.lua	/^local function encodeall(r)$/;"	f
 end_capture	3rd/lua/lstrlib.c	/^static const char *end_capture (MatchState *ms, const char *s,$/;"	f	file:
-endless	skynet-src/skynet_server.c	/^	bool endless;					\/\/是否回绕$/;"	m	struct:skynet_context	file:
+endless	skynet-src/skynet_server.c	/^	bool endless;					\/\/消息分发陷入死循环$/;"	m	struct:skynet_context	file:
 endpc	3rd/lua/lobject.h	/^  int endpc;    \/* first point where variable is dead *\/$/;"	m	struct:LocVar
 enq	3rd/jemalloc/include/jemalloc/internal/prof.h	/^	bool			enq;$/;"	m	struct:prof_tdata_s
 enq_gdump	3rd/jemalloc/include/jemalloc/internal/prof.h	/^	bool			enq_gdump;$/;"	m	struct:prof_tdata_s
@@ -4911,8 +4911,8 @@ head	lualib-src/lua-seri.c	/^	struct block * head;$/;"	m	struct:write_block	type
 head	lualib-src/lua-socket.c	/^	struct buffer_node *head;$/;"	m	struct:socket_buffer	typeref:struct:socket_buffer::buffer_node	file:
 head	service-src/databuffer.h	/^	struct message * head;$/;"	m	struct:databuffer	typeref:struct:databuffer::message
 head	service-src/service_harbor.c	/^	int head;$/;"	m	struct:harbor_msg_queue	file:
-head	skynet-src/skynet_mq.c	/^	int head;		\/\/头$/;"	m	struct:message_queue	file:
-head	skynet-src/skynet_mq.c	/^	struct message_queue *head;	$/;"	m	struct:global_queue	typeref:struct:global_queue::message_queue	file:
+head	skynet-src/skynet_mq.c	/^	int head;		\/\/队头索引$/;"	m	struct:message_queue	file:
+head	skynet-src/skynet_mq.c	/^	struct message_queue *head;	\/\/消息队列头指针$/;"	m	struct:global_queue	typeref:struct:global_queue::message_queue	file:
 head	skynet-src/skynet_timer.c	/^	struct timer_node head;$/;"	m	struct:link_list	typeref:struct:link_list::timer_node	file:
 head	skynet-src/socket_server.c	/^	struct write_buffer * head;$/;"	m	struct:wb_list	typeref:struct:wb_list::write_buffer	file:
 header	lualib-src/lua-netpack.c	/^	int header;$/;"	m	struct:uncomplete	file:
@@ -5090,7 +5090,7 @@ import_field	lualib-src/sproto/sproto.c	/^import_field(struct sproto *s, struct 
 import_protocol	lualib-src/sproto/sproto.c	/^import_protocol(struct sproto *s, struct protocol *p, const uint8_t * stream) {$/;"	f	file:
 import_string	lualib-src/sproto/sproto.c	/^import_string(struct sproto *s, const uint8_t * stream) {$/;"	f	file:
 import_type	lualib-src/sproto/sproto.c	/^import_type(struct sproto *s, struct sproto_type *t, const uint8_t * stream) {$/;"	f	file:
-in_global	skynet-src/skynet_mq.c	/^	int in_global;$/;"	m	struct:message_queue	file:
+in_global	skynet-src/skynet_mq.c	/^	int in_global;	\/\/是否在全局队列中$/;"	m	struct:message_queue	file:
 in_valgrind	3rd/jemalloc/include/jemalloc/internal/private_namespace.h	220;"	d
 in_valgrind	3rd/jemalloc/include/jemalloc/internal/private_unnamespace.h	220;"	d
 in_valgrind	3rd/jemalloc/src/jemalloc.c	/^bool	in_valgrind;$/;"	v
@@ -5738,8 +5738,8 @@ lock	lualib-src/lua-stm.c	/^	struct rwlock lock;$/;"	m	struct:stm_object	typeref
 lock	skynet-src/skynet_env.c	/^	int lock;			\/\/锁$/;"	m	struct:skynet_env	file:
 lock	skynet-src/skynet_handle.c	/^	struct rwlock lock;	\/\/读写锁$/;"	m	struct:handle_storage	typeref:struct:handle_storage::rwlock	file:
 lock	skynet-src/skynet_module.c	/^	int lock;\/\/锁$/;"	m	struct:modules	file:
-lock	skynet-src/skynet_mq.c	/^	int lock;		\/\/锁$/;"	m	struct:message_queue	file:
-lock	skynet-src/skynet_mq.c	/^	int lock;$/;"	m	struct:global_queue	file:
+lock	skynet-src/skynet_mq.c	/^	int lock;					\/\/锁$/;"	m	struct:global_queue	file:
+lock	skynet-src/skynet_mq.c	/^	int lock;		\/\/用于实现自旋锁 加锁将这个值设置为1 释放锁将这个值设置为0$/;"	m	struct:message_queue	file:
 lock	skynet-src/skynet_timer.c	/^	int lock;$/;"	m	struct:timer	file:
 locvars	3rd/lua/lobject.h	/^  LocVar *locvars;  \/* information about local variables (debug information) *\/$/;"	m	struct:SharedProto
 log_blob	skynet-src/skynet_log.c	/^log_blob(FILE *f, void * buffer, size_t sz) {$/;"	f	file:
@@ -6748,7 +6748,7 @@ monitor	examples/simplemonitor.lua	/^local function monitor(session, watcher, co
 monitor	lualib/sharedata.lua	/^local function monitor(name, obj, cobj)$/;"	f
 monitor	skynet-src/skynet_start.c	/^struct monitor {$/;"	s	file:
 monitor_clear	service/cslave.lua	/^local function monitor_clear(id)$/;"	f
-monitor_exit	skynet-src/skynet_server.c	/^	uint32_t monitor_exit;$/;"	m	struct:skynet_node	file:
+monitor_exit	skynet-src/skynet_server.c	/^	uint32_t monitor_exit;\/\/监视服务退出的句柄号$/;"	m	struct:skynet_node	file:
 monitor_harbor	service/cslave.lua	/^local function monitor_harbor(master_fd)$/;"	f
 monitor_master	examples/main_log.lua	/^local function monitor_master()$/;"	f
 monitor_master	service/cslave.lua	/^local function monitor_master(master_fd)$/;"	f
@@ -6888,7 +6888,7 @@ next	service-src/databuffer.h	/^	struct message * next;$/;"	m	struct:message	typ
 next	service-src/databuffer.h	/^	struct messagepool_list *next;$/;"	m	struct:messagepool_list	typeref:struct:messagepool_list::messagepool_list
 next	service-src/hashid.h	/^	struct hashid_node *next;$/;"	m	struct:hashid_node	typeref:struct:hashid_node::hashid_node
 next	service-src/service_harbor.c	/^	struct keyvalue * next;$/;"	m	struct:keyvalue	typeref:struct:keyvalue::keyvalue	file:
-next	skynet-src/skynet_mq.c	/^	struct message_queue *next;		$/;"	m	struct:message_queue	typeref:struct:message_queue::message_queue	file:
+next	skynet-src/skynet_mq.c	/^	struct message_queue *next;		\/\/下一个消息队列$/;"	m	struct:message_queue	typeref:struct:message_queue::message_queue	file:
 next	skynet-src/skynet_timer.c	/^	struct timer_node *next;$/;"	m	struct:timer_node	typeref:struct:timer_node::timer_node	file:
 next	skynet-src/socket_server.c	/^	struct write_buffer * next;$/;"	m	struct:write_buffer	typeref:struct:write_buffer::write_buffer	file:
 next_ci	3rd/lua/ldo.c	290;"	d	file:
@@ -7122,8 +7122,8 @@ os_tmpname	3rd/lua/loslib.c	/^static int os_tmpname (lua_State *L) {$/;"	f	file:
 otherwhite	3rd/lua/lgc.h	110;"	d
 output	3rd/lua/luac.c	/^static const char* output=Output;	\/* actual output file name *\/$/;"	v	file:
 overflow	3rd/jemalloc/bin/pprof	/^  sub overflow {$/;"	s
-overload	skynet-src/skynet_mq.c	/^	int overload;$/;"	m	struct:message_queue	file:
-overload_threshold	skynet-src/skynet_mq.c	/^	int overload_threshold;$/;"	m	struct:message_queue	file:
+overload	skynet-src/skynet_mq.c	/^	int overload;	\/\/超载值（超载队列的长度）$/;"	m	struct:message_queue	file:
+overload_threshold	skynet-src/skynet_mq.c	/^	int overload_threshold;			\/\/超载阀值$/;"	m	struct:message_queue	file:
 p	3rd/jemalloc/src/jemalloc.c	/^	void	*p;	\/* Input pointer (as in realloc(p, s)). *\/$/;"	m	struct:__anon10	file:
 p	3rd/lpeg/lpcode.c	/^  Pattern *p;  \/* pattern being compiled *\/$/;"	m	struct:CompileState	file:
 p	3rd/lpeg/lpvm.c	/^  const Instruction *p;  \/* next instruction *\/$/;"	m	struct:Stack	file:
@@ -7567,7 +7567,7 @@ queue	lualib-src/lua-netpack.c	/^	struct netpack queue[QUEUESIZE];$/;"	m	struct:
 queue	lualib-src/lua-netpack.c	/^struct queue {$/;"	s	file:
 queue	service-src/service_harbor.c	/^	struct harbor_msg_queue * queue;$/;"	m	struct:keyvalue	typeref:struct:keyvalue::harbor_msg_queue	file:
 queue	service-src/service_harbor.c	/^	struct harbor_msg_queue *queue;$/;"	m	struct:slave	typeref:struct:slave::harbor_msg_queue	file:
-queue	skynet-src/skynet_mq.c	/^	struct skynet_message *queue;	\/\/存储消息$/;"	m	struct:message_queue	typeref:struct:message_queue::skynet_message	file:
+queue	skynet-src/skynet_mq.c	/^	struct skynet_message *queue;	\/\/具体的消息队列(存放具体的skynet消息) 类似于数组，按需扩展$/;"	m	struct:message_queue	typeref:struct:message_queue::skynet_message	file:
 queue	skynet-src/skynet_server.c	/^	struct message_queue *queue;	\/\/消息队列$/;"	m	struct:skynet_context	typeref:struct:skynet_context::message_queue	file:
 quot	3rd/jemalloc/include/msvc_compat/inttypes.h	/^   intmax_t quot;$/;"	m	struct:__anon9
 quoteStr 	test/testmysql.lua	/^    quoteStr = function(str)$/;"	f
@@ -7688,7 +7688,7 @@ register_zone	3rd/jemalloc/include/jemalloc/internal/private_unnamespace.h	336;"
 registerlocalvar	3rd/lua/lparser.c	/^static int registerlocalvar (LexState *ls, TString *varname) {$/;"	f	file:
 rehash	3rd/lua/ltable.c	/^static void rehash (lua_State *L, Table *t, const TValue *ek) {$/;"	f	file:
 release	skynet-src/skynet_module.h	/^	skynet_dl_release release;\/\/释放函数$/;"	m	struct:skynet_module
-release	skynet-src/skynet_mq.c	/^	int release;	$/;"	m	struct:message_queue	file:
+release	skynet-src/skynet_mq.c	/^	int release;	\/\/消息队列释放标记，当要释放一个服务的时候 清理标记$/;"	m	struct:message_queue	file:
 release_queue	service-src/service_harbor.c	/^release_queue(struct harbor_msg_queue *queue) {$/;"	f	file:
 release_watching	lualib/skynet.lua	/^local function release_watching(address)$/;"	f
 releaseobj	lualib-src/lua-sharedata.c	/^releaseobj(lua_State *L) {$/;"	f	file:
@@ -8179,7 +8179,7 @@ skynet_timer_init	skynet-src/skynet_timer.c	/^skynet_timer_init(void) {$/;"	f
 skynet_updatetime	skynet-src/skynet_timer.c	/^skynet_updatetime(void) {$/;"	f
 slave	service-src/service_harbor.c	/^	uint32_t slave;$/;"	m	struct:harbor	file:
 slave	service-src/service_harbor.c	/^struct slave {$/;"	s	file:
-sleep	skynet-src/skynet_start.c	/^	int sleep;\/\/睡眠$/;"	m	struct:monitor	file:
+sleep	skynet-src/skynet_start.c	/^	int sleep;\/\/睡眠线程数$/;"	m	struct:monitor	file:
 slot	skynet-src/skynet_handle.c	/^	struct skynet_context ** slot;\/\/槽$/;"	m	struct:handle_storage	typeref:struct:handle_storage::skynet_context	file:
 slot	skynet-src/socket_server.c	/^	struct socket slot[MAX_SOCKET];$/;"	m	struct:socket_server	typeref:struct:socket_server::socket	file:
 slot_size	skynet-src/skynet_handle.c	/^	int slot_size;\/\/槽大小$/;"	m	struct:handle_storage	file:
@@ -8484,8 +8484,7 @@ tail	lualib-src/lua-netpack.c	/^	int tail;$/;"	m	struct:queue	file:
 tail	lualib-src/lua-socket.c	/^	struct buffer_node *tail;$/;"	m	struct:socket_buffer	typeref:struct:socket_buffer::buffer_node	file:
 tail	service-src/databuffer.h	/^	struct message * tail;$/;"	m	struct:databuffer	typeref:struct:databuffer::message
 tail	service-src/service_harbor.c	/^	int tail;$/;"	m	struct:harbor_msg_queue	file:
-tail	skynet-src/skynet_mq.c	/^	int tail;		\/\/尾$/;"	m	struct:message_queue	file:
-tail	skynet-src/skynet_mq.c	/^	struct message_queue *tail;$/;"	m	struct:global_queue	typeref:struct:global_queue::message_queue	file:
+tail	skynet-src/skynet_mq.c	/^	int tail;		\/\/队尾索引$/;"	m	struct:message_queue	file:
 tail	skynet-src/skynet_timer.c	/^	struct timer_node *tail;$/;"	m	struct:link_list	typeref:struct:link_list::timer_node	file:
 tail	skynet-src/socket_server.c	/^	struct write_buffer * tail;$/;"	m	struct:wb_list	typeref:struct:wb_list::write_buffer	file:
 target	3rd/lpeg/lpcode.c	494;"	d	file:
@@ -8714,6 +8713,7 @@ thread_node	3rd/jemalloc/src/ctl.c	/^static const ctl_named_node_t	thread_node[]
 thread_tcache_enabled_ctl	3rd/jemalloc/src/ctl.c	/^thread_tcache_enabled_ctl(const size_t *mib, size_t miblen, void *oldp,$/;"	f	file:
 thread_tcache_flush_ctl	3rd/jemalloc/src/ctl.c	/^thread_tcache_flush_ctl(const size_t *mib, size_t miblen, void *oldp,$/;"	f	file:
 thvalue	3rd/lua/lobject.h	166;"	d
+til	skynet-src/skynet_mq.c	/^	struct amessage_queue *til;	\/\/消息队列尾指针$/;"	m	struct:global_queue	typeref:struct:global_queue::amessage_queue	file:
 time	skynet-src/skynet_timer.c	/^	uint32_t time;$/;"	m	struct:timer	file:
 timeout	test/testtimer.lua	/^local function timeout(t)$/;"	f
 timer	skynet-src/skynet_timer.c	/^struct timer {$/;"	s	file:
@@ -8977,7 +8977,7 @@ verifyerror	3rd/lpeg/lptree.c	/^static int verifyerror (lua_State *L, int *passe
 verifygrammar	3rd/lpeg/lptree.c	/^static void verifygrammar (lua_State *L, TTree *grammar) {$/;"	f	file:
 verifyrule	3rd/lpeg/lptree.c	/^static int verifyrule (lua_State *L, TTree *tree, int *passed, int npassed,$/;"	f	file:
 version	3rd/lua/lstate.h	/^  const lua_Number *version;  \/* pointer to version number *\/$/;"	m	struct:global_State
-version	skynet-src/skynet_monitor.c	/^	int version;		\/\/版本$/;"	m	struct:skynet_monitor	file:
+version	skynet-src/skynet_monitor.c	/^	int version;		\/\/当前版本$/;"	m	struct:skynet_monitor	file:
 version_string	3rd/jemalloc/bin/pprof	/^sub version_string {$/;"	s
 vkisinreg	3rd/lua/lparser.h	38;"	d
 vkisvar	3rd/lua/lparser.h	37;"	d

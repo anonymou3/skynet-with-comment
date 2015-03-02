@@ -4,14 +4,19 @@
 
 #include <stdbool.h>
 
-typedef int poll_fd;
+//epoll kqueue统称poll
 
+typedef int poll_fd;//poll文件描述符
+
+//事件数据结构定义
 struct event {
 	void * s;
 	bool read;
 	bool write;
 };
 
+//sp:socket poll
+//接口定义
 static bool sp_invalid(poll_fd fd);
 static poll_fd sp_create();
 static void sp_release(poll_fd fd);
@@ -21,12 +26,13 @@ static void sp_write(poll_fd, int sock, void *ud, bool enable);
 static int sp_wait(poll_fd, struct event *e, int max);
 static void sp_nonblocking(int sock);
 
-#ifdef __linux__
-#include "socket_epoll.h"
+//实现在下面，根据平台的不同包含不同的实现代码
+#ifdef __linux__	//如果是linux平台
+#include "socket_epoll.h"	//使用epoll
 #endif
 
-#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined (__NetBSD__)
-#include "socket_kqueue.h"
+#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined (__NetBSD__)	//如果是apple freebsd openbsd netbsd
+#include "socket_kqueue.h"	//使用kqueue
 #endif
 
 #endif

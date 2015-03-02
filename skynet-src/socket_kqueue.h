@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+//kfd:kqueue fd
 static bool 
 sp_invalid(int kfd) {
 	return kfd == -1;

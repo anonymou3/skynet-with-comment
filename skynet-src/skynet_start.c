@@ -134,7 +134,7 @@ _timer(void *p) {
 	return NULL;
 }
 
-//工作线程工作函数
+//工作线程工作函数 工作线程的主要作用就是派发消息
 //工作线程是有多个的
 static void *
 _worker(void *p) {
