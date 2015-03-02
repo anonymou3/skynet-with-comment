@@ -176,7 +176,9 @@ skynet_context_new(const char * name, const char *param) {
 			ctx->init = true;//设置标志，标志完成初始化
 		}
 		skynet_globalmq_push(queue);//将队列push到全局队列中
-		if (ret) {
+		if (ret) {//创建上下文成功，打印log,形如：
+			//[:01000001] LAUNCH logger
+			//[:01000002] LAUNCH snlua bootstrap
 			skynet_error(ret, "LAUNCH %s %s", name, param ? param : "");//打印日志
 		}
 		return ret;

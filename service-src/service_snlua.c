@@ -123,16 +123,18 @@ _init(struct snlua *l, struct skynet_context *ctx, const char * args, size_t sz)
 	lua_pushcfunction(L, traceback);// 设置栈回溯函数
 	assert(lua_gettop(L) == 1);//栈顶元素的索引必为1，就是栈内只有一个元素（traceback）
 
+// 要调用一个函数请遵循以下协议： 首先，要调用的函数应该被压入栈； 接着，把需要传递给这个函数的参数按正序压栈； 这是指第一个参数首先压栈。 最后调用一下 lua_call； nargs 是你压入栈的参数个数。 当函数调用完毕后，所有的参数以及函数本身都会出栈。 而函数的返回值这时则被压栈。 返回值的个数将被调整为 nresults 个， 除非 nresults 被设置成 LUA_MULTRET。 在这种情况下，所有的返回值都被压入堆栈中。 Lua 会保证返回值都放入栈空间中。 函数返回值将按正序压栈（第一个返回值首先压栈）， 因此在调用结束后，最后一个返回值将被放在栈顶。
+
 	const char * loader = optstring(ctx, "lualoader", "./lualib/loader.lua");//获取lua loader
 
-	int r = luaL_loadfile(L,loader);//加载并运行lua loader
+	int r = luaL_loadfile(L,loader);//把一个文件加载为LUA代码块，并作为LUA函数压入栈顶
 	if (r != LUA_OK) {
 		skynet_error(ctx, "Can't load %s : %s", loader, lua_tostring(L, -1));
 		_report_launcher_error(ctx);
 		return 1;
 	}
-	lua_pushlstring(L, args, sz);
-	r = lua_pcall(L,1,0,1);
+	lua_pushlstring(L, args, sz);//args为第一个发送过来的消息bootstrap，将bootstrap压栈
+	r = lua_pcall(L,1,0,1);//调用loader 以bootstrap为参数
 	if (r != LUA_OK) {
 		skynet_error(ctx, "lua loader error : %s", lua_tostring(L, -1));
 		_report_launcher_error(ctx);
