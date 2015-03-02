@@ -263,7 +263,7 @@ skynet_start(struct skynet_config * config) {
 
 	bootstrap(ctx, config->bootstrap);//加载引导模块,传入的ctx是日志模块的上下文
 
-	_start(config->thread);//启动各个线程
+	_start(config->thread);//启动各个线程开始工作
 
 	// harbor_exit may call socket send, so it should exit before socket_free
 	// harbor_exit 可能会调用 socket send,所以他应该在socket_free之前退出

@@ -28,10 +28,10 @@ struct snlua {
 
 //C 函数的类型。
 
-// 为了正确的和 Lua 通讯， C 函数必须使用下列协议。 这个协议定义了参数以及返回值传递方法： C 函数通过 Lua 中的栈来接受参数， 参数以正序入栈（第一个参数首先入栈）。 因此，当函数开始的时候， lua_gettop(L) 可以返回函数收到的参数个数。 第一个参数（如果有的话）在索引 1 的地方， 而最后一个参数在索引 lua_gettop(L) 处。 当需要向 Lua 返回值的时候， C 函数只需要把它们以正序压到堆栈上（第一个返回值最先压入）， 然后返回这些返回值的个数。 在这些返回值之下的，堆栈上的东西都会被 Lua 丢掉。 和 Lua 函数一样，从 Lua 中调用 C 函数也可以有很多返回值。
+// 为了正确的和 Lua 通讯， C 函数必须使用下列协议。 这个协议定义了参数以及返回值传递方法： C 函数通过 Lua 中的栈来接受参数， 参数以正序入栈（第一个参数首先入栈）。 因此，当函数开始的时候， lua_gettop(L) 可以返回函数收到的参数个数。 第一个参数（如果有的话）在索引 1 的地方， 而最后一个参数在索引 lua_gettop(L) 处。 ****当需要向 Lua 返回值的时候， C 函数只需要把它们以正序压到堆栈上（第一个返回值最先压入）， 然后返回这些返回值的个数。 在这些返回值之下的，堆栈上的东西都会被 Lua 丢掉。 和 Lua 函数一样，从 Lua 中调用 C 函数也可以有很多返回值。
 
 //也就是说，在C中定义的函数如果想作为C库被LUA调用，C函数内使用的参数是不需要通过声明的，而是在代码里操作LUA栈来获得
-//而在LUA这面，像调用普通函数那样传入参数即可，两者是通过约定协议来交互的。
+//而在LUA这面，像调用普通函数那样传入参数即可，函数的返回值是C代码事先放到LUA栈中，再返回返回值的个数即可。两者是通过约定协议来交互的。
 
 
 //需要注意的是：无论何时 Lua 调用 C，被调用的函数都得到一个新的栈， 这个栈独立于 C 函数本身的栈，也独立于之前的 Lua 栈。它里面包含了 Lua 传递给 C 函数的所有参数， 而 C 函数则把要返回的结果放入这个栈以返回给调用者
@@ -47,21 +47,21 @@ codecache(lua_State *L) {
 		{ "clear", cleardummy },
 		{ NULL, NULL },
 	};
-	luaL_newlib(L,l);
-	lua_getglobal(L, "loadfile");
-	lua_setfield(L, -2, "loadfile");
-	return 1;
+	luaL_newlib(L,l);//创建一张新的表，并把列表 l 中的函数注册进去
+	lua_getglobal(L, "loadfile");//把全局变量loadfile里的值(函数)压栈,该值目前在栈顶
+	lua_setfield(L, -2, "loadfile");//新建的表["loadfile"]=栈顶的值(loadfile函数)，并把栈顶的值弹出栈
+	return 1;//返回值个数为1
 }
 
 #endif
-
+// lua栈回溯
 static int 
 traceback (lua_State *L) {
 	const char *msg = lua_tostring(L, 1);
 	if (msg)
 		luaL_traceback(L, L, msg, 1);
 	else {
-		lua_pushliteral(L, "(no error message)");
+		lua_pushliteral(L, "(no error message)");//push一个字面量
 	}
 	return 1;
 }
@@ -91,36 +91,41 @@ _init(struct snlua *l, struct skynet_context *ctx, const char * args, size_t sz)
 	// 一个经验方法是，调用LUA_GCSTOP停止自动 GC。在周期间定期调用 gcstep 且使用较大的 data 值，在有限个周期做完一整趟 gc 。
 	lua_gc(L, LUA_GCSTOP, 0);//停止垃圾收集器
 
+	//向栈中压入一个布尔true
+	lua_pushboolean(L, 1);  /* signal for libraries to ignore env. vars. */
+	//让库忽略env vars的信号
 
-	lua_pushboolean(L, 1);  /* signal for libraries to ignore env. vars. */	//向栈中压入一个布尔true
 	//Lua 提供了一个注册表，这是一个预定义出来的表，可以用来保存任何 C 代码想保存的 Lua 值。
 	//LUA_REGISTRYINDEX是伪索引，用来索引注册表
 	lua_setfield(L, LUA_REGISTRYINDEX, "LUA_NOENV");//注册表["LUA_NOENV"]=true
 	luaL_openlibs(L);//打开所有Lua标准库
+
+
 	lua_pushlightuserdata(L, ctx);//将skynet_context指针作为light userdata压栈
 	lua_setfield(L, LUA_REGISTRYINDEX, "skynet_context");//注册表["skynet_context"]=light userdata
-	luaL_requiref(L, "skynet.codecache", codecache , 0);//require进函数
-	lua_pop(L,1);
+	luaL_requiref(L, "skynet.codecache", codecache , 0);//package.loaded["skynet.codecache"]={"clear":cleardummy,"loadfile":loadfile}
+
+	lua_pop(L,1);//从栈上弹出一个元素(luaL_requiref会在栈上留下模块的副本)
 
 	const char *path = optstring(ctx, "lua_path","./lualib/?.lua;./lualib/?/init.lua");//获取lua path
-	lua_pushstring(L, path);
-	lua_setglobal(L, "LUA_PATH");
-	const char *cpath = optstring(ctx, "lua_cpath","./luaclib/?.so");
-	lua_pushstring(L, cpath);
-	lua_setglobal(L, "LUA_CPATH");
-	const char *service = optstring(ctx, "luaservice", "./service/?.lua");
-	lua_pushstring(L, service);
-	lua_setglobal(L, "LUA_SERVICE");
-	const char *preload = skynet_command(ctx, "GETENV", "preload");
-	lua_pushstring(L, preload);
-	lua_setglobal(L, "LUA_PRELOAD");
+	lua_pushstring(L, path);//push到栈顶
+	lua_setglobal(L, "LUA_PATH");//设置到全局变量
+	const char *cpath = optstring(ctx, "lua_cpath","./luaclib/?.so");//获取lua cpath
+	lua_pushstring(L, cpath);//push到栈顶
+	lua_setglobal(L, "LUA_CPATH");//设置到全局变量
+	const char *service = optstring(ctx, "luaservice", "./service/?.lua");//获取lua service
+	lua_pushstring(L, service);//push到栈顶
+	lua_setglobal(L, "LUA_SERVICE");//设置到全局变量
+	const char *preload = skynet_command(ctx, "GETENV", "preload");//获取预加载
+	lua_pushstring(L, preload);//push到栈顶
+	lua_setglobal(L, "LUA_PRELOAD");//设置到全局变量
 
-	lua_pushcfunction(L, traceback);
-	assert(lua_gettop(L) == 1);
+	lua_pushcfunction(L, traceback);// 设置栈回溯函数
+	assert(lua_gettop(L) == 1);//栈顶元素的索引必为1，就是栈内只有一个元素（traceback）
 
-	const char * loader = optstring(ctx, "lualoader", "./lualib/loader.lua");
+	const char * loader = optstring(ctx, "lualoader", "./lualib/loader.lua");//获取lua loader
 
-	int r = luaL_loadfile(L,loader);
+	int r = luaL_loadfile(L,loader);//加载并运行lua loader
 	if (r != LUA_OK) {
 		skynet_error(ctx, "Can't load %s : %s", loader, lua_tostring(L, -1));
 		_report_launcher_error(ctx);

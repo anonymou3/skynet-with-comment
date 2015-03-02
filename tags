@@ -205,7 +205,7 @@ AddressInc	3rd/jemalloc/bin/pprof	/^sub AddressInc {$/;"	s
 AddressIncUnitTest	3rd/jemalloc/bin/pprof	/^sub AddressIncUnitTest {$/;"	s
 AddressSub	3rd/jemalloc/bin/pprof	/^sub AddressSub {$/;"	s
 AddressSubUnitTest	3rd/jemalloc/bin/pprof	/^sub AddressSubUnitTest {$/;"	s
-BACKLOG	lualib-src/lua-socket.c	18;"	d	file:
+BACKLOG	lualib-src/lua-socket.c	19;"	d	file:
 BACKLOG	service-src/service_gate.c	14;"	d	file:
 BASE_O	3rd/lua/Makefile	/^BASE_O= $(CORE_O) $(LIB_O) $(MYOBJS)$/;"	m
 BASIC_STACK_SIZE	3rd/lua/lstate.h	50;"	d
@@ -252,7 +252,7 @@ BT_COUNT_CHECK_INTERVAL	3rd/jemalloc/test/unit/prof_accum.h	6;"	d
 BT_FRAME	3rd/jemalloc/src/prof.c	236;"	d	file:
 BT_FRAME	3rd/jemalloc/src/prof.c	399;"	d	file:
 BUFERROR_BUF	3rd/jemalloc/include/jemalloc/internal/util.h	5;"	d
-BUFFER_LIMIT	lualib-src/lua-socket.c	21;"	d	file:
+BUFFER_LIMIT	lualib-src/lua-socket.c	22;"	d	file:
 BUFLEN	3rd/jemalloc/test/unit/util.c	140;"	d	file:
 BUFLEN	3rd/jemalloc/test/unit/util.c	166;"	d	file:
 BUFLEN	3rd/jemalloc/test/unit/util.c	173;"	d	file:
@@ -539,7 +539,7 @@ FIXEDARGS	3rd/lpeg/lptypes.h	71;"	d
 FIXEDBIT	3rd/lua/lgc.h	92;"	d
 FLAGS	3rd/lua/lstrlib.c	825;"	d	file:
 FORMAT	3rd/lua/lundump.c	238;"	d	file:
-FREE	skynet-src/socket_server.c	204;"	d	file:
+FREE	skynet-src/socket_server.c	212;"	d	file:
 FUNCTION	3rd/lua/luac.c	117;"	d	file:
 FetchDynamicProfile	3rd/jemalloc/bin/pprof	/^sub FetchDynamicProfile {$/;"	s
 FetchDynamicProfiles	3rd/jemalloc/bin/pprof	/^sub FetchDynamicProfiles {$/;"	s
@@ -597,7 +597,7 @@ HANDLE_REMOTE_SHIFT	skynet-src/skynet_harbor.h	14;"	d
 HARBOR	skynet-src/skynet_harbor.c	/^static unsigned int HARBOR = ~0;$/;"	v	file:
 HASHSIZE	3rd/lua-md5/md5.h	14;"	d
 HASHSIZE	lualib-src/lua-netpack.c	15;"	d	file:
-HASH_ID	skynet-src/socket_server.c	39;"	d	file:
+HASH_ID	skynet-src/socket_server.c	40;"	d	file:
 HASH_SIZE	service-src/service_harbor.c	24;"	d	file:
 HAVE_SSE2	3rd/jemalloc/test/include/test/jemalloc_test_defs.h	5;"	d
 HEADERS	3rd/jemalloc/Makefile	/^HEADERS = $(wildcard $(foreach dir,$(HEADER_DIRS),$(dir)\/*.h))$/;"	m
@@ -894,7 +894,7 @@ L	lualib-src/sproto/lsproto.c	/^	lua_State *L;$/;"	m	struct:decode_ud	file:
 L	lualib-src/sproto/lsproto.c	/^	lua_State *L;$/;"	m	struct:encode_ud	file:
 L	service-src/service_snlua.c	/^	lua_State * L;\/\/一个lua虚拟机$/;"	m	struct:snlua	file:
 L	skynet-src/skynet_env.c	/^	lua_State *L;		\/\/LUA虚拟机$/;"	m	struct:skynet_env	file:
-LARGE_PAGE_NODE	lualib-src/lua-socket.c	20;"	d	file:
+LARGE_PAGE_NODE	lualib-src/lua-socket.c	21;"	d	file:
 LClosure	3rd/lua/lobject.h	/^typedef struct LClosure {$/;"	s
 LClosure	3rd/lua/lobject.h	/^} LClosure;$/;"	t	typeref:struct:LClosure
 LDFLAGS	3rd/jemalloc/Makefile	/^LDFLAGS := $/;"	m
@@ -1270,7 +1270,7 @@ M	skynet-src/skynet_module.c	/^static struct modules * M = NULL;$/;"	v	typeref:s
 M.parseheader	lualib/http/internal.lua	/^function M.parseheader(lines, from, header)$/;"	f
 M.recvchunkedbody	lualib/http/internal.lua	/^function M.recvchunkedbody(readbytes, bodylimit, header, body)$/;"	f
 M.recvheader	lualib/http/internal.lua	/^function M.recvheader(readbytes, lines, header)$/;"	f
-MALLOC	skynet-src/socket_server.c	203;"	d	file:
+MALLOC	skynet-src/socket_server.c	211;"	d	file:
 MALLOCX_ALIGN	3rd/jemalloc/include/jemalloc/jemalloc.h	70;"	d
 MALLOCX_ALIGN	3rd/jemalloc/include/jemalloc/jemalloc.h	72;"	d
 MALLOCX_ALIGN	3rd/jemalloc/include/jemalloc/jemalloc_macros.h	13;"	d
@@ -1341,7 +1341,7 @@ MAX_ALIGN	3rd/jemalloc/test/integration/rallocx.c	115;"	d	file:
 MAX_ALIGN	3rd/jemalloc/test/integration/rallocx.c	132;"	d	file:
 MAX_COOKIE	lualib-src/lua-seri.c	26;"	d	file:
 MAX_DEPTH	lualib-src/lua-seri.c	30;"	d	file:
-MAX_EVENT	skynet-src/socket_server.c	22;"	d	file:
+MAX_EVENT	skynet-src/socket_server.c	23;"	d	file:
 MAX_FORMAT	3rd/lua/lstrlib.c	830;"	d	file:
 MAX_GLOBAL_MQ	skynet-src/skynet_mq.c	14;"	d	file:
 MAX_INFO	skynet-src/socket_server.c	19;"	d	file:
@@ -1357,9 +1357,9 @@ MAX_REL_ERR	3rd/jemalloc/test/unit/math.c	3;"	d	file:
 MAX_SIZET	3rd/lua/llimits.h	30;"	d
 MAX_SIZE_T	3rd/lua/liolib.c	393;"	d	file:
 MAX_SLOT_SIZE	skynet-src/skynet_handle.c	13;"	d	file:
-MAX_SOCKET	skynet-src/socket_server.c	34;"	d	file:
-MAX_SOCKET_P	skynet-src/socket_server.c	21;"	d	file:
-MAX_UDP_PACKAGE	skynet-src/socket_server.c	47;"	d	file:
+MAX_SOCKET	skynet-src/socket_server.c	35;"	d	file:
+MAX_SOCKET_P	skynet-src/socket_server.c	22;"	d	file:
+MAX_UDP_PACKAGE	skynet-src/socket_server.c	48;"	d	file:
 MAX_VALIDATE	3rd/jemalloc/test/integration/rallocx.c	141;"	d	file:
 MAX_VALIDATE	3rd/jemalloc/test/integration/rallocx.c	168;"	d	file:
 MEMERRMSG	3rd/lua/lstate.c	42;"	d	file:
@@ -1371,7 +1371,7 @@ MEXP	3rd/jemalloc/test/include/test/jemalloc_test.h	140;"	d
 MICROSEC	lualib-src/lua-profile.c	12;"	d	file:
 MINSIZEARRAY	3rd/lua/lmem.c	43;"	d	file:
 MINSTRTABSIZE	3rd/lua/llimits.h	144;"	d
-MIN_READ_BUFFER	skynet-src/socket_server.c	23;"	d	file:
+MIN_READ_BUFFER	skynet-src/socket_server.c	24;"	d	file:
 MKLIB	3rd/jemalloc/Makefile	/^MKLIB = $/;"	m
 MQ_IN_GLOBAL	skynet-src/skynet_mq.c	19;"	d	file:
 MQ_OVERLOAD	skynet-src/skynet_mq.c	20;"	d	file:
@@ -1677,8 +1677,8 @@ POS_OP	3rd/lua/lopcodes.h	46;"	d
 PRE	3rd/lua/lobject.c	247;"	d	file:
 PREFIX_SIZE	skynet-src/malloc_hook.c	18;"	d	file:
 PRINTBIT	3rd/lua/lctype.h	41;"	d
-PRIORITY_HIGH	skynet-src/socket_server.c	36;"	d	file:
-PRIORITY_LOW	skynet-src/socket_server.c	37;"	d	file:
+PRIORITY_HIGH	skynet-src/socket_server.c	37;"	d	file:
+PRIORITY_LOW	skynet-src/socket_server.c	38;"	d	file:
 PRIX16	3rd/jemalloc/include/msvc_compat/inttypes.h	116;"	d
 PRIX32	3rd/jemalloc/include/msvc_compat/inttypes.h	129;"	d
 PRIX64	3rd/jemalloc/include/msvc_compat/inttypes.h	142;"	d
@@ -1776,9 +1776,9 @@ PROF_TDATA_STATE_MAX	3rd/jemalloc/include/jemalloc/internal/prof.h	50;"	d
 PROF_TDATA_STATE_PURGATORY	3rd/jemalloc/include/jemalloc/internal/prof.h	49;"	d
 PROF_TDATA_STATE_REINCARNATED	3rd/jemalloc/include/jemalloc/internal/prof.h	48;"	d
 PROGNAME	3rd/lua/luac.c	25;"	d	file:
-PROTOCOL_TCP	skynet-src/socket_server.c	41;"	d	file:
-PROTOCOL_UDP	skynet-src/socket_server.c	42;"	d	file:
-PROTOCOL_UDPv6	skynet-src/socket_server.c	43;"	d	file:
+PROTOCOL_TCP	skynet-src/socket_server.c	42;"	d	file:
+PROTOCOL_UDP	skynet-src/socket_server.c	43;"	d	file:
+PROTOCOL_UDPv6	skynet-src/socket_server.c	44;"	d	file:
 PTRDIFF_MAX	3rd/jemalloc/include/msvc_compat/stdint.h	193;"	d
 PTRDIFF_MAX	3rd/jemalloc/include/msvc_compat/stdint.h	196;"	d
 PTRDIFF_MIN	3rd/jemalloc/include/msvc_compat/stdint.h	192;"	d
@@ -2072,8 +2072,8 @@ SIZEOF_FIELD	lualib-src/sproto/sproto.c	13;"	d	file:
 SIZEOF_HEADER	lualib-src/sproto/sproto.c	12;"	d	file:
 SIZEOF_LENGTH	lualib-src/sproto/sproto.c	11;"	d	file:
 SIZEOF_PTR	3rd/jemalloc/include/jemalloc/internal/jemalloc_internal.h	296;"	d
-SIZEOF_TCPBUFFER	skynet-src/socket_server.c	58;"	d	file:
-SIZEOF_UDPBUFFER	skynet-src/socket_server.c	59;"	d	file:
+SIZEOF_TCPBUFFER	skynet-src/socket_server.c	61;"	d	file:
+SIZEOF_UDPBUFFER	skynet-src/socket_server.c	62;"	d	file:
 SIZE_A	3rd/lua/lopcodes.h	41;"	d
 SIZE_Ax	3rd/lua/lopcodes.h	42;"	d
 SIZE_B	3rd/lua/lopcodes.h	39;"	d
@@ -2194,15 +2194,15 @@ SOCKET_ERROR	skynet-src/socket_server.h	11;"	d
 SOCKET_EXIT	skynet-src/socket_server.h	12;"	d
 SOCKET_OPEN	skynet-src/socket_server.h	9;"	d
 SOCKET_SERVER	skynet-src/skynet_socket.c	/^static struct socket_server * SOCKET_SERVER = NULL;$/;"	v	typeref:struct:socket_server	file:
-SOCKET_TYPE_BIND	skynet-src/socket_server.c	32;"	d	file:
-SOCKET_TYPE_CONNECTED	skynet-src/socket_server.c	29;"	d	file:
-SOCKET_TYPE_CONNECTING	skynet-src/socket_server.c	28;"	d	file:
-SOCKET_TYPE_HALFCLOSE	skynet-src/socket_server.c	30;"	d	file:
-SOCKET_TYPE_INVALID	skynet-src/socket_server.c	24;"	d	file:
-SOCKET_TYPE_LISTEN	skynet-src/socket_server.c	27;"	d	file:
-SOCKET_TYPE_PACCEPT	skynet-src/socket_server.c	31;"	d	file:
-SOCKET_TYPE_PLISTEN	skynet-src/socket_server.c	26;"	d	file:
-SOCKET_TYPE_RESERVE	skynet-src/socket_server.c	25;"	d	file:
+SOCKET_TYPE_BIND	skynet-src/socket_server.c	33;"	d	file:
+SOCKET_TYPE_CONNECTED	skynet-src/socket_server.c	30;"	d	file:
+SOCKET_TYPE_CONNECTING	skynet-src/socket_server.c	29;"	d	file:
+SOCKET_TYPE_HALFCLOSE	skynet-src/socket_server.c	31;"	d	file:
+SOCKET_TYPE_INVALID	skynet-src/socket_server.c	25;"	d	file:
+SOCKET_TYPE_LISTEN	skynet-src/socket_server.c	28;"	d	file:
+SOCKET_TYPE_PACCEPT	skynet-src/socket_server.c	32;"	d	file:
+SOCKET_TYPE_PLISTEN	skynet-src/socket_server.c	27;"	d	file:
+SOCKET_TYPE_RESERVE	skynet-src/socket_server.c	26;"	d	file:
 SOCKET_UDP	skynet-src/socket_server.h	13;"	d
 SOREV	3rd/jemalloc/Makefile	/^SOREV = so.2$/;"	m
 SPACEBIT	3rd/lua/lctype.h	42;"	d
@@ -2542,7 +2542,7 @@ TotalProfile	3rd/jemalloc/bin/pprof	/^sub TotalProfile {$/;"	s
 TranslateStack	3rd/jemalloc/bin/pprof	/^sub TranslateStack {$/;"	s
 TryCollectProfile	3rd/jemalloc/bin/pprof	/^sub TryCollectProfile {$/;"	s
 U2S_BUFSIZE	3rd/jemalloc/src/util.c	29;"	d	file:
-UDP_ADDRESS_SIZE	skynet-src/socket_server.c	45;"	d	file:
+UDP_ADDRESS_SIZE	skynet-src/socket_server.c	46;"	d	file:
 UINT16_C	3rd/jemalloc/include/msvc_compat/stdint.h	236;"	d
 UINT16_MAX	3rd/jemalloc/include/msvc_compat/stdint.h	141;"	d
 UINT32_C	3rd/jemalloc/include/msvc_compat/stdint.h	237;"	d
@@ -2829,7 +2829,7 @@ aligned_alloc	3rd/jemalloc/include/jemalloc/jemalloc_mangle_jet.h	17;"	d
 allgc	3rd/lua/lstate.h	/^  GCObject *allgc;  \/* list of all collectable objects *\/$/;"	m	struct:global_State
 alloc	3rd/jemalloc/include/jemalloc/internal/rtree.h	/^	rtree_alloc_t	*alloc;$/;"	m	struct:rtree_s
 alloc_from_permuted_backtrace	3rd/jemalloc/test/unit/prof_accum.c	/^alloc_from_permuted_backtrace(unsigned thd_ind, unsigned iteration)$/;"	f	file:
-alloc_id	skynet-src/socket_server.c	/^	int alloc_id;$/;"	m	struct:socket_server	file:
+alloc_id	skynet-src/socket_server.c	/^	int alloc_id;		\/\/应用层分配id用的$/;"	m	struct:socket_server	file:
 alloc_n_gen	3rd/jemalloc/test/unit/prof_accum.h	13;"	d
 alloc_n_proto	3rd/jemalloc/test/unit/prof_accum.h	8;"	d
 alloca	3rd/jemalloc/include/jemalloc/internal/jemalloc_internal.h	346;"	d
@@ -3555,7 +3555,7 @@ buffer	service-src/service_harbor.c	/^	void * buffer;$/;"	m	struct:harbor_msg	fi
 buffer	skynet-src/skynet_socket.h	/^	char * buffer;$/;"	m	struct:skynet_socket_message
 buffer	skynet-src/socket_server.c	/^		char buffer[256];$/;"	m	union:request_package::__anon39	file:
 buffer	skynet-src/socket_server.c	/^	char * buffer;$/;"	m	struct:request_send	file:
-buffer	skynet-src/socket_server.c	/^	char buffer[MAX_INFO];$/;"	m	struct:socket_server	file:
+buffer	skynet-src/socket_server.c	/^	char buffer[MAX_INFO];		\/\/缓冲区	MAX_INFO:128$/;"	m	struct:socket_server	file:
 buffer	skynet-src/socket_server.c	/^	void * buffer;$/;"	m	struct:send_object	file:
 buffer	skynet-src/socket_server.c	/^	void *buffer;$/;"	m	struct:write_buffer	file:
 buffer	skynet-src/socket_server.h	/^	void * (*buffer)(void *);$/;"	m	struct:socket_object_interface
@@ -3662,7 +3662,7 @@ check_wb_list	skynet-src/socket_server.c	/^check_wb_list(struct wb_list *s) {$/;
 check_wsz	skynet-src/skynet_socket.c	/^check_wsz(struct skynet_context *ctx, int id, void *buffer, int64_t wsz) {$/;"	f	file:
 checkaux	3rd/lpeg/lpcode.c	/^int checkaux (TTree *tree, int pred) {$/;"	f
 checkconsistency	3rd/lua/lgc.c	71;"	d	file:
-checkctrl	skynet-src/socket_server.c	/^	int checkctrl;$/;"	m	struct:socket_server	file:
+checkctrl	skynet-src/socket_server.c	/^	int checkctrl;		\/\/是否检查控制$/;"	m	struct:socket_server	file:
 checkdeadkey	3rd/lua/lgc.c	68;"	d	file:
 checkeq 	3rd/lpeg/test.lua	/^local function checkeq (x, y, p)$/;"	f
 checkerr 	3rd/lpeg/test.lua	/^local function checkerr (msg, ...)$/;"	f
@@ -4371,16 +4371,16 @@ errorlimit	3rd/lua/lparser.c	/^static l_noret errorlimit (FuncState *fs, int lim
 escape	lualib/http/httpc.lua	/^local function escape(s)$/;"	f
 escape_sql_str	lualib-src/lua_mysqlaux.c	/^escape_sql_str(unsigned char *dst, unsigned char *src, size_t size)$/;"	f	file:
 escerror	3rd/lua/llex.c	/^static void escerror (LexState *ls, int *c, int n, const char *msg) {$/;"	f	file:
-ev	skynet-src/socket_server.c	/^	struct event ev[MAX_EVENT];$/;"	m	struct:socket_server	typeref:struct:socket_server::event	file:
+ev	skynet-src/socket_server.c	/^	struct event ev[MAX_EVENT];		\/\/存储已准备好读写的事件	MAX_EVENT:64$/;"	m	struct:socket_server	typeref:struct:socket_server::event	file:
 ev_cnt	3rd/jemalloc/include/jemalloc/internal/tcache.h	/^	unsigned	ev_cnt;		\/* Event count since incremental GC. *\/$/;"	m	struct:tcache_s
 eval	3rd/lpeg/lpeg.html	/^function eval (v1, op, v2)$/;"	f
 eval	3rd/lpeg/lpeg.html	/^function eval (x)$/;"	f
 evalExp	3rd/lpeg/lpeg.html	/^function evalExp (s)$/;"	f
 event	3rd/lua/lua.h	/^  int event;$/;"	m	struct:lua_Debug
 event	skynet-src/socket_poll.h	/^struct event {$/;"	s
-event_fd	skynet-src/socket_server.c	/^	poll_fd event_fd;$/;"	m	struct:socket_server	file:
-event_index	skynet-src/socket_server.c	/^	int event_index;$/;"	m	struct:socket_server	file:
-event_n	skynet-src/socket_server.c	/^	int event_n;$/;"	m	struct:socket_server	file:
+event_fd	skynet-src/socket_server.c	/^	poll_fd event_fd;	\/\/事件池文件描述符$/;"	m	struct:socket_server	file:
+event_index	skynet-src/socket_server.c	/^	int event_index;	\/\/事件索引$/;"	m	struct:socket_server	file:
+event_n	skynet-src/socket_server.c	/^	int event_n;		\/\/事件数$/;"	m	struct:socket_server	file:
 ex	3rd/lpeg/lpeg.html	/^<h2><a name="ex">Some Examples<\/a><\/h2>$/;"	a
 ex	3rd/lpeg/re.html	/^<h2><a name="ex">Some Examples<\/a><\/h2>$/;"	a
 ex_or	3rd/lua-md5/md5lib.c	/^static int ex_or (lua_State *L) {$/;"	f	file:
@@ -4504,10 +4504,10 @@ family	skynet-src/socket_server.c	/^	int family;$/;"	m	struct:request_udp	file:
 fasttm	3rd/lua/ltm.h	44;"	d
 fatal	3rd/lua/luac.c	/^static void fatal(const char* message)$/;"	f	file:
 fd	service-src/service_harbor.c	/^	int fd;$/;"	m	struct:slave	file:
+fd	skynet-src/socket_server.c	/^	int fd;					\/\/对应内核分配的fd$/;"	m	struct:socket	file:
 fd	skynet-src/socket_server.c	/^	int fd;$/;"	m	struct:request_bind	file:
 fd	skynet-src/socket_server.c	/^	int fd;$/;"	m	struct:request_listen	file:
 fd	skynet-src/socket_server.c	/^	int fd;$/;"	m	struct:request_udp	file:
-fd	skynet-src/socket_server.c	/^	int fd;$/;"	m	struct:socket	file:
 ffs	3rd/jemalloc/include/msvc_compat/strings.h	/^static __forceinline int ffs(int x)$/;"	f
 ffsl	3rd/jemalloc/include/msvc_compat/strings.h	/^static __forceinline int ffsl(long x)$/;"	f
 field	3rd/lua/lparser.c	/^static void field (LexState *ls, struct ConsControl *cc) {$/;"	f	file:
@@ -4914,19 +4914,19 @@ head	service-src/service_harbor.c	/^	int head;$/;"	m	struct:harbor_msg_queue	fil
 head	skynet-src/skynet_mq.c	/^	int head;		\/\/队头索引$/;"	m	struct:message_queue	file:
 head	skynet-src/skynet_mq.c	/^	struct message_queue *head;	\/\/消息队列头指针$/;"	m	struct:global_queue	typeref:struct:global_queue::message_queue	file:
 head	skynet-src/skynet_timer.c	/^	struct timer_node head;$/;"	m	struct:link_list	typeref:struct:link_list::timer_node	file:
-head	skynet-src/socket_server.c	/^	struct write_buffer * head;$/;"	m	struct:wb_list	typeref:struct:wb_list::write_buffer	file:
+head	skynet-src/socket_server.c	/^	struct write_buffer * head;\/\/头$/;"	m	struct:wb_list	typeref:struct:wb_list::write_buffer	file:
 header	lualib-src/lua-netpack.c	/^	int header;$/;"	m	struct:uncomplete	file:
 header	lualib-src/sproto/sproto.c	/^	struct chunk * header;$/;"	m	struct:pool	typeref:struct:pool::chunk	file:
 header	service-src/databuffer.h	/^	int header;$/;"	m	struct:databuffer
 header	service-src/service_harbor.c	/^	struct remote_message_header header;$/;"	m	struct:harbor_msg	typeref:struct:harbor_msg::remote_message_header	file:
-header	skynet-src/socket_server.c	/^	uint8_t header[8];	\/\/ 6 bytes dummy$/;"	m	struct:request_package	file:
+header	skynet-src/socket_server.c	/^	uint8_t header[8];	\/\/ 6 bytes dummy 头部 6个字节未用 [0-5] [6]是type [7]长度 长度指的是包体的长度$/;"	m	struct:request_package	file:
 header_size	service-src/service_gate.c	/^	int header_size;$/;"	m	struct:gate	file:
 header_to_message	service-src/service_harbor.c	/^header_to_message(const struct remote_message_header * header, uint8_t * message) {$/;"	f	file:
 headfail	3rd/lpeg/lpcode.c	/^static int headfail (TTree *tree) {$/;"	f	file:
 height	3rd/jemalloc/include/jemalloc/internal/rtree.h	/^	unsigned	height;$/;"	m	struct:rtree_s
 hextoint	lualib-src/lua-bson.c	/^hextoint(char c) {$/;"	f	file:
 high	3rd/jemalloc/include/jemalloc/internal/ctl.h	/^		size_t		high;		\/* stats_chunks.highchunks *\/$/;"	m	struct:ctl_stats_s::__anon4
-high	skynet-src/socket_server.c	/^	struct wb_list high;$/;"	m	struct:socket	typeref:struct:socket::wb_list	file:
+high	skynet-src/socket_server.c	/^	struct wb_list high;	\/\/高$/;"	m	struct:socket	typeref:struct:socket::wb_list	file:
 highchunks	3rd/jemalloc/include/jemalloc/internal/stats.h	/^	size_t		highchunks;$/;"	m	struct:chunk_stats_s
 hmac	lualib-src/lua-crypt.c	/^hmac(uint32_t x[2], uint32_t y[2], uint32_t result[2]) {$/;"	f	file:
 hmac_sha1	test/testsha.lua	/^local function hmac_sha1(key, text)$/;"	f
@@ -5039,6 +5039,7 @@ id	service-src/service_gate.c	/^	int id;	\/\/ skynet_socket id$/;"	m	struct:conn
 id	service-src/service_harbor.c	/^	int id;$/;"	m	struct:harbor	file:
 id	skynet-src/skynet_socket.h	/^	int id;$/;"	m	struct:skynet_socket_message
 id	skynet-src/skynet_start.c	/^	int id;			\/\/ID$/;"	m	struct:worker_parm	file:
+id	skynet-src/socket_server.c	/^	int id;					\/\/应用层维护的一个与fd对应的id 实际上是在socket池中的id$/;"	m	struct:socket	file:
 id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_bind	file:
 id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_close	file:
 id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_listen	file:
@@ -5048,7 +5049,6 @@ id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_setopt	file:
 id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_setudp	file:
 id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_start	file:
 id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_udp	file:
-id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:socket	file:
 id	skynet-src/socket_server.h	/^	int id;$/;"	m	struct:socket_message
 id 	3rd/lpeg/test.lua	/^local function id (s, i, ...)$/;"	f
 id_to_hex	skynet-src/skynet_server.c	/^id_to_hex(char * str, uint32_t id) {$/;"	f	file:
@@ -5758,7 +5758,7 @@ loopset	3rd/lpeg/lptypes.h	99;"	d
 lopcodes_c	3rd/lua/lopcodes.c	8;"	d	file:
 lopcodes_h	3rd/lua/lopcodes.h	8;"	d
 loslib_c	3rd/lua/loslib.c	14;"	d	file:
-low	skynet-src/socket_server.c	/^	struct wb_list low;$/;"	m	struct:socket	typeref:struct:socket::wb_list	file:
+low	skynet-src/socket_server.c	/^	struct wb_list low;		\/\/低$/;"	m	struct:socket	typeref:struct:socket::wb_list	file:
 low_water	3rd/jemalloc/include/jemalloc/internal/tcache.h	/^	int		low_water;	\/* Min # cached since last GC. *\/$/;"	m	struct:tcache_bin_s
 lp_P	3rd/lpeg/lptree.c	/^static int lp_P (lua_State *L) {$/;"	f	file:
 lp_V	3rd/lpeg/lptree.c	/^static int lp_V (lua_State *L) {$/;"	f	file:
@@ -6890,7 +6890,7 @@ next	service-src/hashid.h	/^	struct hashid_node *next;$/;"	m	struct:hashid_node	
 next	service-src/service_harbor.c	/^	struct keyvalue * next;$/;"	m	struct:keyvalue	typeref:struct:keyvalue::keyvalue	file:
 next	skynet-src/skynet_mq.c	/^	struct message_queue *next;		\/\/下一个消息队列$/;"	m	struct:message_queue	typeref:struct:message_queue::message_queue	file:
 next	skynet-src/skynet_timer.c	/^	struct timer_node *next;$/;"	m	struct:timer_node	typeref:struct:timer_node::timer_node	file:
-next	skynet-src/socket_server.c	/^	struct write_buffer * next;$/;"	m	struct:write_buffer	typeref:struct:write_buffer::write_buffer	file:
+next	skynet-src/socket_server.c	/^	struct write_buffer * next; \/\/ 发送缓冲区构成一个链表$/;"	m	struct:write_buffer	typeref:struct:write_buffer::write_buffer	file:
 next_ci	3rd/lua/ldo.c	290;"	d	file:
 next_gc_bin	3rd/jemalloc/include/jemalloc/internal/tcache.h	/^	unsigned	next_gc_bin;	\/* Next bin to GC. *\/$/;"	m	struct:tcache_s
 nextcap	3rd/lpeg/lpcap.c	/^static void nextcap (CapState *cs) {$/;"	f	file:
@@ -7020,13 +7020,13 @@ op_kill	lualib-src/lua-mongo.c	/^op_kill(lua_State *L) {$/;"	f	file:
 op_query	lualib-src/lua-mongo.c	/^op_query(lua_State *L) {$/;"	f	file:
 op_reply	lualib-src/lua-mongo.c	/^op_reply(lua_State *L) {$/;"	f	file:
 op_update	lualib-src/lua-mongo.c	/^op_update(lua_State *L) {$/;"	f	file:
+opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;		\/\/在skynet中用于保存服务的handle$/;"	m	struct:socket	file:
 opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:request_bind	file:
 opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:request_close	file:
 opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:request_listen	file:
 opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:request_open	file:
 opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:request_start	file:
 opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:request_udp	file:
-opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:socket	file:
 opaque	skynet-src/socket_server.h	/^	uintptr_t opaque;$/;"	m	struct:socket_message
 open	skynet-src/socket_server.c	/^		struct request_open open;$/;"	m	union:request_package::__anon39	typeref:struct:request_package::__anon39::request_open	file:
 open_channel	service/clusterd.lua	/^local function open_channel(t, key)$/;"	f
@@ -7204,7 +7204,7 @@ period_certification	3rd/jemalloc/test/src/SFMT.c	/^static void period_certifica
 pk_funcs	3rd/lua/loadlib.c	/^static const luaL_Reg pk_funcs[] = {$/;"	v	file:
 pmain	3rd/lua/lua.c	/^static int pmain (lua_State *L) {$/;"	f	file:
 pmain	3rd/lua/luac.c	/^static int pmain(lua_State* L)$/;"	f	file:
-poll_fd	skynet-src/socket_poll.h	/^typedef int poll_fd;$/;"	t
+poll_fd	skynet-src/socket_poll.h	/^typedef int poll_fd;\/\/poll文件描述符$/;"	t
 poll_socket_epoll_h	skynet-src/socket_epoll.h	3;"	d
 poll_socket_kqueue_h	skynet-src/socket_kqueue.h	3;"	d
 pool	lualib-src/sproto/sproto.c	/^struct pool {$/;"	s	file:
@@ -7431,7 +7431,7 @@ propagatelist	3rd/lua/lgc.c	/^static void propagatelist (global_State *g, GCObje
 propagatemark	3rd/lua/lgc.c	/^static void propagatemark (global_State *g) {$/;"	f	file:
 proto	lualib-src/sproto/sproto.c	/^	struct protocol * proto;$/;"	m	struct:sproto	typeref:struct:sproto::protocol	file:
 protocol	lualib-src/sproto/sproto.c	/^struct protocol {$/;"	s	file:
-protocol	skynet-src/socket_server.c	/^	uint16_t protocol;$/;"	m	struct:socket	file:
+protocol	skynet-src/socket_server.c	/^	uint16_t protocol;		\/\/协议$/;"	m	struct:socket	file:
 protocol_n	lualib-src/sproto/sproto.c	/^	int protocol_n;$/;"	m	struct:sproto	file:
 prototypes	3rd/jemalloc/configure	/^   function prototypes and stuff, but not '\\xHH' hex character constants.$/;"	f
 ps	3rd/lpeg/lptree.h	/^    int ps;  \/* occasional second sibling *\/$/;"	m	union:TTree::__anon17
@@ -7453,7 +7453,7 @@ ptr	lualib-src/lua-bson.c	/^	uint8_t *ptr;$/;"	m	struct:bson	file:
 ptr	lualib-src/lua-mongo.c	/^	uint8_t * ptr;$/;"	m	struct:buffer	file:
 ptr	lualib-src/lua-seri.c	/^	int ptr;$/;"	m	struct:read_block	file:
 ptr	lualib-src/lua-seri.c	/^	int ptr;$/;"	m	struct:write_block	file:
-ptr	skynet-src/socket_server.c	/^	char *ptr;$/;"	m	struct:write_buffer	file:
+ptr	skynet-src/socket_server.c	/^	char *ptr;	\/\/ 指向当前未发送的数据首部$/;"	m	struct:write_buffer	file:
 publish	service/multicastd.lua	/^local function publish(c , source, pack, size)$/;"	f
 purged	3rd/jemalloc/include/jemalloc/internal/stats.h	/^	uint64_t	purged;$/;"	m	struct:arena_stats_s
 push64	lualib-src/lua-crypt.c	/^push64(lua_State *L, uint64_t r) {$/;"	f	file:
@@ -7660,7 +7660,7 @@ recover	3rd/lua/ldo.c	/^static int recover (lua_State *L, int status) {$/;"	f	fi
 recv_buffer	service-src/service_harbor.c	/^	char * recv_buffer;$/;"	m	struct:slave	file:
 recv_package	examples/client.lua	/^local function recv_package(last)$/;"	f
 recv_response	examples/login/client.lua	/^local function recv_response(v)$/;"	f
-recvctrl_fd	skynet-src/socket_server.c	/^	int recvctrl_fd;$/;"	m	struct:socket_server	file:
+recvctrl_fd	skynet-src/socket_server.c	/^	int recvctrl_fd;	\/\/读取控制文件描述符$/;"	m	struct:socket_server	file:
 redcmd[36] 	lualib/redis.lua	/^redcmd[36] = function(fd, data) -- '$'$/;"	f
 redcmd[42] 	lualib/redis.lua	/^redcmd[42] = function(fd, data)	-- '*'$/;"	f
 redcmd[43] 	lualib/redis.lua	/^redcmd[43] = function(fd, data) -- '+'$/;"	f
@@ -7761,7 +7761,7 @@ retraversegrays	3rd/lua/lgc.c	/^static void retraversegrays (global_State *g) {$
 retstat	3rd/lua/lparser.c	/^static void retstat (LexState *ls) {$/;"	f	file:
 return_f	service/snaxd.lua	/^local function return_f(f, ...)$/;"	f
 return_free_node	lualib-src/lua-socket.c	/^return_free_node(lua_State *L, int pool, struct socket_buffer *sb) {$/;"	f	file:
-rfds	skynet-src/socket_server.c	/^	fd_set rfds;$/;"	m	struct:socket_server	file:
+rfds	skynet-src/socket_server.c	/^	fd_set rfds;	\/\/用于select的描述符集$/;"	m	struct:socket_server	file:
 right	3rd/lua/lparser.c	/^  lu_byte right; \/* right priority *\/$/;"	m	struct:__anon26	file:
 righttt	3rd/lua/lobject.h	177;"	d
 ring_s	3rd/jemalloc/test/unit/qr.c	/^struct ring_s {$/;"	s	file:
@@ -7874,7 +7874,7 @@ send_request	service/clusterd.lua	/^local function send_request(source, node, ad
 send_request	skynet-src/socket_server.c	/^send_request(struct socket_server *ss, struct request_package *request, char type, int len) {$/;"	f	file:
 send_socket	skynet-src/socket_server.c	/^send_socket(struct socket_server *ss, struct request_send * request, struct socket_message *result, int priority, const uint8_t *udp_address) {$/;"	f	file:
 send_udp	skynet-src/socket_server.c	/^		struct request_send_udp send_udp;$/;"	m	union:request_package::__anon39	typeref:struct:request_package::__anon39::request_send_udp	file:
-sendctrl_fd	skynet-src/socket_server.c	/^	int sendctrl_fd;$/;"	m	struct:socket_server	file:
+sendctrl_fd	skynet-src/socket_server.c	/^	int sendctrl_fd;	\/\/写入控制文件描述符$/;"	m	struct:socket_server	file:
 separatetobefnz	3rd/lua/lgc.c	/^static void separatetobefnz (lua_State *L, int all) {$/;"	f	file:
 seqaux	3rd/lpeg/lptree.c	/^static TTree *seqaux (TTree *tree, TTree *sib, int sibsize) {$/;"	f	file:
 seri	lualib-src/lua-seri.c	/^seri(lua_State *L, struct block *b, int len) {$/;"	f	file:
@@ -7996,7 +7996,7 @@ size	service-src/databuffer.h	/^	int size;$/;"	m	struct:message
 size	service-src/service_harbor.c	/^	int size;$/;"	m	struct:harbor_msg_queue	file:
 size	service-src/service_harbor.c	/^	size_t size;$/;"	m	struct:harbor_msg	file:
 size	service-src/service_harbor.c	/^	uint8_t size[4];$/;"	m	struct:slave	file:
-size	skynet-src/socket_server.c	/^		int size;$/;"	m	union:socket::__anon38	file:
+size	skynet-src/socket_server.c	/^		int size;	\/\/下一次read操作要分配的缓冲区大小?$/;"	m	union:socket::__anon38	file:
 size	skynet-src/socket_server.h	/^	int (*size)(void *);$/;"	m	struct:socket_object_interface
 sizeCclosure	3rd/lua/lfunc.h	14;"	d
 sizeLclosure	3rd/lua/lfunc.h	17;"	d
@@ -8181,7 +8181,7 @@ slave	service-src/service_harbor.c	/^	uint32_t slave;$/;"	m	struct:harbor	file:
 slave	service-src/service_harbor.c	/^struct slave {$/;"	s	file:
 sleep	skynet-src/skynet_start.c	/^	int sleep;\/\/睡眠线程数$/;"	m	struct:monitor	file:
 slot	skynet-src/skynet_handle.c	/^	struct skynet_context ** slot;\/\/槽$/;"	m	struct:handle_storage	typeref:struct:handle_storage::skynet_context	file:
-slot	skynet-src/socket_server.c	/^	struct socket slot[MAX_SOCKET];$/;"	m	struct:socket_server	typeref:struct:socket_server::socket	file:
+slot	skynet-src/socket_server.c	/^	struct socket slot[MAX_SOCKET];\/\/槽，用于存储套接字	MAX_SOCKET:65536$/;"	m	struct:socket_server	typeref:struct:socket_server::socket	file:
 slot_size	skynet-src/skynet_handle.c	/^	int slot_size;\/\/槽大小$/;"	m	struct:handle_storage	file:
 small_bin2size	3rd/jemalloc/include/jemalloc/internal/arena.h	/^small_bin2size(size_t binind)$/;"	f
 small_bin2size	3rd/jemalloc/include/jemalloc/internal/private_namespace.h	348;"	d
@@ -8266,7 +8266,7 @@ sockethelper.close	lualib/http/sockethelper.lua	/^function sockethelper.close(fd
 sockethelper.connect	lualib/http/sockethelper.lua	/^function sockethelper.connect(host, port)$/;"	f
 sockethelper.readfunc	lualib/http/sockethelper.lua	/^function sockethelper.readfunc(fd)$/;"	f
 sockethelper.writefunc	lualib/http/sockethelper.lua	/^function sockethelper.writefunc(fd)$/;"	f
-soi	skynet-src/socket_server.c	/^	struct socket_object_interface soi;$/;"	m	struct:socket_server	typeref:struct:socket_server::socket_object_interface	file:
+soi	skynet-src/socket_server.c	/^	struct socket_object_interface soi;		\/\/套接字对象接口$/;"	m	struct:socket_server	typeref:struct:socket_server::socket_object_interface	file:
 sort	3rd/lua/ltablib.c	/^static int sort (lua_State *L) {$/;"	f	file:
 sort_comp	3rd/lua/ltablib.c	/^static int sort_comp (lua_State *L, int a, int b) {$/;"	f	file:
 source	3rd/lua/llex.h	/^  TString *source;  \/* current source name *\/$/;"	m	struct:LexState
@@ -8278,7 +8278,7 @@ source	skynet-src/skynet_mq.h	/^	uint32_t source;\/\/消息源$/;"	m	struct:skyn
 sp	3rd/lua/lobject.h	/^  struct SharedProto *sp;$/;"	m	struct:Proto	typeref:struct:Proto::SharedProto
 sp_add	skynet-src/socket_epoll.h	/^sp_add(int efd, int sock, void *ud) {$/;"	f
 sp_add	skynet-src/socket_kqueue.h	/^sp_add(int kfd, int sock, void *ud) {$/;"	f
-sp_create	skynet-src/socket_epoll.h	/^sp_create() {$/;"	f
+sp_create	skynet-src/socket_epoll.h	/^sp_create() {\/\/创建socket poll$/;"	f
 sp_create	skynet-src/socket_kqueue.h	/^sp_create() {$/;"	f
 sp_del	skynet-src/socket_epoll.h	/^sp_del(int efd, int sock) {$/;"	f
 sp_del	skynet-src/socket_kqueue.h	/^sp_del(int kfd, int sock) {$/;"	f
@@ -8485,8 +8485,9 @@ tail	lualib-src/lua-socket.c	/^	struct buffer_node *tail;$/;"	m	struct:socket_bu
 tail	service-src/databuffer.h	/^	struct message * tail;$/;"	m	struct:databuffer	typeref:struct:databuffer::message
 tail	service-src/service_harbor.c	/^	int tail;$/;"	m	struct:harbor_msg_queue	file:
 tail	skynet-src/skynet_mq.c	/^	int tail;		\/\/队尾索引$/;"	m	struct:message_queue	file:
+tail	skynet-src/skynet_mq.c	/^	struct message_queue *tail;	\/\/消息队列尾指针$/;"	m	struct:global_queue	typeref:struct:global_queue::message_queue	file:
 tail	skynet-src/skynet_timer.c	/^	struct timer_node *tail;$/;"	m	struct:link_list	typeref:struct:link_list::timer_node	file:
-tail	skynet-src/socket_server.c	/^	struct write_buffer * tail;$/;"	m	struct:wb_list	typeref:struct:wb_list::write_buffer	file:
+tail	skynet-src/socket_server.c	/^	struct write_buffer * tail;\/\/尾$/;"	m	struct:wb_list	typeref:struct:wb_list::write_buffer	file:
 target	3rd/lpeg/lpcode.c	494;"	d	file:
 tbins	3rd/jemalloc/include/jemalloc/internal/tcache.h	/^	tcache_bin_t	tbins[1];	\/* Dynamically sized. *\/$/;"	m	struct:tcache_s
 tbl	lualib-src/lua-sharedata.c	/^	struct table * tbl;$/;"	m	struct:context	typeref:struct:context::table	file:
@@ -8713,7 +8714,6 @@ thread_node	3rd/jemalloc/src/ctl.c	/^static const ctl_named_node_t	thread_node[]
 thread_tcache_enabled_ctl	3rd/jemalloc/src/ctl.c	/^thread_tcache_enabled_ctl(const size_t *mib, size_t miblen, void *oldp,$/;"	f	file:
 thread_tcache_flush_ctl	3rd/jemalloc/src/ctl.c	/^thread_tcache_flush_ctl(const size_t *mib, size_t miblen, void *oldp,$/;"	f	file:
 thvalue	3rd/lua/lobject.h	166;"	d
-til	skynet-src/skynet_mq.c	/^	struct amessage_queue *til;	\/\/消息队列尾指针$/;"	m	struct:global_queue	typeref:struct:global_queue::amessage_queue	file:
 time	skynet-src/skynet_timer.c	/^	uint32_t time;$/;"	m	struct:timer	file:
 timeout	test/testtimer.lua	/^local function timeout(t)$/;"	f
 timer	skynet-src/skynet_timer.c	/^struct timer {$/;"	s	file:
@@ -8828,7 +8828,7 @@ txtToken	3rd/lua/llex.c	/^static const char *txtToken (LexState *ls, int token) 
 type	lualib-src/sproto/sproto.c	/^	int type;$/;"	m	struct:field	file:
 type	lualib-src/sproto/sproto.c	/^	struct sproto_type * type;$/;"	m	struct:sproto	typeref:struct:sproto::sproto_type	file:
 type	skynet-src/skynet_socket.h	/^	int type;$/;"	m	struct:skynet_socket_message
-type	skynet-src/socket_server.c	/^	uint16_t type;$/;"	m	struct:socket	file:
+type	skynet-src/socket_server.c	/^	uint16_t type;	\/\/socket类型或者状态$/;"	m	struct:socket	file:
 type_n	lualib-src/sproto/sproto.c	/^	int type_n;$/;"	m	struct:sproto	file:
 typeclosure	lualib-src/lua-bson.c	/^typeclosure(lua_State *L) {$/;"	f	file:
 typeerror	3rd/lua/lauxlib.c	/^static int typeerror (lua_State *L, int narg, const char *tname) {$/;"	f	file:
@@ -8856,7 +8856,7 @@ udp	skynet-src/socket_server.c	/^		struct request_udp udp;$/;"	m	union:request_p
 udp_address	skynet-src/socket_server.c	/^		uint8_t udp_address[UDP_ADDRESS_SIZE];$/;"	m	union:socket::__anon38	file:
 udp_address	skynet-src/socket_server.c	/^	uint8_t udp_address[UDP_ADDRESS_SIZE];$/;"	m	struct:write_buffer	file:
 udp_socket_address	skynet-src/socket_server.c	/^udp_socket_address(struct socket *s, const uint8_t udp_address[UDP_ADDRESS_SIZE], union sockaddr_all *sa) {$/;"	f	file:
-udpbuffer	skynet-src/socket_server.c	/^	uint8_t udpbuffer[MAX_UDP_PACKAGE];$/;"	m	struct:socket_server	file:
+udpbuffer	skynet-src/socket_server.c	/^	uint8_t udpbuffer[MAX_UDP_PACKAGE];	\/\/udp缓冲区		MAX_UDP_PACKAGE:65535$/;"	m	struct:socket_server	file:
 uint16_t	3rd/jemalloc/include/msvc_compat/stdint.h	/^   typedef unsigned __int16  uint16_t;$/;"	t
 uint16_t	3rd/jemalloc/include/msvc_compat/stdint.h	/^   typedef unsigned short    uint16_t;$/;"	t
 uint16_t	lualib-src/sproto/msvcint.h	/^typedef unsigned __int16  uint16_t;$/;"	t
@@ -9011,7 +9011,7 @@ wb_nil	lualib-src/lua-seri.c	/^wb_nil(struct write_block *wb) {$/;"	f	file:
 wb_number	lualib-src/lua-seri.c	/^wb_number(struct write_block *wb, double v) {$/;"	f	file:
 wb_pointer	lualib-src/lua-seri.c	/^wb_pointer(struct write_block *wb, void *v) {$/;"	f	file:
 wb_push	lualib-src/lua-seri.c	/^wb_push(struct write_block *b, const void *buf, int sz) {$/;"	f	file:
-wb_size	skynet-src/socket_server.c	/^	int64_t wb_size;$/;"	m	struct:socket	file:
+wb_size	skynet-src/socket_server.c	/^	int64_t wb_size;		\/\/发送缓冲区未发送的数据$/;"	m	struct:socket	file:
 wb_string	lualib-src/lua-seri.c	/^wb_string(struct write_block *wb, const char *str, int len) {$/;"	f	file:
 wb_table	lualib-src/lua-seri.c	/^wb_table(lua_State *L, struct write_block *wb, int index, int depth) {$/;"	f	file:
 wb_table_array	lualib-src/lua-seri.c	/^wb_table_array(lua_State *L, struct write_block * wb, int index, int depth) {$/;"	f	file:

@@ -387,7 +387,7 @@ handle_exit(struct skynet_context * context, uint32_t handle) {
 	} else {
 		skynet_error(context, "KILL :%0x", handle);//输出日志 杀掉句柄号为handle的服务
 	}
-	if (G_NODE.monitor_exit) {//如果存在监视服务退出的服务
+	if (G_NODE.monitor_exit) {//如果存在监视其他服务退出的服务
 		skynet_send(context,  handle, G_NODE.monitor_exit, PTYPE_CLIENT, 0, NULL, 0);//向该服务发送消息
 	}
 	skynet_handle_retire(handle);//回收句柄
@@ -632,8 +632,8 @@ static struct command_func cmd_funcs[] = {
 	{ "EXIT", cmd_exit },//退出命令
 	{ "KILL", cmd_kill },
 	{ "LAUNCH", cmd_launch },
-	{ "GETENV", cmd_getenv },
-	{ "SETENV", cmd_setenv },
+	{ "GETENV", cmd_getenv },//获取环境变量
+	{ "SETENV", cmd_setenv },//设置环境变量
 	{ "STARTTIME", cmd_starttime },
 	{ "ENDLESS", cmd_endless },
 	{ "ABORT", cmd_abort },
