@@ -134,6 +134,8 @@ _init(struct snlua *l, struct skynet_context *ctx, const char * args, size_t sz)
 		return 1;
 	}
 	lua_pushlstring(L, args, sz);//args为第一个发送过来的消息bootstrap，将bootstrap压栈
+	//第一次启动的snlua服务，args为bootstrap,之后启动的snlua服务，args为要启动的LUA服务名字
+	//每个LUA服务都由snlua来承载
 	r = lua_pcall(L,1,0,1);//调用loader 以bootstrap为参数
 	if (r != LUA_OK) {
 		skynet_error(ctx, "lua loader error : %s", lua_tostring(L, -1));

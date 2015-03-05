@@ -1,16 +1,17 @@
 local args = {}
-for word in string.gmatch(..., "%S+") do --pattern的意思是 非空白字符一次或多次
+
+--string.gmatch (s, pattern)
+--返回一个迭代器函数。 每次调用这个函数都会继续以 pattern （参见　§6.4.1） 对 s 做匹配，并返回所有捕获到的值。 如果 pattern 中没有指定捕获，则每次捕获整个 pattern
+for word in string.gmatch(..., "%S+") do --这里pattern表达的意思是 非空白字符一次或多次
 	table.insert(args, word)--插入到args中
 end
+--所以上面处理的结果就是，如果传入的参数是a b c d，则得到的args为:{['1']=a, ['2']=b, ['3']=c, ['4']=d}
 
-SERVICE_NAME = args[1]	--服务名bootstrap
+SERVICE_NAME = args[1]	--传入的服务名，比如第一次启动snlua服务传入的是bootstrap
 
 local main, pattern
 
 local err = {}
-
---string.gmatch (s, pattern)
---返回一个迭代器函数。 每次调用这个函数都会继续以 pattern （参见　§6.4.1） 对 s 做匹配，并返回所有捕获到的值。 如果 pattern 中没有指定捕获，则每次捕获整个 pattern
 
 for pat in string.gmatch(LUA_SERVICE, "([^;]+);*") do
 	local filename = string.gsub(pat, "?", SERVICE_NAME)
