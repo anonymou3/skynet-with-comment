@@ -107,7 +107,7 @@ _init(struct snlua *l, struct skynet_context *ctx, const char * args, size_t sz)
 
 	lua_pop(L,1);//从栈上弹出一个元素(luaL_requiref会在栈上留下模块的副本)
 
-	const char *path = optstring(ctx, "lua_path","./lualib/?.lua;./lualib/?/init.lua");//获取lua path
+	const char *path = optstring(ctx, "lua_path","./lualib/?.lua;./lualib/?/init.lua");//获取lua path,./lualib/?/init.lua有什么用？？
 	lua_pushstring(L, path);//push到栈顶
 	lua_setglobal(L, "LUA_PATH");//设置到全局变量
 	const char *cpath = optstring(ctx, "lua_cpath","./luaclib/?.so");//获取lua cpath
@@ -142,7 +142,7 @@ _init(struct snlua *l, struct skynet_context *ctx, const char * args, size_t sz)
 		_report_launcher_error(ctx);
 		return 1;
 	}
-	lua_settop(L,0);
+	lua_settop(L,0);//清除栈上所有元素
 
 	lua_gc(L, LUA_GCRESTART, 0);//重启垃圾收集器
 
