@@ -43,7 +43,7 @@
 #endif
 //skynet上下文数据结构定义
 //上下文可以理解为一种环境，包含了许多东西
-//因为skynet是基于actor模型的，所以这里的skynet_context其实也就是actor
+//因为skynet是基于actor模型的，所以这里的skynet_context其实类似actor
 //关于actor说明如下：
 // Actor，可以看作是一个个独立的实体，他们之间是毫无关联的。但是，他们可以通过消息来通信。一个Actor收到其他Actor的信息后，它可以根据需要作出各种相应。消息的类型可以是任意的，消息的内容也可以是任意的。这点有点像webservice了。只提供接口服务，你不必了解我是如何实现的。
  
@@ -679,7 +679,8 @@ _filter_args(struct skynet_context * context, int type, int *session, void ** da
 
 	*sz |= type << HANDLE_REMOTE_SHIFT;//设置消息的大小
 }
-//skynet发送消息
+
+//skynet发送消息(目标是数字地址)
 int
 skynet_send(struct skynet_context * context, uint32_t source, uint32_t destination , int type, int session, void * data, size_t sz) {
 	if ((sz & HANDLE_MASK) != sz) {//判断消息是否过大
@@ -717,6 +718,7 @@ skynet_send(struct skynet_context * context, uint32_t source, uint32_t destinati
 	return session;//返回会话
 }
 
+//skynet发送消息(目标是字符串地址，也就是服务的名字)
 int
 skynet_sendname(struct skynet_context * context, uint32_t source, const char * addr , int type, int session, void * data, size_t sz) {
 	if (source == 0) {

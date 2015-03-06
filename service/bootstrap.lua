@@ -1,3 +1,4 @@
+--引导服务
 local skynet = require "skynet"
 local harbor = require "skynet.harbor"
 

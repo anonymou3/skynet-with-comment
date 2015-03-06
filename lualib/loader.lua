@@ -1,5 +1,6 @@
+--加载并运行LUA代码，同时设置一些关键路径
+
 local args = {}
- for word in string.gmatch(..., "%S+") do --pattern的意思是 非空白字符一次或多次
 
 --string.gmatch (s, pattern)
 --返回一个迭代器函数。 每次调用这个函数都会继续以 pattern （参见　§6.4.1） 对 s 做匹配，并返回所有捕获到的值。 如果 pattern 中没有指定捕获，则每次捕获整个 pattern
@@ -55,4 +56,6 @@ if LUA_PRELOAD then --如果有预加载的文件
 	LUA_PRELOAD = nil --置空
 end
 
-main(select(2, table.unpack(args)))--运行主函数
+--select(index,...) 如果 index 是个数字， 那么返回参数中第 index 个之后的部分； 负的数字会从后向前索引（-1 指最后一个参数）。 否则，index 必须是字符串 "#"， 此时 select 返回参数的个数。
+
+main(select(2, table.unpack(args)))--运行主函数，取出除了服务名的后续参数传入主函数

@@ -1,4 +1,4 @@
-local c = require "skynet.core"
+local c = require "skynet.core"	--加载C库代码
 local tostring = tostring
 local tonumber = tonumber
 local coroutine = coroutine

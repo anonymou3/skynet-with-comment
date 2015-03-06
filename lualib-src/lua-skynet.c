@@ -127,10 +127,12 @@ _genid(lua_State *L) {
 	return 1;
 }
 
+//获取目标地址字符串
 static const char *
 get_dest_string(lua_State *L, int index) {
-	const char * dest_string = lua_tostring(L, index);
-	if (dest_string == NULL) {
+	const char * dest_string = lua_tostring(L, index);//从栈的指定索引处获取字符串
+	if (dest_string == NULL) {//获取到的字符串为空
+		//目标地址一定为数字或者是字符串
 		luaL_error(L, "dest address type (%s) must be a string or number.", lua_typename(L, lua_type(L,index)));
 	}
 	return dest_string;
@@ -147,10 +149,11 @@ get_dest_string(lua_State *L, int index) {
  */
 static int
 _send(lua_State *L) {
-	struct skynet_context * context = lua_touserdata(L, lua_upvalueindex(1));
-	uint32_t dest = lua_tounsigned(L, 1);
-	const char * dest_string = NULL;
-	if (dest == 0) {
+	//lua_upvalueindex获取到当前运行的函数的第i个上值的伪索引
+	struct skynet_context * context = lua_touserdata(L, lua_upvalueindex(1));//从伪索引获取到上下文
+	uint32_t dest = lua_tounsigned(L, 1);//获取目标地址
+	const char * dest_string = NULL;//目标地址字符串
+	if (dest == 0) {//如果目标地址为0 传入的不是数字
 		dest_string = get_dest_string(L, 1);
 	}
 
@@ -304,9 +307,9 @@ ltrash(lua_State *L) {
 
 int
 luaopen_skynet_core(lua_State *L) {
-	luaL_checkversion(L);
+	luaL_checkversion(L);//检查版本
 	
-	luaL_Reg l[] = {
+	luaL_Reg l[] = {//函数名->函数 映射表
 		{ "send" , _send },
 		{ "genid", _genid },
 		{ "redirect", _redirect },
@@ -321,16 +324,17 @@ luaopen_skynet_core(lua_State *L) {
 		{ "callback", _callback },
 		{ NULL, NULL },
 	};
+	//luaL_newlib() 创建一张新的表，并把列表 l 中的函数注册进去。
+	luaL_newlibtable(L, l);//创建一张新的表，并预分配足够保存下数组 l 内容的空间（但不填充）
 
-	luaL_newlibtable(L, l);
-
-	lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");
-	struct skynet_context *ctx = lua_touserdata(L,-1);
+	lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");//获取skynet_context的值并压栈
+	struct skynet_context *ctx = lua_touserdata(L,-1);//将light userdata转化成C指针 检查是否存在
 	if (ctx == NULL) {
-		return luaL_error(L, "Init skynet context first");
+		return luaL_error(L, "Init skynet context first");//提示先初始化skynet context
 	}
+	//skynet_context将作为上值压在新建的表上面
 
-	luaL_setfuncs(L,l,1);
+	luaL_setfuncs(L,l,1);//注册所有函数到栈顶的表（如果存在上值，那么上值将压在该表的上面，所有函数共享这些上值，第三个参数表明有几个上值，这些值必须在调用该函数前，压在表上面，注册完毕后，都会从栈上弹出）
 
 	return 1;
 }
