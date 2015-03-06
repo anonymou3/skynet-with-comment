@@ -1,4 +1,6 @@
 local c = require "skynet.core"	--加载C库代码
+
+--下面为什么要这么写？？
 local tostring = tostring
 local tonumber = tonumber
 local coroutine = coroutine
@@ -13,7 +15,8 @@ coroutine.yield = profile.yield
 
 local proto = {}
 local skynet = {
-	-- read skynet.h
+	--预定义的消息类别id
+	-- read skynet.h 同skynet.h中的定义一致
 	PTYPE_TEXT = 0,
 	PTYPE_RESPONSE = 1,
 	PTYPE_MULTICAST = 2,
@@ -31,13 +34,13 @@ local skynet = {
 -- code cache
 skynet.cache = require "skynet.codecache"
 
-function skynet.register_protocol(class)
-	local name = class.name
-	local id = class.id
-	assert(proto[name] == nil)
-	assert(type(name) == "string" and type(id) == "number" and id >=0 and id <=255)
-	proto[name] = class
-	proto[id] = class
+function skynet.register_protocol(class) --注册新的消息类别，传入的class是个table
+	local name = class.name --类别名
+	local id = class.id --类别id
+	assert(proto[name] == nil) -- 该消息之前没有注册
+	assert(type(name) == "string" and type(id) == "number" and id >=0 and id <=255)--判断参数是否合法
+	proto[name] = class --通过名字可以索引到该协议
+	proto[id] = class --通过id也可以索引到该
 end
 
 local session_id_coroutine = {}
@@ -380,9 +383,9 @@ function skynet.setenv(key, value)
 	c.command("SETENV",key .. " " ..value)
 end
 
-function skynet.send(addr, typename, ...)
-	local p = proto[typename]
-	return c.send(addr, p.id, 0 , p.pack(...))
+function skynet.send(addr, typename, ...) --非阻塞发送消息
+	local p = proto[typename] --先根据名字取得对应的消息类别(table)
+	return c.send(addr, p.id, 0 , p.pack(...)) --先用p.pack打包数据，然后调用c库发送消息
 end
 
 skynet.genid = assert(c.genid)
@@ -391,7 +394,8 @@ skynet.redirect = function(dest,source,typename,...)
 	return c.redirect(dest, source, proto[typename].id, ...)
 end
 
-skynet.pack = assert(c.pack)
+--以下函数使用的都是C库中的函数
+skynet.pack = assert(c.pack)	
 skynet.packstring = assert(c.packstring)
 skynet.unpack = assert(c.unpack)
 skynet.tostring = assert(c.tostring)
@@ -573,12 +577,12 @@ function skynet.error(...)
 	return c.error(table.concat(t, " "))
 end
 
------ register protocol
+----- register protocol 在此预先注册lua层使用的消息类别
 do
 	local REG = skynet.register_protocol
 
 	REG {
-		name = "lua",
+		name = "lua",	--skynet中最常用的消息类别
 		id = skynet.PTYPE_LUA,
 		pack = skynet.pack,
 		unpack = skynet.unpack,

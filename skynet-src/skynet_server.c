@@ -721,21 +721,21 @@ skynet_send(struct skynet_context * context, uint32_t source, uint32_t destinati
 //skynet发送消息(目标是字符串地址，也就是服务的名字)
 int
 skynet_sendname(struct skynet_context * context, uint32_t source, const char * addr , int type, int session, void * data, size_t sz) {
-	if (source == 0) {
-		source = context->handle;
+	if (source == 0) {//如果源地址为0
+		source = context->handle;//设置源地址为上下文的句柄，那么源就是自己
 	}
 	uint32_t des = 0;
-	if (addr[0] == ':') {
-		des = strtoul(addr+1, NULL, 16);
-	} else if (addr[0] == '.') {
+	if (addr[0] == ':') {//名字以:开头 ，名字其实就是数字地址，只不过是用字符串表达的 比如":01000008"
+		des = strtoul(addr+1, NULL, 16);//将字符串转化为长整形
+	} else if (addr[0] == '.') {//名字以.开头 本地服务名字
 		des = skynet_handle_findname(addr + 1);
-		if (des == 0) {
-			if (type & PTYPE_TAG_DONTCOPY) {
-				skynet_free(data);
+		if (des == 0) {//没有找到地址
+			if (type & PTYPE_TAG_DONTCOPY) {//如果消息数据是不需要拷贝的
+				skynet_free(data);//消息数据是分配的指针，需要释放掉
 			}
 			return -1;
 		}
-	} else {
+	} else {//全局名字
 		_filter_args(context, type, &session, (void **)&data, &sz);
 
 		struct remote_message * rmsg = skynet_malloc(sizeof(*rmsg));
@@ -748,7 +748,7 @@ skynet_sendname(struct skynet_context * context, uint32_t source, const char * a
 		return session;
 	}
 
-	return skynet_send(context, source, des, type, session, data, sz);
+	return skynet_send(context, source, des, type, session, data, sz);//最后还是调用的skynet_send
 }
 
 //获取上下文的句柄

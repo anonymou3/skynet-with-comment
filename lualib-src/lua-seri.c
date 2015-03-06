@@ -1,6 +1,7 @@
 //序列化
 /*
 	modify from https://github.com/cloudwu/lua-serialize
+	改自该库
  */
 
 #include "skynet_malloc.h"
@@ -12,21 +13,21 @@
 #include <assert.h>
 #include <string.h>
 
-#define TYPE_NIL 0
-#define TYPE_BOOLEAN 1
+#define TYPE_NIL 0 	//空类型
+#define TYPE_BOOLEAN 1 //布尔类型
 // hibits 0 false 1 true
-#define TYPE_NUMBER 2
+#define TYPE_NUMBER 2 //数字类型
 // hibits 0 : 0 , 1: byte, 2:word, 4: dword, 8 : double
-#define TYPE_USERDATA 3
-#define TYPE_SHORT_STRING 4
+#define TYPE_USERDATA 3 //用户数据类型
+#define TYPE_SHORT_STRING 4 //短字符串类型
 // hibits 0~31 : len
-#define TYPE_LONG_STRING 5
-#define TYPE_TABLE 6
+#define TYPE_LONG_STRING 5 //长字符串类型
+#define TYPE_TABLE 6 //表类型
 
-#define MAX_COOKIE 32
+#define MAX_COOKIE 32 
 #define COMBINE_TYPE(t,v) ((t) | (v) << 3)
 
-#define BLOCK_SIZE 128
+#define BLOCK_SIZE 128	//块大小
 #define MAX_DEPTH 32
 
 struct block {
@@ -486,7 +487,7 @@ seri(lua_State *L, struct block *b, int len) {
 }
 
 int
-_luaseri_unpack(lua_State *L) {
+_luaseri_unpack(lua_State *L) {	//解包函数
 	if (lua_isnoneornil(L,1)) {
 		return 0;
 	}
@@ -529,7 +530,7 @@ _luaseri_unpack(lua_State *L) {
 }
 
 int
-_luaseri_pack(lua_State *L) {
+_luaseri_pack(lua_State *L) {	//打包函数
 	struct block temp;
 	temp.next = NULL;
 	struct write_block wb;

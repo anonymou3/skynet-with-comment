@@ -127,7 +127,7 @@ _genid(lua_State *L) {
 	return 1;
 }
 
-//获取目标地址字符串
+//获取目标字符串地址
 static const char *
 get_dest_string(lua_State *L, int index) {
 	const char * dest_string = lua_tostring(L, index);//从栈的指定索引处获取字符串
@@ -139,53 +139,55 @@ get_dest_string(lua_State *L, int index) {
 }
 
 /*
-	unsigned address
-	 string address
-	integer type
-	integer session
-	string message
-	 lightuserdata message_ptr
-	 integer len
+	参数：
+		1：unsigned address或者string，address 数字地址或者字符串地址
+		2. integer type，消息类型id
+		3. integer session，会话
+		4. string message或者lightuserdata message_ptr，字符串消息或者是轻用户数据消息
+		5. integer len
  */
 static int
 _send(lua_State *L) {
 	//lua_upvalueindex获取到当前运行的函数的第i个上值的伪索引
 	struct skynet_context * context = lua_touserdata(L, lua_upvalueindex(1));//从伪索引获取到上下文
-	uint32_t dest = lua_tounsigned(L, 1);//获取目标地址
-	const char * dest_string = NULL;//目标地址字符串
-	if (dest == 0) {//如果目标地址为0 传入的不是数字
-		dest_string = get_dest_string(L, 1);
+	uint32_t dest = lua_tounsigned(L, 1);//获取目标数字地址
+	const char * dest_string = NULL;//目标字符串地址
+	if (dest == 0) {//如果目标数字地址为0 传入的不是数字 而是字符串
+		dest_string = get_dest_string(L, 1);//获取目标字符串地址
 	}
 
-	int type = luaL_checkinteger(L, 2);
+	int type = luaL_checkinteger(L, 2);//获取消息类型
 	int session = 0;
-	if (lua_isnil(L,3)) {
-		type |= PTYPE_TAG_ALLOCSESSION;
+	if (lua_isnil(L,3)) {//如果第三个参数是空的话，则是skynet.call调用过来的
+		type |= PTYPE_TAG_ALLOCSESSION;//skynet.call会在内部生成一个唯一session，所以这里需要设置分配会话标志
 	} else {
-		session = luaL_checkinteger(L,3);
+		session = luaL_checkinteger(L,3);//获取会话
+		//skynet.send调用过来的传递的是0
 	}
 
-	int mtype = lua_type(L,4);
-	switch (mtype) {
-	case LUA_TSTRING: {
-		size_t len = 0;
-		void * msg = (void *)lua_tolstring(L,4,&len);
-		if (len == 0) {
-			msg = NULL;
+	int mtype = lua_type(L,4);//取得第四个参数的类型
+	switch (mtype) {//判断类型
+	case LUA_TSTRING: {//如果是字符串
+		size_t len = 0; //存放字符串长度
+		void * msg = (void *)lua_tolstring(L,4,&len);//获取字符串
+		if (len == 0) {//长度为零
+			msg = NULL;//置空字符串指针
 		}
-		if (dest_string) {
-			session = skynet_sendname(context, 0, dest_string, type, session , msg, len);
-		} else {
-			session = skynet_send(context, 0, dest, type, session , msg, len);
+		if (dest_string) {//目标地址是字符串地址
+			session = skynet_sendname(context, 0, dest_string, type, session , msg, len);//需要拷贝消息数据
+		} else {//目标地址是数字地址
+			session = skynet_send(context, 0, dest, type, session , msg, len);//需要拷贝消息数据
 		}
 		break;
 	}
-	case LUA_TLIGHTUSERDATA: {
-		void * msg = lua_touserdata(L,4);
-		int size = luaL_checkinteger(L,5);
-		if (dest_string) {
+	case LUA_TLIGHTUSERDATA: {//如果是轻用户数据
+		void * msg = lua_touserdata(L,4);//获取消息的C指针
+		int size = luaL_checkinteger(L,5);//获取消息的长度
+		if (dest_string) {//如果目标是字符串地址
+			//不需要拷贝消息数据
 			session = skynet_sendname(context, 0, dest_string, type | PTYPE_TAG_DONTCOPY, session, msg, size);
-		} else {
+		} else {//如果目标是数字地址
+			//不需要拷贝消息数据
 			session = skynet_send(context, 0, dest, type | PTYPE_TAG_DONTCOPY, session, msg, size);
 		}
 		break;
@@ -196,9 +198,11 @@ _send(lua_State *L) {
 	if (session < 0) {
 		// send to invalid address
 		// todo: maybe throw error whould be better
+		// 发送到无效的地址
+		// 可能抛出一个错误更好
 		return 0;
 	}
-	lua_pushinteger(L,session);
+	lua_pushinteger(L,session);//返回会话
 	return 1;
 }
 
@@ -310,22 +314,23 @@ luaopen_skynet_core(lua_State *L) {
 	luaL_checkversion(L);//检查版本
 	
 	luaL_Reg l[] = {//函数名->函数 映射表
-		{ "send" , _send },
+		{ "send" , _send }, //发送消息函数
 		{ "genid", _genid },
 		{ "redirect", _redirect },
 		{ "command" , _command },
 		{ "error", _error },
 		{ "tostring", _tostring },
 		{ "harbor", _harbor },
-		{ "pack", _luaseri_pack },
-		{ "unpack", _luaseri_unpack },
+		{ "pack", _luaseri_pack },//skynet.pack调用该函数
+		{ "unpack", _luaseri_unpack },//skynet.unpack调用该函数
 		{ "packstring", lpackstring },
 		{ "trash" , ltrash },
 		{ "callback", _callback },
 		{ NULL, NULL },
 	};
-	//luaL_newlib() 创建一张新的表，并把列表 l 中的函数注册进去。
+	
 	luaL_newlibtable(L, l);//创建一张新的表，并预分配足够保存下数组 l 内容的空间（但不填充）
+	//而luaL_newlib() 是创建一张新的表，并把列表 l 中的函数注册进去。
 
 	lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");//获取skynet_context的值并压栈
 	struct skynet_context *ctx = lua_touserdata(L,-1);//将light userdata转化成C指针 检查是否存在
