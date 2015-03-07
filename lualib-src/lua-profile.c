@@ -90,9 +90,9 @@ lstop(lua_State *L) {
 static int
 lresume(lua_State *L) {
 	lua_pushvalue(L,1);//复制co参数并压栈
-	lua_rawget(L, lua_upvalueindex(2));//
-	if (lua_isnil(L, -1)) {		// check total time
-		lua_pop(L,1);
+	lua_rawget(L, lua_upvalueindex(2));//获取表B[co]的值，然后将值压入
+	if (lua_isnil(L, -1)) {		// check total time 检查总时间 没有找到值
+		lua_pop(L,1);//弹出空值
 	} else {
 		lua_pop(L,1);
 		lua_pushvalue(L,1);
