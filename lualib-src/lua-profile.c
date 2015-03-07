@@ -9,19 +9,24 @@
 #include <mach/mach.h>
 #endif
 
-#define NANOSEC 1000000000
-#define MICROSEC 1000000
+#define NANOSEC 1000000000 //纳秒
+#define MICROSEC 1000000 //微妙
 
 static double
 get_time() {
-#if  !defined(__APPLE__)
+#if  !defined(__APPLE__) //如果非apple平台
+	// 	struct timespec
+	// {
+	//     time_t tv_sec;  秒     
+	//     long int tv_nsec; 纳秒     
+	// };
 	struct timespec ti;
-	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ti);
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ti);//本线程到当前代码系统CPU花费的时间
 
-	int sec = ti.tv_sec & 0xffff;
-	int nsec = ti.tv_nsec;
+	int sec = ti.tv_sec & 0xffff;//秒只取32位
+	int nsec = ti.tv_nsec;//纳秒
 
-	return (double)sec + (double)nsec / NANOSEC;	
+	return (double)sec + (double)nsec / NANOSEC;//将纳秒转化为秒
 #else
 	struct task_thread_times_info aTaskInfo;
 	mach_msg_type_number_t aTaskInfoCount = TASK_THREAD_TIMES_INFO_COUNT;
@@ -37,95 +42,110 @@ get_time() {
 }
 
 static inline double 
-diff_time(double start) {
-	double now = get_time();
+diff_time(double start) {//计算时间的差值
+	double now = get_time();//当前时间
 	if (now < start) {
-		return now + 0x10000 - start;
+		return now + 0x10000 - start;//??
 	} else {
 		return now - start;
 	}
 }
 
+//当前协程计时开始
+//初始化启动时间(start time)为当前时间
+//初始化全部时间(total time)为0
 static int
 lstart(lua_State *L) {
-	lua_pushthread(L);
-	lua_rawget(L, lua_upvalueindex(2));
-	if (!lua_isnil(L, -1)) {
+	lua_pushthread(L);//将当前线程co压入栈
+	lua_rawget(L, lua_upvalueindex(2));//获取表B[co]的值
+	if (!lua_isnil(L, -1)) {//如果值不为空
+		//线程只能启动profile一次
 		return luaL_error(L, "Thread %p start profile more than once", lua_topointer(L, 1));
 	}
-	lua_pushthread(L);
-	lua_pushnumber(L, 0);
-	lua_rawset(L, lua_upvalueindex(2));
+	lua_pushthread(L);//压入co
+	lua_pushnumber(L, 0);//压入0
+	lua_rawset(L, lua_upvalueindex(2));//表B[co]=0
 
-	lua_pushthread(L);
-	lua_pushnumber(L, get_time());
-	lua_rawset(L, lua_upvalueindex(1));
+	lua_pushthread(L);//压入co
+	lua_pushnumber(L, get_time());//压入启动时间
+	lua_rawset(L, lua_upvalueindex(1));//表A[co]=启动时间
 
 	return 0;
 }
 
+//当前协程停止计时
+//计算当前时间距离启动时间(启动时间会挂载恢复的时候会重置)的差值，加上全部的时间，即为消耗的总时间
 static int
 lstop(lua_State *L) {
-	lua_pushthread(L);
-	lua_rawget(L, lua_upvalueindex(1));
-	luaL_checktype(L, -1, LUA_TNUMBER);
-	double ti = diff_time(lua_tonumber(L, -1));
-	lua_pushthread(L);
-	lua_rawget(L, lua_upvalueindex(2));
-	double total_time = lua_tonumber(L, -1);
+	lua_pushthread(L);//压入co
+	lua_rawget(L, lua_upvalueindex(1));//获取表A[co]的值
+	luaL_checktype(L, -1, LUA_TNUMBER);//检查类型是否为number
+	double ti = diff_time(lua_tonumber(L, -1));//计算时间差值
+	lua_pushthread(L);//压入co
+	lua_rawget(L, lua_upvalueindex(2));//获取表B[co]的值
+	double total_time = lua_tonumber(L, -1);//总时间
 
+	//表A[co]=nil
 	lua_pushthread(L);
 	lua_pushnil(L);
 	lua_rawset(L, lua_upvalueindex(1));
 
+	//表B[co]=nil
 	lua_pushthread(L);
 	lua_pushnil(L);
 	lua_rawset(L, lua_upvalueindex(2));
 
+	//压入返回结果
 	lua_pushnumber(L, ti + total_time);
 
 	return 1;
 }
 
+//恢复协程
+//恢复协程运行需要重置启动时间
 static int
 lresume(lua_State *L) {
-	lua_pushvalue(L,1);//复制co参数并压栈
+	lua_pushvalue(L,1);//复制co参数并压栈，resume第一个参数为co
 	lua_rawget(L, lua_upvalueindex(2));//获取表B[co]的值，然后将值压入
-	if (lua_isnil(L, -1)) {		// check total time 检查总时间 没有找到值
+
+	//check total time为nil，则代表该协程没有使用profile记录时间
+	if (lua_isnil(L, -1)) {		// check total time 检查总时间，为NILL则表示没有找到值
 		lua_pop(L,1);//弹出空值
 	} else {
-		lua_pop(L,1);
-		lua_pushvalue(L,1);
-		double ti = get_time();
-		lua_pushnumber(L, ti);
-		lua_rawset(L, lua_upvalueindex(1));	// set start time
+		lua_pop(L,1);//弹出取到的总时间
+		lua_pushvalue(L,1);//复制co参数并压栈
+		double ti = get_time();//获取当前时间
+		lua_pushnumber(L, ti);//将时间压入堆栈
+		lua_rawset(L, lua_upvalueindex(1));	// set start time 重置启动时间，表A[co]=ti
 	}
 
-	lua_CFunction co_resume = lua_tocfunction(L, lua_upvalueindex(3));
+	lua_CFunction co_resume = lua_tocfunction(L, lua_upvalueindex(3));//获取LUA中的resume
 
-	return co_resume(L);
+	return co_resume(L);//调用coroutine.resume
 }
 
+//挂起协程
+//挂起协程时，需要计算当前走过的时间，然后加到total time内
 static int
 lyield(lua_State *L) {
-	lua_pushthread(L);
-	lua_rawget(L, lua_upvalueindex(2));	// check total time
-	if (lua_isnil(L, -1)) {
-		lua_pop(L,1);
+	lua_pushthread(L);//将当前线程(co)压栈
+	lua_rawget(L, lua_upvalueindex(2));	// check total time 获取表B[co]的值，压栈
+	if (lua_isnil(L, -1)) {//获取到的值为空
+		lua_pop(L,1);//pop出空值
 	} else {
-		double ti = lua_tonumber(L, -1);
-		lua_pop(L,1);
+		double ti = lua_tonumber(L, -1);//将栈上的时间转化为整数
+		lua_pop(L,1);//弹出
 
-		lua_pushthread(L);
-		lua_rawget(L, lua_upvalueindex(1));
-		double starttime = lua_tonumber(L, -1);
-		lua_pop(L,1);
+		lua_pushthread(L);//将当前线程(co)压栈
+		lua_rawget(L, lua_upvalueindex(1));//获取表A[co]的值，压栈
+		double starttime = lua_tonumber(L, -1);//将栈上的时间转化为整数
+		lua_pop(L,1);//弹出
 
-		ti += diff_time(starttime);
+		ti += diff_time(starttime);//计算经历的时间
 
-		lua_pushthread(L);
-		lua_pushnumber(L, ti);
-		lua_rawset(L, lua_upvalueindex(2));
+		lua_pushthread(L);//压入co
+		lua_pushnumber(L, ti);//压入经历的时间
+		lua_rawset(L, lua_upvalueindex(2));//表B[co]=ti
 	}
 
 	lua_CFunction co_yield = lua_tocfunction(L, lua_upvalueindex(3));
@@ -144,8 +164,8 @@ luaopen_profile(lua_State *L) {
 		{ NULL, NULL },
 	};
 	luaL_newlibtable(L,l);//为存储映射表新建一个表
-	lua_newtable(L);	// table thread->start time 假设名为表A
-	lua_newtable(L);	// table thread->total time 假设名为表B
+	lua_newtable(L);	// table thread->start time 假设名为表A，保存启动时间的表
+	lua_newtable(L);	// table thread->total time 假设名为表B，保存全部时间的表
 
 	lua_newtable(L);	// weak table 弱表,实际准确说是**弱表的元表**
 	lua_pushliteral(L, "kv");//push字面量"kv"
