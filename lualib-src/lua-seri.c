@@ -25,16 +25,18 @@
 #define TYPE_TABLE 6 //表类型
 
 #define MAX_COOKIE 32 
-#define COMBINE_TYPE(t,v) ((t) | (v) << 3)
+#define COMBINE_TYPE(t,v) ((t) | (v) << 3)	//比较类型
 
 #define BLOCK_SIZE 128	//块大小
-#define MAX_DEPTH 32
+#define MAX_DEPTH 32	//最大深度
 
+//块数据结构定义
 struct block {
 	struct block * next;
 	char buffer[BLOCK_SIZE];
 };
 
+//写块
 struct write_block {
 	struct block * head;
 	struct block * current;
@@ -42,6 +44,7 @@ struct write_block {
 	int ptr;
 };
 
+//读块
 struct read_block {
 	char * buffer;
 	int len;
@@ -531,10 +534,10 @@ _luaseri_unpack(lua_State *L) {	//解包函数
 
 int
 _luaseri_pack(lua_State *L) {	//打包函数
-	struct block temp;
-	temp.next = NULL;
-	struct write_block wb;
-	wb_init(&wb, &temp);
+	struct block temp;	//定义临时块
+	temp.next = NULL;	//置空next域
+	struct write_block wb; //定义写块
+	wb_init(&wb, &temp);//写块初始化
 	pack_from(L,&wb,0);
 	assert(wb.head == &temp);
 	seri(L, &temp, wb.len);

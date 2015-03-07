@@ -225,7 +225,7 @@ BLACKBIT	3rd/lua/lgc.h	89;"	d
 BLOCKSIZE	3rd/lua-md5/md5lib.c	63;"	d	file:
 BLOCKSIZE	lualib-src/lsha1.c	261;"	d	file:
 BLOCK_SIZE	3rd/jemalloc/test/unit/SFMT.c	38;"	d	file:
-BLOCK_SIZE	lualib-src/lua-seri.c	29;"	d	file:
+BLOCK_SIZE	lualib-src/lua-seri.c	30;"	d	file:
 BLOCK_SIZE64	3rd/jemalloc/test/unit/SFMT.c	39;"	d	file:
 BSON_ARRAY	lualib-src/lua-bson.c	37;"	d	file:
 BSON_BINARY	lualib-src/lua-bson.c	38;"	d	file:
@@ -342,7 +342,7 @@ CMD.start	examples/agent.lua	/^function CMD.start(gate, fd, proto)$/;"	f
 CMD.start	examples/watchdog.lua	/^function CMD.start(conf)$/;"	f
 CMD.sum	test/testoverload.lua	/^function CMD.sum(n)$/;"	f
 CMD.update	service/sharedatad.lua	/^function CMD.update(name, t)$/;"	f
-COMBINE_TYPE	lualib-src/lua-seri.c	27;"	d	file:
+COMBINE_TYPE	lualib-src/lua-seri.c	28;"	d	file:
 COMMAND.clearcache	service/debug_console.lua	/^function COMMAND.clearcache()$/;"	f
 COMMAND.exit	service/debug_console.lua	/^function COMMAND.exit(address)$/;"	f
 COMMAND.help	service/debug_console.lua	/^function COMMAND.help()$/;"	f
@@ -1339,8 +1339,8 @@ MAXVARS	3rd/lua/lparser.c	32;"	d	file:
 MAX_ABS_ERR	3rd/jemalloc/test/unit/math.c	4;"	d	file:
 MAX_ALIGN	3rd/jemalloc/test/integration/rallocx.c	115;"	d	file:
 MAX_ALIGN	3rd/jemalloc/test/integration/rallocx.c	132;"	d	file:
-MAX_COOKIE	lualib-src/lua-seri.c	26;"	d	file:
-MAX_DEPTH	lualib-src/lua-seri.c	30;"	d	file:
+MAX_COOKIE	lualib-src/lua-seri.c	27;"	d	file:
+MAX_DEPTH	lualib-src/lua-seri.c	31;"	d	file:
 MAX_EVENT	skynet-src/socket_server.c	23;"	d	file:
 MAX_FORMAT	3rd/lua/lstrlib.c	830;"	d	file:
 MAX_GLOBAL_MQ	skynet-src/skynet_mq.c	14;"	d	file:
@@ -2521,18 +2521,18 @@ TValuefields	3rd/lua/lobject.h	104;"	d
 TValuefields	3rd/lua/lobject.h	296;"	d
 TValuefields	3rd/lua/lobject.h	302;"	d
 TValuefields	3rd/lua/lobject.h	313;"	d
-TYPE_BOOLEAN	lualib-src/lua-seri.c	16;"	d	file:
+TYPE_BOOLEAN	lualib-src/lua-seri.c	17;"	d	file:
 TYPE_CLOSE	lualib-src/lua-netpack.c	22;"	d	file:
 TYPE_DATA	lualib-src/lua-netpack.c	18;"	d	file:
 TYPE_ERROR	lualib-src/lua-netpack.c	20;"	d	file:
-TYPE_LONG_STRING	lualib-src/lua-seri.c	23;"	d	file:
+TYPE_LONG_STRING	lualib-src/lua-seri.c	24;"	d	file:
 TYPE_MORE	lualib-src/lua-netpack.c	19;"	d	file:
-TYPE_NIL	lualib-src/lua-seri.c	15;"	d	file:
-TYPE_NUMBER	lualib-src/lua-seri.c	18;"	d	file:
+TYPE_NIL	lualib-src/lua-seri.c	16;"	d	file:
+TYPE_NUMBER	lualib-src/lua-seri.c	19;"	d	file:
 TYPE_OPEN	lualib-src/lua-netpack.c	21;"	d	file:
-TYPE_SHORT_STRING	lualib-src/lua-seri.c	21;"	d	file:
-TYPE_TABLE	lualib-src/lua-seri.c	24;"	d	file:
-TYPE_USERDATA	lualib-src/lua-seri.c	20;"	d	file:
+TYPE_SHORT_STRING	lualib-src/lua-seri.c	22;"	d	file:
+TYPE_TABLE	lualib-src/lua-seri.c	25;"	d	file:
+TYPE_USERDATA	lualib-src/lua-seri.c	21;"	d	file:
 Table	3rd/lua/lobject.h	/^typedef struct Table {$/;"	s
 Table	3rd/lua/lobject.h	/^} Table;$/;"	t	typeref:struct:Table
 TempName	3rd/jemalloc/bin/pprof	/^sub TempName {$/;"	s
@@ -2713,8 +2713,8 @@ _insert_name_before	skynet-src/skynet_handle.c	/^_insert_name_before(struct hand
 _int64	3rd/lua-int64/int64.c	/^_int64(lua_State *L, int index) {$/;"	f	file:
 _launch	service-src/service_snlua.c	/^_launch(struct skynet_context * context, void *ud, int type, int session, uint32_t source , const void * msg, size_t sz) {$/;"	f	file:
 _logger	service-src/service_logger.c	/^_logger(struct skynet_context * context, void *ud, int type, int session, uint32_t source, const void * msg, size_t sz) {$/;"	f	file:
-_luaseri_pack	lualib-src/lua-seri.c	/^_luaseri_pack(lua_State *L) {$/;"	f
-_luaseri_unpack	lualib-src/lua-seri.c	/^_luaseri_unpack(lua_State *L) {$/;"	f
+_luaseri_pack	lualib-src/lua-seri.c	/^_luaseri_pack(lua_State *L) {	\/\/打包函数$/;"	f
+_luaseri_unpack	lualib-src/lua-seri.c	/^_luaseri_unpack(lua_State *L) {	\/\/解包函数$/;"	f
 _malloc_thread_cleanup	3rd/jemalloc/src/tsd.c	/^_malloc_thread_cleanup(void)$/;"	f
 _mem_data	skynet-src/malloc_hook.c	/^typedef struct _mem_data {$/;"	s	file:
 _memory_block	skynet-src/malloc_hook.c	/^static size_t _memory_block = 0;$/;"	v	file:
@@ -5185,7 +5185,7 @@ intmax_t	3rd/jemalloc/include/msvc_compat/stdint.h	/^typedef int64_t   intmax_t;
 intptr_t	3rd/jemalloc/include/msvc_compat/stdint.h	/^   typedef _W64 signed int   intptr_t;$/;"	t
 intptr_t	3rd/jemalloc/include/msvc_compat/stdint.h	/^   typedef signed __int64    intptr_t;$/;"	t
 intro	3rd/lpeg/lpeg.html	/^<h2><a name="intro">Introduction<\/a><\/h2>$/;"	a
-invalid_stream	lualib-src/lua-seri.c	312;"	d	file:
+invalid_stream	lualib-src/lua-seri.c	313;"	d	file:
 invalid_stream_line	lualib-src/lua-seri.c	/^invalid_stream_line(lua_State *L, struct read_block *rb, int line) {$/;"	f	file:
 invalidateTMcache	3rd/lua/ltable.h	18;"	d
 invertjump	3rd/lua/lcode.c	/^static void invertjump (FuncState *fs, expdesc *e) {$/;"	f	file:
@@ -8046,12 +8046,12 @@ skynet.queue	lualib/skynet/queue.lua	/^function skynet.queue()$/;"	f
 skynet.rawcall	lualib/skynet.lua	/^function skynet.rawcall(addr, typename, msg, sz)$/;"	f
 skynet.redirect 	lualib/skynet.lua	/^skynet.redirect = function(dest,source,typename,...)$/;"	f
 skynet.register	lualib/skynet.lua	/^function skynet.register(name)$/;"	f
-skynet.register_protocol	lualib/skynet.lua	/^function skynet.register_protocol(class)$/;"	f
+skynet.register_protocol	lualib/skynet.lua	/^function skynet.register_protocol(class) --注册新的消息类别，传入的class是个table$/;"	f
 skynet.response	lualib/skynet.lua	/^function skynet.response(pack)$/;"	f
 skynet.ret	lualib/skynet.lua	/^function skynet.ret(msg, sz)$/;"	f
 skynet.retpack	lualib/skynet.lua	/^function skynet.retpack(...)$/;"	f
 skynet.self	lualib/skynet.lua	/^function skynet.self()$/;"	f
-skynet.send	lualib/skynet.lua	/^function skynet.send(addr, typename, ...)$/;"	f
+skynet.send	lualib/skynet.lua	/^function skynet.send(addr, typename, ...) --非阻塞发送消息$/;"	f
 skynet.setenv	lualib/skynet.lua	/^function skynet.setenv(key, value)$/;"	f
 skynet.sleep	lualib/skynet.lua	/^function skynet.sleep(ti)$/;"	f
 skynet.start	lualib/skynet.lua	/^function skynet.start(start_func)$/;"	f

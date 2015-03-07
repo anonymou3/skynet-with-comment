@@ -1,3 +1,4 @@
+//统计一个消息处理使用的系统时间
 #include <lua.h>
 #include <lauxlib.h>
 
@@ -88,8 +89,8 @@ lstop(lua_State *L) {
 
 static int
 lresume(lua_State *L) {
-	lua_pushvalue(L,1);
-	lua_rawget(L, lua_upvalueindex(2));
+	lua_pushvalue(L,1);//复制co参数并压栈
+	lua_rawget(L, lua_upvalueindex(2));//
 	if (lua_isnil(L, -1)) {		// check total time
 		lua_pop(L,1);
 	} else {
@@ -134,54 +135,53 @@ lyield(lua_State *L) {
 
 int
 luaopen_profile(lua_State *L) {
-	luaL_checkversion(L);
-	luaL_Reg l[] = {
+	luaL_checkversion(L); //检查版本
+	luaL_Reg l[] = {//映射表
 		{ "start", lstart },
 		{ "stop", lstop },
 		{ "resume", lresume },
 		{ "yield", lyield },
 		{ NULL, NULL },
 	};
-	luaL_newlibtable(L,l);
-	lua_newtable(L);	// table thread->start time
-	lua_newtable(L);	// table thread->total time
+	luaL_newlibtable(L,l);//为存储映射表新建一个表
+	lua_newtable(L);	// table thread->start time 假设名为表A
+	lua_newtable(L);	// table thread->total time 假设名为表B
 
-	lua_newtable(L);	// weak table
-	lua_pushliteral(L, "kv");
-	lua_setfield(L, -2, "__mode");
+	lua_newtable(L);	// weak table 弱表,实际准确说是**弱表的元表**
+	lua_pushliteral(L, "kv");//push字面量"kv"
+	lua_setfield(L, -2, "__mode");//weaktable["__mode"]="kv",表示key和value都是weak的，能够被自动gc
 
-	lua_pushvalue(L, -1);
-	lua_setmetatable(L, -3); 
-	lua_setmetatable(L, -3);
+	lua_pushvalue(L, -1);//复制刚才的**弱表的元表**然后压栈
+	lua_setmetatable(L, -3); //为表B设置元表，表B成为弱表
+	lua_setmetatable(L, -3);//为表A设置元表，表A成为弱表
 
-	lua_pushnil(L);
-	luaL_setfuncs(L,l,3);
+	lua_pushnil(L);//压一个空值
+	luaL_setfuncs(L,l,3);//注册映射表中的所有函数，并且有3个上值，所以注册的所有函数前两个参数是表A，表B，第三个参数是空
 
-	int libtable = lua_gettop(L);
+	int libtable = lua_gettop(L);//获取栈顶元素的索引
 
-	lua_getglobal(L, "coroutine");
-	lua_getfield(L, -1, "resume");
+	lua_getglobal(L, "coroutine");//获取coroutine，实际上是一个table
+	lua_getfield(L, -1, "resume");//获取coroutine["resume"]并压栈,实际上是一个function，也就是平常调用的coroutine.resume
 
-	lua_CFunction co_resume = lua_tocfunction(L, -1);
+	lua_CFunction co_resume = lua_tocfunction(L, -1);//将coroutine.resume转化为C函数，可以这么转换么？
 	if (co_resume == NULL)
 		return luaL_error(L, "Can't get coroutine.resume");
-	lua_pop(L,1);
-	lua_getfield(L, libtable, "resume");
-	lua_pushcfunction(L, co_resume);
-	lua_setupvalue(L, -2, 3);
-	lua_pop(L,1);
+	lua_pop(L,1);//将coroutine.resume弹出
+	lua_getfield(L, libtable, "resume");//获取新建表中的resume函数(C函数)
+	lua_pushcfunction(L, co_resume);//将LUA中的resume压栈
+	lua_setupvalue(L, -2, 3);//弹出lua中的resume,设置C的resume函数的第三个上值为lua中的resume
+	lua_pop(L,1);//弹出C的resume
 
-	lua_getfield(L, -1, "yield");
+	lua_getfield(L, -1, "yield");//获取coroutine["yield"]
 
-	lua_CFunction co_yield = lua_tocfunction(L, -1);
+	lua_CFunction co_yield = lua_tocfunction(L, -1);//转化为C函数
 	if (co_yield == NULL)
 		return luaL_error(L, "Can't get coroutine.yield");
-	lua_pop(L,1);
-	lua_getfield(L, libtable, "yield");
-	lua_pushcfunction(L, co_yield);
-	lua_setupvalue(L, -2, 3);
+	lua_pop(L,1);//弹出cotoutine.yield
+	lua_getfield(L, libtable, "yield");//获取C的yield
+	lua_pushcfunction(L, co_yield);//压入lua的yield
+	lua_setupvalue(L, -2, 3);//弹出lua的yield,并设置为C的yield的第三个上值
 
-	lua_settop(L, libtable);
-
+	lua_settop(L, libtable);//设置栈顶
 	return 1;
 }

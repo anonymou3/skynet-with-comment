@@ -1,6 +1,7 @@
-local c = require "skynet.core"	--加载C库代码
+local c = require "skynet.core"	--加载C库
 
 --下面为什么要这么写？？
+--可以想到的是这样写可以提高性能
 local tostring = tostring
 local tonumber = tonumber
 local coroutine = coroutine
@@ -8,12 +9,12 @@ local assert = assert
 local pairs = pairs
 local pcall = pcall
 
-local profile = require "profile"
+local profile = require "profile" --加载C库
 
-coroutine.resume = profile.resume
-coroutine.yield = profile.yield
+coroutine.resume = profile.resume --替换成C库中的函数
+coroutine.yield = profile.yield --替换成C库中的函数
 
-local proto = {}
+local proto = {}  --保存注册的消息类别信息
 local skynet = {
 	--预定义的消息类别id
 	-- read skynet.h 同skynet.h中的定义一致
@@ -96,9 +97,9 @@ end
 
 -- coroutine reuse
 
-local coroutine_pool = {}
-local coroutine_yield = coroutine.yield
-local coroutine_count = 0
+local coroutine_pool = {}	--协程池
+local coroutine_yield = coroutine.yield --起个别名，同样提升性能
+local coroutine_count = 0   --协程数目
 
 local function co_create(f)
 	local co = table.remove(coroutine_pool)
@@ -409,8 +410,8 @@ local function yield_call(service, session)
 end
 
 function skynet.call(addr, typename, ...)
-	local p = proto[typename]
-	local session = c.send(addr, p.id , nil , p.pack(...))
+	local p = proto[typename] --先根据名字取得对应的消息类别(table)
+	local session = c.send(addr, p.id , nil , p.pack(...)) --保存返回的会话
 	if session == nil then
 		error("call to invalid address " .. skynet.address(addr))
 	end
@@ -472,11 +473,11 @@ function skynet.dispatch_unknown_response(unknown)
 	return prev
 end
 
-local fork_queue = {}
+local fork_queue = {} --创建的协程队列
 
 local tunpack = table.unpack
 
-function skynet.fork(func,...)
+function skynet.fork(func,...) --创建一个新的协程
 	local args = { ... }
 	local co = co_create(function()
 		func(tunpack(args))
@@ -558,10 +559,10 @@ function skynet.queryservice(global, ...)
 end
 
 function skynet.address(addr)
-	if type(addr) == "number" then
-		return string.format(":%08x",addr)
+	if type(addr) == "number" then --如果是数字
+		return string.format(":%08x",addr) --将数字地址转换为字符串
 	else
-		return tostring(addr)
+		return tostring(addr) --转换任何类型到人可阅读的字符串形式
 	end
 end
 
