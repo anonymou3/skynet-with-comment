@@ -11,7 +11,7 @@
 //因为消息传递必然涉及到使用何种协议来编码 解码 格式是怎样的
 //所以这里开头的P的含义可以理解为protocol的首字母
 #define PTYPE_TEXT 0 	//以文本方式编码消息的消息类别
-#define PTYPE_RESPONSE 1 
+#define PTYPE_RESPONSE 1  //响应的消息类别
 #define PTYPE_MULTICAST 2
 #define PTYPE_CLIENT 3
 #define PTYPE_SYSTEM 4

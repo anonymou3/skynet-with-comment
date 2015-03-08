@@ -30,46 +30,48 @@ traceback (lua_State *L) {
 
 static int
 _cb(struct skynet_context * context, void * ud, int type, int session, uint32_t source, const void * msg, size_t sz) {
-	lua_State *L = ud;
+	lua_State *L = ud;//从用户数据中获取lua_State
 	int trace = 1;
 	int r;
-	int top = lua_gettop(L);
-	if (top == 0) {
-		lua_pushcfunction(L, traceback);
-		lua_rawgetp(L, LUA_REGISTRYINDEX, _cb);
+	int top = lua_gettop(L);//获取栈顶索引
+	//printf("_cb:the top of stack is %d \n",lua_gettop(L));	
+
+	if (top == 0) {//栈为空
+		lua_pushcfunction(L, traceback);//压入追踪函数
+		lua_rawgetp(L, LUA_REGISTRYINDEX, _cb);//根据cb获取LUA回调函数(_callback传入的)
 	} else {
-		assert(top == 2);
+		assert(top == 2);//栈内有两个元素
 	}
-	lua_pushvalue(L,2);
+	lua_pushvalue(L,2);//复制LUA回调函数
 
-	lua_pushinteger(L, type);
-	lua_pushlightuserdata(L, (void *)msg);
-	lua_pushinteger(L,sz);
-	lua_pushinteger(L, session);
-	lua_pushnumber(L, source);
+	lua_pushinteger(L, type);//压入类型类型
+	lua_pushlightuserdata(L, (void *)msg);//压入消息
+	lua_pushinteger(L,sz);//压入消息大小
+	lua_pushinteger(L, session);//压入会话
+	lua_pushnumber(L, source);//压入消息来源
 
-	r = lua_pcall(L, 5, 0 , trace);
+	r = lua_pcall(L, 5, 0 , trace);//调用回调函数处理消息
 
-	if (r == LUA_OK) {
-		return 0;
+	if (r == LUA_OK) {//成功
+		return 0;//直接返回0
 	}
-	const char * self = skynet_command(context, "REG", NULL);
+	const char * self = skynet_command(context, "REG", NULL);//获取自己句柄的十六进制表示(字符串)
 	switch (r) {
-	case LUA_ERRRUN:
+	case LUA_ERRRUN://运行时错误
 		skynet_error(context, "lua call [%x to %s : %d msgsz = %d] error : " KRED "%s" KNRM, source , self, session, sz, lua_tostring(L,-1));
 		break;
-	case LUA_ERRMEM:
+	case LUA_ERRMEM://内存分配错误
 		skynet_error(context, "lua memory error : [%x to %s : %d]", source , self, session);
 		break;
-	case LUA_ERRERR:
+	case LUA_ERRERR://在运行错误处理函数时发生的错误
 		skynet_error(context, "lua error in error : [%x to %s : %d]", source , self, session);
 		break;
-	case LUA_ERRGCMM:
+	case LUA_ERRGCMM://在运行 __gc 元方法时发生的错误
 		skynet_error(context, "lua gc error : [%x to %s : %d]", source , self, session);
 		break;
 	};
 
-	lua_pop(L,1);
+	lua_pop(L,1);//弹出复制的LUA回调函数
 
 	return 0;
 }
@@ -83,19 +85,20 @@ forward_cb(struct skynet_context * context, void * ud, int type, int session, ui
 
 static int
 _callback(lua_State *L) {
-	struct skynet_context * context = lua_touserdata(L, lua_upvalueindex(1));
+	struct skynet_context * context = lua_touserdata(L, lua_upvalueindex(1));//从上值取得上下文
 	int forward = lua_toboolean(L, 2);
-	luaL_checktype(L,1,LUA_TFUNCTION);
-	lua_settop(L,1);
-	lua_rawsetp(L, LUA_REGISTRYINDEX, _cb);
+	luaL_checktype(L,1,LUA_TFUNCTION);//检查参数1是否是函数
+	lua_settop(L,1);//设置栈顶
+	lua_rawsetp(L, LUA_REGISTRYINDEX, _cb);//注册表[_cb对应的轻量用户数据]=栈顶的LUA函数,会将值弹出栈
 
-	lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_MAINTHREAD);
-	lua_State *gL = lua_tothread(L,-1);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_MAINTHREAD);//获取LUA状态机的主线程(类型可能是thread吧)，压入
+	lua_State *gL = lua_tothread(L,-1);//将栈顶的值转化为LUA线程，由lua_State*表示
 
+	//printf("_callback:the top of stack is %d \n",lua_gettop(L));	
 	if (forward) {
 		skynet_callback(context, gL, forward_cb);
 	} else {
-		skynet_callback(context, gL, _cb);
+		skynet_callback(context, gL, _cb);//重新设置上下文的回调函数
 	}
 
 	return 0;

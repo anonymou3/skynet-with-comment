@@ -7044,7 +7044,7 @@ uncomplete	lualib-src/lua-netpack.c	/^struct uncomplete {$/;"	s	file:
 write_size	lualib-src/lua-netpack.c	/^write_size(uint8_t * buffer, int len) {$/;"	f	file:
 MICROSEC	lualib-src/lua-profile.c	/^#define MICROSEC /;"	d	file:
 NANOSEC	lualib-src/lua-profile.c	/^#define NANOSEC /;"	d	file:
-diff_time	lualib-src/lua-profile.c	/^diff_time(double start) {$/;"	f	file:
+diff_time	lualib-src/lua-profile.c	/^diff_time(double start) {\/\/计算时间的差值$/;"	f	file:
 get_time	lualib-src/lua-profile.c	/^get_time() {$/;"	f	file:
 lresume	lualib-src/lua-profile.c	/^lresume(lua_State *L) {$/;"	f	file:
 lstart	lualib-src/lua-profile.c	/^lstart(lua_State *L) {$/;"	f	file:
@@ -7062,8 +7062,8 @@ TYPE_NUMBER	lualib-src/lua-seri.c	/^#define TYPE_NUMBER /;"	d	file:
 TYPE_SHORT_STRING	lualib-src/lua-seri.c	/^#define TYPE_SHORT_STRING /;"	d	file:
 TYPE_TABLE	lualib-src/lua-seri.c	/^#define TYPE_TABLE /;"	d	file:
 TYPE_USERDATA	lualib-src/lua-seri.c	/^#define TYPE_USERDATA /;"	d	file:
-_luaseri_pack	lualib-src/lua-seri.c	/^_luaseri_pack(lua_State *L) {$/;"	f
-_luaseri_unpack	lualib-src/lua-seri.c	/^_luaseri_unpack(lua_State *L) {$/;"	f
+_luaseri_pack	lualib-src/lua-seri.c	/^_luaseri_pack(lua_State *L) {	\/\/打包函数$/;"	f
+_luaseri_unpack	lualib-src/lua-seri.c	/^_luaseri_unpack(lua_State *L) {	\/\/解包函数$/;"	f
 blk_alloc	lualib-src/lua-seri.c	/^blk_alloc(void) {$/;"	f	file:
 block	lualib-src/lua-seri.c	/^struct block {$/;"	s	file:
 buffer	lualib-src/lua-seri.c	/^	char * buffer;$/;"	m	struct:read_block	file:
@@ -7562,7 +7562,7 @@ clear_pool	lualib/skynet.lua	/^local function clear_pool()$/;"	f
 co 	lualib/skynet.lua	/^		co = coroutine.create(function(...)$/;"	f
 co_create	lualib/skynet.lua	/^local function co_create(f)$/;"	f
 dispatch_error_queue	lualib/skynet.lua	/^local function dispatch_error_queue()$/;"	f
-dispatch_message	lualib/skynet.lua	/^local function dispatch_message(...)$/;"	f
+dispatch_message	lualib/skynet.lua	/^local function dispatch_message(...) --派发消息回调$/;"	f
 dispatch_wakeup	lualib/skynet.lua	/^local function dispatch_wakeup()$/;"	f
 globalname	lualib/skynet.lua	/^local function globalname(name, handle)$/;"	f
 init_all	lualib/skynet.lua	/^local function init_all()$/;"	f
@@ -7582,7 +7582,7 @@ skynet.endless	lualib/skynet.lua	/^function skynet.endless()$/;"	f
 skynet.error	lualib/skynet.lua	/^function skynet.error(...)$/;"	f
 skynet.exit	lualib/skynet.lua	/^function skynet.exit()$/;"	f
 skynet.filter	lualib/skynet.lua	/^function skynet.filter(f ,start_func)$/;"	f
-skynet.fork	lualib/skynet.lua	/^function skynet.fork(func,...)$/;"	f
+skynet.fork	lualib/skynet.lua	/^function skynet.fork(func,...) --创建一个新的协程$/;"	f
 skynet.forward_type	lualib/skynet.lua	/^function skynet.forward_type(map, start_func)$/;"	f
 skynet.getenv	lualib/skynet.lua	/^function skynet.getenv(key)$/;"	f
 skynet.harbor	lualib/skynet.lua	/^function skynet.harbor(addr)$/;"	f
@@ -7599,15 +7599,15 @@ skynet.queryservice	lualib/skynet.lua	/^function skynet.queryservice(global, ...
 skynet.rawcall	lualib/skynet.lua	/^function skynet.rawcall(addr, typename, msg, sz)$/;"	f
 skynet.redirect 	lualib/skynet.lua	/^skynet.redirect = function(dest,source,typename,...)$/;"	f
 skynet.register	lualib/skynet.lua	/^function skynet.register(name)$/;"	f
-skynet.register_protocol	lualib/skynet.lua	/^function skynet.register_protocol(class)$/;"	f
+skynet.register_protocol	lualib/skynet.lua	/^function skynet.register_protocol(class) --注册新的消息类别，传入的class是个table$/;"	f
 skynet.response	lualib/skynet.lua	/^function skynet.response(pack)$/;"	f
 skynet.ret	lualib/skynet.lua	/^function skynet.ret(msg, sz)$/;"	f
 skynet.retpack	lualib/skynet.lua	/^function skynet.retpack(...)$/;"	f
 skynet.self	lualib/skynet.lua	/^function skynet.self()$/;"	f
-skynet.send	lualib/skynet.lua	/^function skynet.send(addr, typename, ...)$/;"	f
+skynet.send	lualib/skynet.lua	/^function skynet.send(addr, typename, ...) --非阻塞发送消息$/;"	f
 skynet.setenv	lualib/skynet.lua	/^function skynet.setenv(key, value)$/;"	f
 skynet.sleep	lualib/skynet.lua	/^function skynet.sleep(ti)$/;"	f
-skynet.start	lualib/skynet.lua	/^function skynet.start(start_func)$/;"	f
+skynet.start	lualib/skynet.lua	/^function skynet.start(start_func)  --注册启动函数$/;"	f
 skynet.starttime	lualib/skynet.lua	/^function skynet.starttime()$/;"	f
 skynet.task	lualib/skynet.lua	/^function skynet.task(ret)$/;"	f
 skynet.term	lualib/skynet.lua	/^function skynet.term(service)$/;"	f
@@ -8292,14 +8292,14 @@ skynet_monitor_delete	skynet-src/skynet_monitor.c	/^skynet_monitor_delete(struct
 skynet_monitor_new	skynet-src/skynet_monitor.c	/^skynet_monitor_new() {$/;"	f
 skynet_monitor_trigger	skynet-src/skynet_monitor.c	/^skynet_monitor_trigger(struct skynet_monitor *sm, uint32_t source, uint32_t destination) {$/;"	f
 source	skynet-src/skynet_monitor.c	/^	uint32_t source;	\/\/源$/;"	m	struct:skynet_monitor	file:
-version	skynet-src/skynet_monitor.c	/^	int version;		\/\/版本$/;"	m	struct:skynet_monitor	file:
+version	skynet-src/skynet_monitor.c	/^	int version;		\/\/当前版本$/;"	m	struct:skynet_monitor	file:
 SKYNET_MONITOR_H	skynet-src/skynet_monitor.h	/^#define SKYNET_MONITOR_H$/;"	d
 DEFAULT_QUEUE_SIZE	skynet-src/skynet_mq.c	/^#define DEFAULT_QUEUE_SIZE /;"	d	file:
 LOCK	skynet-src/skynet_mq.c	/^#define LOCK(/;"	d	file:
 MAX_GLOBAL_MQ	skynet-src/skynet_mq.c	/^#define MAX_GLOBAL_MQ /;"	d	file:
 MQ_IN_GLOBAL	skynet-src/skynet_mq.c	/^#define MQ_IN_GLOBAL /;"	d	file:
 MQ_OVERLOAD	skynet-src/skynet_mq.c	/^#define MQ_OVERLOAD /;"	d	file:
-Q	skynet-src/skynet_mq.c	/^static struct global_queue *Q = NULL;$/;"	v	typeref:struct:global_queue	file:
+Q	skynet-src/skynet_mq.c	/^static struct global_queue *Q = NULL;	\/\/全局队列引用$/;"	v	typeref:struct:global_queue	file:
 UNLOCK	skynet-src/skynet_mq.c	/^#define UNLOCK(/;"	d	file:
 _drop_queue	skynet-src/skynet_mq.c	/^_drop_queue(struct message_queue *q, message_drop drop_func, void *ud) {$/;"	f	file:
 _release	skynet-src/skynet_mq.c	/^_release(struct message_queue *q) {$/;"	f	file:
@@ -8307,17 +8307,17 @@ cap	skynet-src/skynet_mq.c	/^	int cap;		\/\/容量$/;"	m	struct:message_queue	fi
 expand_queue	skynet-src/skynet_mq.c	/^expand_queue(struct message_queue *q) {$/;"	f	file:
 global_queue	skynet-src/skynet_mq.c	/^struct global_queue {$/;"	s	file:
 handle	skynet-src/skynet_mq.c	/^	uint32_t handle;\/\/句柄号$/;"	m	struct:message_queue	file:
-head	skynet-src/skynet_mq.c	/^	int head;		\/\/头$/;"	m	struct:message_queue	file:
-head	skynet-src/skynet_mq.c	/^	struct message_queue *head;	$/;"	m	struct:global_queue	typeref:struct:global_queue::message_queue	file:
-in_global	skynet-src/skynet_mq.c	/^	int in_global;$/;"	m	struct:message_queue	file:
-lock	skynet-src/skynet_mq.c	/^	int lock;		\/\/锁$/;"	m	struct:message_queue	file:
-lock	skynet-src/skynet_mq.c	/^	int lock;$/;"	m	struct:global_queue	file:
+head	skynet-src/skynet_mq.c	/^	int head;		\/\/队头索引$/;"	m	struct:message_queue	file:
+head	skynet-src/skynet_mq.c	/^	struct message_queue *head;	\/\/消息队列头指针$/;"	m	struct:global_queue	typeref:struct:global_queue::message_queue	file:
+in_global	skynet-src/skynet_mq.c	/^	int in_global;	\/\/是否在全局队列中$/;"	m	struct:message_queue	file:
+lock	skynet-src/skynet_mq.c	/^	int lock;					\/\/锁$/;"	m	struct:global_queue	file:
+lock	skynet-src/skynet_mq.c	/^	int lock;		\/\/用于实现自旋锁 加锁将这个值设置为1 释放锁将这个值设置为0$/;"	m	struct:message_queue	file:
 message_queue	skynet-src/skynet_mq.c	/^struct message_queue {$/;"	s	file:
-next	skynet-src/skynet_mq.c	/^	struct message_queue *next;		$/;"	m	struct:message_queue	typeref:struct:message_queue::message_queue	file:
-overload	skynet-src/skynet_mq.c	/^	int overload;$/;"	m	struct:message_queue	file:
-overload_threshold	skynet-src/skynet_mq.c	/^	int overload_threshold;$/;"	m	struct:message_queue	file:
-queue	skynet-src/skynet_mq.c	/^	struct skynet_message *queue;	\/\/存储消息$/;"	m	struct:message_queue	typeref:struct:message_queue::skynet_message	file:
-release	skynet-src/skynet_mq.c	/^	int release;	$/;"	m	struct:message_queue	file:
+next	skynet-src/skynet_mq.c	/^	struct message_queue *next;		\/\/下一个消息队列$/;"	m	struct:message_queue	typeref:struct:message_queue::message_queue	file:
+overload	skynet-src/skynet_mq.c	/^	int overload;	\/\/超载值（超载队列的长度）$/;"	m	struct:message_queue	file:
+overload_threshold	skynet-src/skynet_mq.c	/^	int overload_threshold;			\/\/超载阀值$/;"	m	struct:message_queue	file:
+queue	skynet-src/skynet_mq.c	/^	struct skynet_message *queue;	\/\/具体的消息队列(存放具体的skynet消息) 类似于数组，按需扩展$/;"	m	struct:message_queue	typeref:struct:message_queue::skynet_message	file:
+release	skynet-src/skynet_mq.c	/^	int release;	\/\/消息队列释放标记，当要释放一个服务的时候 清理标记$/;"	m	struct:message_queue	file:
 skynet_globalmq_pop	skynet-src/skynet_mq.c	/^skynet_globalmq_pop() {$/;"	f
 skynet_globalmq_push	skynet-src/skynet_mq.c	/^skynet_globalmq_push(struct message_queue * queue) {$/;"	f
 skynet_mq_create	skynet-src/skynet_mq.c	/^skynet_mq_create(uint32_t handle) {$/;"	f
@@ -8329,8 +8329,8 @@ skynet_mq_overload	skynet-src/skynet_mq.c	/^skynet_mq_overload(struct message_qu
 skynet_mq_pop	skynet-src/skynet_mq.c	/^skynet_mq_pop(struct message_queue *q, struct skynet_message *message) {$/;"	f
 skynet_mq_push	skynet-src/skynet_mq.c	/^skynet_mq_push(struct message_queue *q, struct skynet_message *message) {$/;"	f
 skynet_mq_release	skynet-src/skynet_mq.c	/^skynet_mq_release(struct message_queue *q, message_drop drop_func, void *ud) {$/;"	f
-tail	skynet-src/skynet_mq.c	/^	int tail;		\/\/尾$/;"	m	struct:message_queue	file:
-tail	skynet-src/skynet_mq.c	/^	struct message_queue *tail;$/;"	m	struct:global_queue	typeref:struct:global_queue::message_queue	file:
+tail	skynet-src/skynet_mq.c	/^	int tail;		\/\/队尾索引$/;"	m	struct:message_queue	file:
+tail	skynet-src/skynet_mq.c	/^	struct message_queue *tail;	\/\/消息队列尾指针$/;"	m	struct:global_queue	typeref:struct:global_queue::message_queue	file:
 SKYNET_MESSAGE_QUEUE_H	skynet-src/skynet_mq.h	/^#define SKYNET_MESSAGE_QUEUE_H$/;"	d
 data	skynet-src/skynet_mq.h	/^	void * data;	\/\/数据$/;"	m	struct:skynet_message
 message_drop	skynet-src/skynet_mq.h	/^typedef void (*message_drop)(struct skynet_message *, void *);$/;"	t
@@ -8373,7 +8373,7 @@ delete_context	skynet-src/skynet_server.c	/^delete_context(struct skynet_context
 dispatch_message	skynet-src/skynet_server.c	/^dispatch_message(struct skynet_context *ctx, struct skynet_message *msg) {$/;"	f	file:
 drop_message	skynet-src/skynet_server.c	/^drop_message(struct skynet_message *msg, void *ud) {$/;"	f	file:
 drop_t	skynet-src/skynet_server.c	/^struct drop_t {$/;"	s	file:
-endless	skynet-src/skynet_server.c	/^	bool endless;					\/\/是否回绕$/;"	m	struct:skynet_context	file:
+endless	skynet-src/skynet_server.c	/^	bool endless;					\/\/消息分发陷入死循环$/;"	m	struct:skynet_context	file:
 func	skynet-src/skynet_server.c	/^	const char * (*func)(struct skynet_context * context, const char * param);	\/\/命令函数$/;"	m	struct:command_func	file:
 handle	skynet-src/skynet_server.c	/^	uint32_t handle;				\/\/句柄号$/;"	m	struct:skynet_context	file:
 handle	skynet-src/skynet_server.c	/^	uint32_t handle;$/;"	m	struct:drop_t	file:
@@ -8385,7 +8385,7 @@ init	skynet-src/skynet_server.c	/^	int init;$/;"	m	struct:skynet_node	file:
 instance	skynet-src/skynet_server.c	/^	void * instance;			\/\/模块实例引用$/;"	m	struct:skynet_context	file:
 logfile	skynet-src/skynet_server.c	/^	FILE * logfile;					\/\/日志文件句柄$/;"	m	struct:skynet_context	file:
 mod	skynet-src/skynet_server.c	/^	struct skynet_module * mod;	\/\/模块引用$/;"	m	struct:skynet_context	typeref:struct:skynet_context::skynet_module	file:
-monitor_exit	skynet-src/skynet_server.c	/^	uint32_t monitor_exit;$/;"	m	struct:skynet_node	file:
+monitor_exit	skynet-src/skynet_server.c	/^	uint32_t monitor_exit;\/\/监视服务退出的句柄号$/;"	m	struct:skynet_node	file:
 name	skynet-src/skynet_server.c	/^	const char *name;	\/\/命令名$/;"	m	struct:command_func	file:
 queue	skynet-src/skynet_server.c	/^	struct message_queue *queue;	\/\/消息队列$/;"	m	struct:skynet_context	typeref:struct:skynet_context::message_queue	file:
 ref	skynet-src/skynet_server.c	/^	int ref;						\/\/引用计数$/;"	m	struct:skynet_context	file:
@@ -8456,19 +8456,19 @@ _start	skynet-src/skynet_start.c	/^_start(int thread) {$/;"	f	file:
 _timer	skynet-src/skynet_start.c	/^_timer(void *p) {$/;"	f	file:
 _worker	skynet-src/skynet_start.c	/^_worker(void *p) {$/;"	f	file:
 bootstrap	skynet-src/skynet_start.c	/^bootstrap(struct skynet_context * logger, const char * cmdline) {$/;"	f	file:
-cond	skynet-src/skynet_start.c	/^	pthread_cond_t cond;$/;"	m	struct:monitor	file:
+cond	skynet-src/skynet_start.c	/^	pthread_cond_t cond;\/\/条件锁	$/;"	m	struct:monitor	file:
 count	skynet-src/skynet_start.c	/^	int count;\/\/监视者计数$/;"	m	struct:monitor	file:
 create_thread	skynet-src/skynet_start.c	/^create_thread(pthread_t *thread, void *(*start_routine) (void *), void *arg) {$/;"	f	file:
 free_monitor	skynet-src/skynet_start.c	/^free_monitor(struct monitor *m) {$/;"	f	file:
-id	skynet-src/skynet_start.c	/^	int id;$/;"	m	struct:worker_parm	file:
-m	skynet-src/skynet_start.c	/^	struct monitor *m;$/;"	m	struct:worker_parm	typeref:struct:worker_parm::monitor	file:
+id	skynet-src/skynet_start.c	/^	int id;			\/\/ID$/;"	m	struct:worker_parm	file:
+m	skynet-src/skynet_start.c	/^	struct monitor *m;\/\/监视者们引用$/;"	m	struct:worker_parm	typeref:struct:worker_parm::monitor	file:
 m	skynet-src/skynet_start.c	/^	struct skynet_monitor ** m;\/\/存储具体的监视者$/;"	m	struct:monitor	typeref:struct:monitor::skynet_monitor	file:
 monitor	skynet-src/skynet_start.c	/^struct monitor {$/;"	s	file:
-mutex	skynet-src/skynet_start.c	/^	pthread_mutex_t mutex;$/;"	m	struct:monitor	file:
+mutex	skynet-src/skynet_start.c	/^	pthread_mutex_t mutex;\/\/互斥锁$/;"	m	struct:monitor	file:
 skynet_start	skynet-src/skynet_start.c	/^skynet_start(struct skynet_config * config) {$/;"	f
-sleep	skynet-src/skynet_start.c	/^	int sleep;\/\/睡眠$/;"	m	struct:monitor	file:
+sleep	skynet-src/skynet_start.c	/^	int sleep;\/\/睡眠线程数$/;"	m	struct:monitor	file:
 wakeup	skynet-src/skynet_start.c	/^wakeup(struct monitor *m, int busy) {$/;"	f	file:
-weight	skynet-src/skynet_start.c	/^	int weight;$/;"	m	struct:worker_parm	file:
+weight	skynet-src/skynet_start.c	/^	int weight;		\/\/权重$/;"	m	struct:worker_parm	file:
 worker_parm	skynet-src/skynet_start.c	/^struct worker_parm {$/;"	s	file:
 CLOCK_TIMER	skynet-src/skynet_timer.c	/^#define CLOCK_TIMER /;"	d	file:
 LOCK	skynet-src/skynet_timer.c	/^#define LOCK(/;"	d	file:
@@ -8519,7 +8519,7 @@ timer_update	skynet-src/skynet_timer.c	/^timer_update(struct timer *T) {$/;"	f	f
 SKYNET_TIMER_H	skynet-src/skynet_timer.h	/^#define SKYNET_TIMER_H$/;"	d
 poll_socket_epoll_h	skynet-src/socket_epoll.h	/^#define poll_socket_epoll_h$/;"	d
 sp_add	skynet-src/socket_epoll.h	/^sp_add(int efd, int sock, void *ud) {$/;"	f
-sp_create	skynet-src/socket_epoll.h	/^sp_create() {$/;"	f
+sp_create	skynet-src/socket_epoll.h	/^sp_create() {\/\/创建socket poll$/;"	f
 sp_del	skynet-src/socket_epoll.h	/^sp_del(int efd, int sock) {$/;"	f
 sp_invalid	skynet-src/socket_epoll.h	/^sp_invalid(int efd) {$/;"	f
 sp_nonblocking	skynet-src/socket_epoll.h	/^sp_nonblocking(int fd) {$/;"	f
@@ -8536,7 +8536,7 @@ sp_release	skynet-src/socket_kqueue.h	/^sp_release(int kfd) {$/;"	f
 sp_wait	skynet-src/socket_kqueue.h	/^sp_wait(int kfd, struct event *e, int max) {$/;"	f
 sp_write	skynet-src/socket_kqueue.h	/^sp_write(int kfd, int sock, void *ud, bool enable) {$/;"	f
 event	skynet-src/socket_poll.h	/^struct event {$/;"	s
-poll_fd	skynet-src/socket_poll.h	/^typedef int poll_fd;$/;"	t
+poll_fd	skynet-src/socket_poll.h	/^typedef int poll_fd;\/\/poll文件描述符$/;"	t
 read	skynet-src/socket_poll.h	/^	bool read;$/;"	m	struct:event
 s	skynet-src/socket_poll.h	/^	void * s;$/;"	m	struct:event
 socket_poll_h	skynet-src/socket_poll.h	/^#define socket_poll_h$/;"	d
@@ -8570,7 +8570,7 @@ UDP_ADDRESS_SIZE	skynet-src/socket_server.c	/^#define UDP_ADDRESS_SIZE /;"	d	fil
 add_udp_socket	skynet-src/socket_server.c	/^add_udp_socket(struct socket_server *ss, struct request_udp *udp) {$/;"	f	file:
 address	skynet-src/socket_server.c	/^	uint8_t address[UDP_ADDRESS_SIZE];$/;"	m	struct:request_send_udp	file:
 address	skynet-src/socket_server.c	/^	uint8_t address[UDP_ADDRESS_SIZE];$/;"	m	struct:request_setudp	file:
-alloc_id	skynet-src/socket_server.c	/^	int alloc_id;$/;"	m	struct:socket_server	file:
+alloc_id	skynet-src/socket_server.c	/^	int alloc_id;		\/\/应用层分配id用的$/;"	m	struct:socket_server	file:
 append_sendbuffer	skynet-src/socket_server.c	/^append_sendbuffer(struct socket_server *ss, struct socket *s, struct request_send * request, int n) {$/;"	f	file:
 append_sendbuffer_	skynet-src/socket_server.c	/^append_sendbuffer_(struct socket_server *ss, struct wb_list *s, struct request_send * request, int size, int n) {$/;"	f	file:
 append_sendbuffer_low	skynet-src/socket_server.c	/^append_sendbuffer_low(struct socket_server *ss,struct socket *s, struct request_send * request) {$/;"	f	file:
@@ -8580,11 +8580,11 @@ bind_socket	skynet-src/socket_server.c	/^bind_socket(struct socket_server *ss, s
 block_readpipe	skynet-src/socket_server.c	/^block_readpipe(int pipefd, void *buffer, int sz) {$/;"	f	file:
 buffer	skynet-src/socket_server.c	/^		char buffer[256];$/;"	m	union:request_package::__anon39	file:
 buffer	skynet-src/socket_server.c	/^	char * buffer;$/;"	m	struct:request_send	file:
-buffer	skynet-src/socket_server.c	/^	char buffer[MAX_INFO];$/;"	m	struct:socket_server	file:
+buffer	skynet-src/socket_server.c	/^	char buffer[MAX_INFO];		\/\/缓冲区	MAX_INFO:128$/;"	m	struct:socket_server	file:
 buffer	skynet-src/socket_server.c	/^	void * buffer;$/;"	m	struct:send_object	file:
 buffer	skynet-src/socket_server.c	/^	void *buffer;$/;"	m	struct:write_buffer	file:
 check_wb_list	skynet-src/socket_server.c	/^check_wb_list(struct wb_list *s) {$/;"	f	file:
-checkctrl	skynet-src/socket_server.c	/^	int checkctrl;$/;"	m	struct:socket_server	file:
+checkctrl	skynet-src/socket_server.c	/^	int checkctrl;		\/\/是否检查控制$/;"	m	struct:socket_server	file:
 clear_closed_event	skynet-src/socket_server.c	/^clear_closed_event(struct socket_server *ss, struct socket_message * result, int type) {$/;"	f	file:
 clear_wb_list	skynet-src/socket_server.c	/^clear_wb_list(struct wb_list *list) {$/;"	f	file:
 close	skynet-src/socket_server.c	/^		struct request_close close;$/;"	m	union:request_package::__anon39	typeref:struct:request_package::__anon39::request_close	file:
@@ -8593,15 +8593,15 @@ ctrl_cmd	skynet-src/socket_server.c	/^ctrl_cmd(struct socket_server *ss, struct 
 do_bind	skynet-src/socket_server.c	/^do_bind(const char *host, int port, int protocol, int *family) {$/;"	f	file:
 do_listen	skynet-src/socket_server.c	/^do_listen(const char * host, int port, int backlog) {$/;"	f	file:
 dummy	skynet-src/socket_server.c	/^	uint8_t dummy[256];$/;"	m	struct:request_package	file:
-ev	skynet-src/socket_server.c	/^	struct event ev[MAX_EVENT];$/;"	m	struct:socket_server	typeref:struct:socket_server::event	file:
-event_fd	skynet-src/socket_server.c	/^	poll_fd event_fd;$/;"	m	struct:socket_server	file:
-event_index	skynet-src/socket_server.c	/^	int event_index;$/;"	m	struct:socket_server	file:
-event_n	skynet-src/socket_server.c	/^	int event_n;$/;"	m	struct:socket_server	file:
+ev	skynet-src/socket_server.c	/^	struct event ev[MAX_EVENT];		\/\/存储已准备好读写的事件	MAX_EVENT:64$/;"	m	struct:socket_server	typeref:struct:socket_server::event	file:
+event_fd	skynet-src/socket_server.c	/^	poll_fd event_fd;	\/\/事件池文件描述符$/;"	m	struct:socket_server	file:
+event_index	skynet-src/socket_server.c	/^	int event_index;	\/\/事件索引$/;"	m	struct:socket_server	file:
+event_n	skynet-src/socket_server.c	/^	int event_n;		\/\/事件数$/;"	m	struct:socket_server	file:
 family	skynet-src/socket_server.c	/^	int family;$/;"	m	struct:request_udp	file:
+fd	skynet-src/socket_server.c	/^	int fd;					\/\/对应内核分配的fd$/;"	m	struct:socket	file:
 fd	skynet-src/socket_server.c	/^	int fd;$/;"	m	struct:request_bind	file:
 fd	skynet-src/socket_server.c	/^	int fd;$/;"	m	struct:request_listen	file:
 fd	skynet-src/socket_server.c	/^	int fd;$/;"	m	struct:request_udp	file:
-fd	skynet-src/socket_server.c	/^	int fd;$/;"	m	struct:socket	file:
 force_close	skynet-src/socket_server.c	/^force_close(struct socket_server *ss, struct socket *s, struct socket_message *result) {$/;"	f	file:
 forward_message_tcp	skynet-src/socket_server.c	/^forward_message_tcp(struct socket_server *ss, struct socket *s, struct socket_message * result) {$/;"	f	file:
 forward_message_udp	skynet-src/socket_server.c	/^forward_message_udp(struct socket_server *ss, struct socket *s, struct socket_message * result) {$/;"	f	file:
@@ -8609,11 +8609,12 @@ free_func	skynet-src/socket_server.c	/^	void (*free_func)(void *);$/;"	m	struct:
 free_wb_list	skynet-src/socket_server.c	/^free_wb_list(struct socket_server *ss, struct wb_list *list) {$/;"	f	file:
 gen_udp_address	skynet-src/socket_server.c	/^gen_udp_address(int protocol, union sockaddr_all *sa, uint8_t * udp_address) {$/;"	f	file:
 has_cmd	skynet-src/socket_server.c	/^has_cmd(struct socket_server *ss) {$/;"	f	file:
-head	skynet-src/socket_server.c	/^	struct write_buffer * head;$/;"	m	struct:wb_list	typeref:struct:wb_list::write_buffer	file:
-header	skynet-src/socket_server.c	/^	uint8_t header[8];	\/\/ 6 bytes dummy$/;"	m	struct:request_package	file:
-high	skynet-src/socket_server.c	/^	struct wb_list high;$/;"	m	struct:socket	typeref:struct:socket::wb_list	file:
+head	skynet-src/socket_server.c	/^	struct write_buffer * head;\/\/头$/;"	m	struct:wb_list	typeref:struct:wb_list::write_buffer	file:
+header	skynet-src/socket_server.c	/^	uint8_t header[8];	\/\/ 6 bytes dummy 头部 6个字节未用 [0-5] [6]是type [7]长度 长度指的是包体的长度$/;"	m	struct:request_package	file:
+high	skynet-src/socket_server.c	/^	struct wb_list high;	\/\/高$/;"	m	struct:socket	typeref:struct:socket::wb_list	file:
 host	skynet-src/socket_server.c	/^	char host[1];$/;"	m	struct:request_listen	file:
 host	skynet-src/socket_server.c	/^	char host[1];$/;"	m	struct:request_open	file:
+id	skynet-src/socket_server.c	/^	int id;					\/\/应用层维护的一个与fd对应的id 实际上是在socket池中的id$/;"	m	struct:socket	file:
 id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_bind	file:
 id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_close	file:
 id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_listen	file:
@@ -8623,29 +8624,28 @@ id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_setopt	file:
 id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_setudp	file:
 id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_start	file:
 id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:request_udp	file:
-id	skynet-src/socket_server.c	/^	int id;$/;"	m	struct:socket	file:
 list_uncomplete	skynet-src/socket_server.c	/^list_uncomplete(struct wb_list *s) {$/;"	f	file:
 listen	skynet-src/socket_server.c	/^		struct request_listen listen;$/;"	m	union:request_package::__anon39	typeref:struct:request_package::__anon39::request_listen	file:
 listen_socket	skynet-src/socket_server.c	/^listen_socket(struct socket_server *ss, struct request_listen * request, struct socket_message *result) {$/;"	f	file:
-low	skynet-src/socket_server.c	/^	struct wb_list low;$/;"	m	struct:socket	typeref:struct:socket::wb_list	file:
+low	skynet-src/socket_server.c	/^	struct wb_list low;		\/\/低$/;"	m	struct:socket	typeref:struct:socket::wb_list	file:
 new_fd	skynet-src/socket_server.c	/^new_fd(struct socket_server *ss, int id, int fd, int protocol, uintptr_t opaque, bool add) {$/;"	f	file:
-next	skynet-src/socket_server.c	/^	struct write_buffer * next;$/;"	m	struct:write_buffer	typeref:struct:write_buffer::write_buffer	file:
+next	skynet-src/socket_server.c	/^	struct write_buffer * next; \/\/ 发送缓冲区构成一个链表$/;"	m	struct:write_buffer	typeref:struct:write_buffer::write_buffer	file:
+opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;		\/\/在skynet中用于保存服务的handle$/;"	m	struct:socket	file:
 opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:request_bind	file:
 opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:request_close	file:
 opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:request_listen	file:
 opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:request_open	file:
 opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:request_start	file:
 opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:request_udp	file:
-opaque	skynet-src/socket_server.c	/^	uintptr_t opaque;$/;"	m	struct:socket	file:
 open	skynet-src/socket_server.c	/^		struct request_open open;$/;"	m	union:request_package::__anon39	typeref:struct:request_package::__anon39::request_open	file:
 open_request	skynet-src/socket_server.c	/^open_request(struct socket_server *ss, struct request_package *req, uintptr_t opaque, const char *addr, int port) {$/;"	f	file:
 open_socket	skynet-src/socket_server.c	/^open_socket(struct socket_server *ss, struct request_open * request, struct socket_message *result) {$/;"	f	file:
 p	skynet-src/socket_server.c	/^	} p;$/;"	m	struct:socket	typeref:union:socket::__anon38	file:
 port	skynet-src/socket_server.c	/^	int port;$/;"	m	struct:request_open	file:
-protocol	skynet-src/socket_server.c	/^	uint16_t protocol;$/;"	m	struct:socket	file:
-ptr	skynet-src/socket_server.c	/^	char *ptr;$/;"	m	struct:write_buffer	file:
+protocol	skynet-src/socket_server.c	/^	uint16_t protocol;		\/\/协议$/;"	m	struct:socket	file:
+ptr	skynet-src/socket_server.c	/^	char *ptr;	\/\/ 指向当前未发送的数据首部$/;"	m	struct:write_buffer	file:
 raise_uncomplete	skynet-src/socket_server.c	/^raise_uncomplete(struct socket * s) {$/;"	f	file:
-recvctrl_fd	skynet-src/socket_server.c	/^	int recvctrl_fd;$/;"	m	struct:socket_server	file:
+recvctrl_fd	skynet-src/socket_server.c	/^	int recvctrl_fd;	\/\/读取控制文件描述符$/;"	m	struct:socket_server	file:
 report_accept	skynet-src/socket_server.c	/^report_accept(struct socket_server *ss, struct socket *s, struct socket_message *result) {$/;"	f	file:
 report_connect	skynet-src/socket_server.c	/^report_connect(struct socket_server *ss, struct socket *s, struct socket_message *result) {$/;"	f	file:
 request_bind	skynet-src/socket_server.c	/^struct request_bind {$/;"	s	file:
@@ -8660,7 +8660,7 @@ request_setudp	skynet-src/socket_server.c	/^struct request_setudp {$/;"	s	file:
 request_start	skynet-src/socket_server.c	/^struct request_start {$/;"	s	file:
 request_udp	skynet-src/socket_server.c	/^struct request_udp {$/;"	s	file:
 reserve_id	skynet-src/socket_server.c	/^reserve_id(struct socket_server *ss) {$/;"	f	file:
-rfds	skynet-src/socket_server.c	/^	fd_set rfds;$/;"	m	struct:socket_server	file:
+rfds	skynet-src/socket_server.c	/^	fd_set rfds;	\/\/用于select的描述符集$/;"	m	struct:socket_server	file:
 s	skynet-src/socket_server.c	/^	struct sockaddr s;$/;"	m	union:sockaddr_all	typeref:struct:sockaddr_all::sockaddr	file:
 send	skynet-src/socket_server.c	/^		struct request_send send;$/;"	m	union:request_package::__anon39	typeref:struct:request_package::__anon39::request_send	file:
 send	skynet-src/socket_server.c	/^	struct request_send send;$/;"	m	struct:request_send_udp	typeref:struct:request_send_udp::request_send	file:
@@ -8674,13 +8674,13 @@ send_object_init	skynet-src/socket_server.c	/^send_object_init(struct socket_ser
 send_request	skynet-src/socket_server.c	/^send_request(struct socket_server *ss, struct request_package *request, char type, int len) {$/;"	f	file:
 send_socket	skynet-src/socket_server.c	/^send_socket(struct socket_server *ss, struct request_send * request, struct socket_message *result, int priority, const uint8_t *udp_address) {$/;"	f	file:
 send_udp	skynet-src/socket_server.c	/^		struct request_send_udp send_udp;$/;"	m	union:request_package::__anon39	typeref:struct:request_package::__anon39::request_send_udp	file:
-sendctrl_fd	skynet-src/socket_server.c	/^	int sendctrl_fd;$/;"	m	struct:socket_server	file:
+sendctrl_fd	skynet-src/socket_server.c	/^	int sendctrl_fd;	\/\/写入控制文件描述符$/;"	m	struct:socket_server	file:
 set_udp	skynet-src/socket_server.c	/^		struct request_setudp set_udp;$/;"	m	union:request_package::__anon39	typeref:struct:request_package::__anon39::request_setudp	file:
 set_udp_address	skynet-src/socket_server.c	/^set_udp_address(struct socket_server *ss, struct request_setudp *request, struct socket_message *result) {$/;"	f	file:
 setopt	skynet-src/socket_server.c	/^		struct request_setopt setopt;$/;"	m	union:request_package::__anon39	typeref:struct:request_package::__anon39::request_setopt	file:
 setopt_socket	skynet-src/socket_server.c	/^setopt_socket(struct socket_server *ss, struct request_setopt *request) {$/;"	f	file:
-size	skynet-src/socket_server.c	/^		int size;$/;"	m	union:socket::__anon38	file:
-slot	skynet-src/socket_server.c	/^	struct socket slot[MAX_SOCKET];$/;"	m	struct:socket_server	typeref:struct:socket_server::socket	file:
+size	skynet-src/socket_server.c	/^		int size;	\/\/下一次read操作要分配的缓冲区大小?$/;"	m	union:socket::__anon38	file:
+slot	skynet-src/socket_server.c	/^	struct socket slot[MAX_SOCKET];\/\/槽，用于存储套接字	MAX_SOCKET:65536$/;"	m	struct:socket_server	typeref:struct:socket_server::socket	file:
 sockaddr_all	skynet-src/socket_server.c	/^union sockaddr_all {$/;"	u	file:
 socket	skynet-src/socket_server.c	/^struct socket {$/;"	s	file:
 socket_keepalive	skynet-src/socket_server.c	/^socket_keepalive(int fd) {$/;"	f	file:
@@ -8702,26 +8702,26 @@ socket_server_udp_address	skynet-src/socket_server.c	/^socket_server_udp_address
 socket_server_udp_connect	skynet-src/socket_server.c	/^socket_server_udp_connect(struct socket_server *ss, int id, const char * addr, int port) {$/;"	f
 socket_server_udp_send	skynet-src/socket_server.c	/^socket_server_udp_send(struct socket_server *ss, int id, const struct socket_udp_address *addr, const void *buffer, int sz) {$/;"	f
 socket_server_userobject	skynet-src/socket_server.c	/^socket_server_userobject(struct socket_server *ss, struct socket_object_interface *soi) {$/;"	f
-soi	skynet-src/socket_server.c	/^	struct socket_object_interface soi;$/;"	m	struct:socket_server	typeref:struct:socket_server::socket_object_interface	file:
+soi	skynet-src/socket_server.c	/^	struct socket_object_interface soi;		\/\/套接字对象接口$/;"	m	struct:socket_server	typeref:struct:socket_server::socket_object_interface	file:
 start	skynet-src/socket_server.c	/^		struct request_start start;$/;"	m	union:request_package::__anon39	typeref:struct:request_package::__anon39::request_start	file:
 start_socket	skynet-src/socket_server.c	/^start_socket(struct socket_server *ss, struct request_start *request, struct socket_message *result) {$/;"	f	file:
 sz	skynet-src/socket_server.c	/^	int sz;$/;"	m	struct:request_send	file:
 sz	skynet-src/socket_server.c	/^	int sz;$/;"	m	struct:send_object	file:
 sz	skynet-src/socket_server.c	/^	int sz;$/;"	m	struct:write_buffer	file:
-tail	skynet-src/socket_server.c	/^	struct write_buffer * tail;$/;"	m	struct:wb_list	typeref:struct:wb_list::write_buffer	file:
-type	skynet-src/socket_server.c	/^	uint16_t type;$/;"	m	struct:socket	file:
+tail	skynet-src/socket_server.c	/^	struct write_buffer * tail;\/\/尾$/;"	m	struct:wb_list	typeref:struct:wb_list::write_buffer	file:
+type	skynet-src/socket_server.c	/^	uint16_t type;	\/\/socket类型或者状态$/;"	m	struct:socket	file:
 u	skynet-src/socket_server.c	/^	} u;$/;"	m	struct:request_package	typeref:union:request_package::__anon39	file:
 udp	skynet-src/socket_server.c	/^		struct request_udp udp;$/;"	m	union:request_package::__anon39	typeref:struct:request_package::__anon39::request_udp	file:
 udp_address	skynet-src/socket_server.c	/^		uint8_t udp_address[UDP_ADDRESS_SIZE];$/;"	m	union:socket::__anon38	file:
 udp_address	skynet-src/socket_server.c	/^	uint8_t udp_address[UDP_ADDRESS_SIZE];$/;"	m	struct:write_buffer	file:
 udp_socket_address	skynet-src/socket_server.c	/^udp_socket_address(struct socket *s, const uint8_t udp_address[UDP_ADDRESS_SIZE], union sockaddr_all *sa) {$/;"	f	file:
-udpbuffer	skynet-src/socket_server.c	/^	uint8_t udpbuffer[MAX_UDP_PACKAGE];$/;"	m	struct:socket_server	file:
+udpbuffer	skynet-src/socket_server.c	/^	uint8_t udpbuffer[MAX_UDP_PACKAGE];	\/\/udp缓冲区		MAX_UDP_PACKAGE:65535$/;"	m	struct:socket_server	file:
 userobject	skynet-src/socket_server.c	/^	bool userobject;$/;"	m	struct:write_buffer	file:
 v4	skynet-src/socket_server.c	/^	struct sockaddr_in v4;$/;"	m	union:sockaddr_all	typeref:struct:sockaddr_all::sockaddr_in	file:
 v6	skynet-src/socket_server.c	/^	struct sockaddr_in6 v6;$/;"	m	union:sockaddr_all	typeref:struct:sockaddr_all::sockaddr_in6	file:
 value	skynet-src/socket_server.c	/^	int value;$/;"	m	struct:request_setopt	file:
 wb_list	skynet-src/socket_server.c	/^struct wb_list {$/;"	s	file:
-wb_size	skynet-src/socket_server.c	/^	int64_t wb_size;$/;"	m	struct:socket	file:
+wb_size	skynet-src/socket_server.c	/^	int64_t wb_size;		\/\/发送缓冲区未发送的数据$/;"	m	struct:socket	file:
 what	skynet-src/socket_server.c	/^	int what;$/;"	m	struct:request_setopt	file:
 write_buffer	skynet-src/socket_server.c	/^struct write_buffer {$/;"	s	file:
 write_buffer_free	skynet-src/socket_server.c	/^write_buffer_free(struct socket_server *ss, struct write_buffer *wb) {$/;"	f	file:

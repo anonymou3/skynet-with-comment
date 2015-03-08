@@ -52,10 +52,10 @@ local session_response = {}
 local wakeup_session = {}
 local sleep_session = {}
 
-local watching_service = {}
-local watching_session = {}
-local dead_service = {}
-local error_queue = {}
+local watching_service = {} --监视服务
+local watching_session = {} --监视会话表：会话为key,服务为value
+local dead_service = {} --死亡服务
+local error_queue = {} --错误队列
 
 -- suspend is function
 local suspend
@@ -402,20 +402,20 @@ skynet.unpack = assert(c.unpack)
 skynet.tostring = assert(c.tostring)
 
 local function yield_call(service, session)
-	watching_session[session] = service
-	local succ, msg, sz = coroutine_yield("CALL", session)
-	watching_session[session] = nil
-	assert(succ, debug.traceback())
-	return msg,sz
+	watching_session[session] = service --会话为key,服务为value
+	local succ, msg, sz = coroutine_yield("CALL", session)--挂起该协程
+	watching_session[session] = nil --该协程恢复(resume)执行，去掉监视
+	assert(succ, debug.traceback()) --如果失败了，打印堆栈
+	return msg,sz --返回消息，消息大小
 end
 
-function skynet.call(addr, typename, ...)
+function skynet.call(addr, typename, ...)--阻塞发送消息
 	local p = proto[typename] --先根据名字取得对应的消息类别(table)
-	local session = c.send(addr, p.id , nil , p.pack(...)) --保存返回的会话
+	local session = c.send(addr, p.id , nil , p.pack(...)) --p.pack打包消息，然后发送消息，保存返回的会话
 	if session == nil then
 		error("call to invalid address " .. skynet.address(addr))
 	end
-	return p.unpack(yield_call(addr, session))
+	return p.unpack(yield_call(addr, session))--挂起调用，解包返回的(消息，消息大小)
 end
 
 function skynet.rawcall(addr, typename, msg, sz)
@@ -487,7 +487,7 @@ end
 
 local function raw_dispatch_message(prototype, msg, sz, session, source, ...)
 	-- skynet.PTYPE_RESPONSE = 1, read skynet.h
-	if prototype == 1 then
+	if prototype == 1 then -- 响应的消息
 		local co = session_id_coroutine[session]
 		if co == "BREAK" then
 			session_id_coroutine[session] = nil
@@ -517,8 +517,8 @@ local function raw_dispatch_message(prototype, msg, sz, session, source, ...)
 	end
 end
 
-local function dispatch_message(...)
-	local succ, err = pcall(raw_dispatch_message,...)
+local function dispatch_message(...) --派发消息回调
+	local succ, err = pcall(raw_dispatch_message,...) --调用原始的派发消息函数
 	while true do
 		local key,co = next(fork_queue)
 		if co == nil then
@@ -590,7 +590,7 @@ do
 	}
 
 	REG {
-		name = "response",
+		name = "response", --响应类型的消息
 		id = skynet.PTYPE_RESPONSE,
 	}
 
@@ -633,7 +633,7 @@ local function init_template(start)
 	init_all()
 end
 
-local function init_service(start)
+local function init_service(start) --初始化服务
 	local ok, err = xpcall(init_template, debug.traceback, start)
 	if not ok then
 		skynet.error("init service failed: " .. tostring(err))
@@ -644,9 +644,9 @@ local function init_service(start)
 	end
 end
 
-function skynet.start(start_func)
-	c.callback(dispatch_message)
-	skynet.timeout(0, function()
+function skynet.start(start_func)  --注册启动函数
+	c.callback(dispatch_message) --重新设置上下文的回调函数
+	skynet.timeout(0, function() --0个单位时间，调用func
 		init_service(start_func)
 	end)
 end
@@ -719,6 +719,7 @@ local function clear_pool()
 end
 
 -- Inject internal debug framework
+-- 注入内部的debug框架
 local debug = require "skynet.debug"
 debug(skynet, {
 	dispatch = dispatch_message,

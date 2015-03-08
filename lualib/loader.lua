@@ -37,9 +37,9 @@ LUA_SERVICE = nil
 package.path , LUA_PATH = LUA_PATH --设置package.path，置空LUA_PATH
 package.cpath , LUA_CPATH = LUA_CPATH --设置package.cpath，置空LUA_CPATH
 
-print(pattern)
+--print(pattern)
 local service_path = string.match(pattern, "(.*/)[^/?]+$") --捕获这种配置字符串 ./lualib/?/init.lua 捕获到./lualib/?/，大部分都是形如./service/?.lua
-print(service_path)
+--print(service_path)
 
 if service_path then
 	service_path = string.gsub(service_path, "?", args[1]) --替换?为服务名,如./lublib/example/
