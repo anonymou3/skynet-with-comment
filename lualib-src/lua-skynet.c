@@ -106,20 +106,20 @@ _callback(lua_State *L) {
 
 static int
 _command(lua_State *L) {
-	struct skynet_context * context = lua_touserdata(L, lua_upvalueindex(1));
-	const char * cmd = luaL_checkstring(L,1);
-	const char * result;
-	const char * parm = NULL;
-	if (lua_gettop(L) == 2) {
-		parm = luaL_checkstring(L,2);
+	struct skynet_context * context = lua_touserdata(L, lua_upvalueindex(1));//从上值中取出上下文
+	const char * cmd = luaL_checkstring(L,1);//取出命令串
+	const char * result;//结果
+	const char * parm = NULL;//参数
+	if (lua_gettop(L) == 2) {//如果传入的参数有2个
+		parm = luaL_checkstring(L,2);//取出参数串
 	}
 
-	result = skynet_command(context, cmd, parm);
-	if (result) {
-		lua_pushstring(L, result);
-		return 1;
+	result = skynet_command(context, cmd, parm);//执行命令
+	if (result) {//如果有返回值
+		lua_pushstring(L, result);//压入返回值
+		return 1;//有一个返回值
 	}
-	return 0;
+	return 0;//没有返回值
 }
 
 static int
@@ -254,8 +254,8 @@ _redirect(lua_State *L) {
 
 static int
 _error(lua_State *L) {
-	struct skynet_context * context = lua_touserdata(L, lua_upvalueindex(1));
-	skynet_error(context, "%s", luaL_checkstring(L,1));
+	struct skynet_context * context = lua_touserdata(L, lua_upvalueindex(1));//从上值中获取上下文
+	skynet_error(context, "%s", luaL_checkstring(L,1));//向logger服务发送错误信息
 	return 0;
 }
 
@@ -320,8 +320,8 @@ luaopen_skynet_core(lua_State *L) {
 		{ "send" , _send }, //发送消息函数
 		{ "genid", _genid },
 		{ "redirect", _redirect },
-		{ "command" , _command },
-		{ "error", _error },
+		{ "command" , _command },//执行命令
+		{ "error", _error },//报错
 		{ "tostring", _tostring },
 		{ "harbor", _harbor },
 		{ "pack", _luaseri_pack },//skynet.pack调用该函数

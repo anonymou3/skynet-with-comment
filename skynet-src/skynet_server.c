@@ -404,12 +404,12 @@ struct command_func {
 
 static const char *
 cmd_timeout(struct skynet_context * context, const char * param) {
-	char * session_ptr = NULL;
-	int ti = strtol(param, &session_ptr, 10);
-	int session = skynet_context_newsession(context);
+	char * session_ptr = NULL;//没用？
+	int ti = strtol(param, &session_ptr, 10);//取出传入的时间值
+	int session = skynet_context_newsession(context);//新建一个会话
 	skynet_timeout(context->handle, ti, session);
-	sprintf(context->result, "%d", session);
-	return context->result;
+	sprintf(context->result, "%d", session);//将会话写入上下文的result域
+	return context->result;//返回result
 }
 
 static const char *
@@ -626,7 +626,7 @@ cmd_logoff(struct skynet_context * context, const char * param) {
 }
 //命令名-》命令函数 映射表
 static struct command_func cmd_funcs[] = {
-	{ "TIMEOUT", cmd_timeout },
+	{ "TIMEOUT", cmd_timeout },//注册定时器
 	{ "REG", cmd_reg },//注册命令
 	{ "QUERY", cmd_query },
 	{ "NAME", cmd_name },

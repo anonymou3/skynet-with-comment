@@ -1368,7 +1368,7 @@ MEXP	3rd/jemalloc/test/include/test/SFMT-params.h	125;"	d
 MEXP	3rd/jemalloc/test/include/test/SFMT-params.h	127;"	d
 MEXP	3rd/jemalloc/test/include/test/SFMT-params.h	43;"	d
 MEXP	3rd/jemalloc/test/include/test/jemalloc_test.h	140;"	d
-MICROSEC	lualib-src/lua-profile.c	12;"	d	file:
+MICROSEC	lualib-src/lua-profile.c	13;"	d	file:
 MINSIZEARRAY	3rd/lua/lmem.c	43;"	d	file:
 MINSTRTABSIZE	3rd/lua/llimits.h	144;"	d
 MIN_READ_BUFFER	skynet-src/socket_server.c	24;"	d	file:
@@ -1444,7 +1444,7 @@ N64	3rd/jemalloc/test/include/test/SFMT-params.h	59;"	d
 NALLOCS_PER_THREAD	3rd/jemalloc/test/unit/prof_accum.h	4;"	d
 NAME	3rd/jemalloc/src/ctl.c	184;"	d	file:
 NAME	3rd/jemalloc/src/ctl.c	416;"	d	file:
-NANOSEC	lualib-src/lua-profile.c	11;"	d	file:
+NANOSEC	lualib-src/lua-profile.c	12;"	d	file:
 NBAGS	3rd/jemalloc/test/unit/rb.c	217;"	d	file:
 NBAGS	3rd/jemalloc/test/unit/rb.c	321;"	d	file:
 NBINS	3rd/jemalloc/include/jemalloc/internal/size_classes.h	133;"	d
@@ -3902,7 +3902,7 @@ cnts	3rd/jemalloc/include/jemalloc/internal/prof.h	/^	prof_cnt_t		cnts;$/;"	m	st
 cnts_link	3rd/jemalloc/include/jemalloc/internal/prof.h	/^	ql_elm(prof_thr_cnt_t)	cnts_link;$/;"	m	struct:prof_thr_cnt_s
 cnts_ql	3rd/jemalloc/include/jemalloc/internal/prof.h	/^	ql_head(prof_thr_cnt_t)	cnts_ql;$/;"	m	struct:prof_ctx_s
 co 	lualib/skynet.lua	/^		co = coroutine.create(function(...)$/;"	f
-co_create	lualib/skynet.lua	/^local function co_create(f)$/;"	f
+co_create	lualib/skynet.lua	/^local function co_create(f) --创建协程$/;"	f
 co_funcs	3rd/lua/lcorolib.c	/^static const luaL_Reg co_funcs[] = {$/;"	v	file:
 code	3rd/lpeg/lptree.h	/^  union Instruction *code;$/;"	m	struct:Pattern	typeref:union:Pattern::Instruction
 code	3rd/lpeg/lpvm.h	/^    byte code;$/;"	m	struct:Instruction::Inst
@@ -4229,7 +4229,7 @@ detected_redzone_corruption	3rd/jemalloc/test/unit/junk.c	/^static bool detected
 detected_redzone_corruption	3rd/jemalloc/test/unit/quarantine.c	/^static bool detected_redzone_corruption;$/;"	v	file:
 did_prof_dump_open	3rd/jemalloc/test/unit/prof_gdump.c	/^static bool did_prof_dump_open;$/;"	v	file:
 did_prof_dump_open	3rd/jemalloc/test/unit/prof_idump.c	/^static bool did_prof_dump_open;$/;"	v	file:
-diff_time	lualib-src/lua-profile.c	/^diff_time(double start) {$/;"	f	file:
+diff_time	lualib-src/lua-profile.c	/^diff_time(double start) {\/\/计算时间的差值$/;"	f	file:
 digest	3rd/lua-md5/md5.c	/^static void digest(const WORD32 *m, WORD32 *d) {$/;"	f	file:
 dirty	lualib-src/lua-sharedata.c	/^	int dirty;$/;"	m	struct:state	file:
 dirty_link	3rd/jemalloc/include/jemalloc/internal/arena.h	/^	rb_node(arena_chunk_t)	dirty_link;$/;"	m	struct:arena_chunk_s
@@ -4250,7 +4250,7 @@ dispatch_by_session	lualib/socketchannel.lua	/^local function dispatch_by_sessio
 dispatch_error_queue	lualib/skynet.lua	/^local function dispatch_error_queue()$/;"	f
 dispatch_function	lualib/socketchannel.lua	/^local function dispatch_function(self)$/;"	f
 dispatch_list	skynet-src/skynet_timer.c	/^dispatch_list(struct timer_node *current) {$/;"	f	file:
-dispatch_message	lualib/skynet.lua	/^local function dispatch_message(...)$/;"	f
+dispatch_message	lualib/skynet.lua	/^local function dispatch_message(...) --派发消息回调$/;"	f
 dispatch_message	service-src/service_gate.c	/^dispatch_message(struct gate *g, struct connection *c, int id, void * data, int sz) {$/;"	f	file:
 dispatch_message	skynet-src/skynet_server.c	/^dispatch_message(struct skynet_context *ctx, struct skynet_message *msg) {$/;"	f	file:
 dispatch_msg	lualib/snax/gateserver.lua	/^	local function dispatch_msg(fd, msg, sz)$/;"	f
@@ -5111,7 +5111,7 @@ init	skynet-src/skynet_module.h	/^	skynet_dl_init init;\/\/初始化函数$/;"	m
 init	skynet-src/skynet_server.c	/^	bool init;						\/\/是否初始化$/;"	m	struct:skynet_context	file:
 init	skynet-src/skynet_server.c	/^	int init;$/;"	m	struct:skynet_node	file:
 init	test/pingserver.lua	/^function init( ... )$/;"	f
-init_all	lualib/skynet.lua	/^local function init_all()$/;"	f
+init_all	lualib/skynet.lua	/^local function init_all() --初始化所有$/;"	f
 init_by_array	3rd/jemalloc/test/src/SFMT.c	/^sfmt_t *init_by_array(uint32_t *init_key, int key_length) {$/;"	f
 init_by_array_32_expected	3rd/jemalloc/test/unit/SFMT.c	/^static const uint32_t init_by_array_32_expected[] = {$/;"	v	file:
 init_by_array_64_expected	3rd/jemalloc/test/unit/SFMT.c	/^static const uint64_t init_by_array_64_expected[] = {$/;"	v	file:
@@ -5126,9 +5126,9 @@ init_lock	3rd/jemalloc/src/jemalloc.c	/^static malloc_mutex_t	init_lock = MALLOC
 init_lock	3rd/jemalloc/src/jemalloc.c	/^static malloc_mutex_t	init_lock;$/;"	v	file:
 init_oid_header	lualib-src/lua-bson.c	/^init_oid_header() {$/;"	f	file:
 init_registry	3rd/lua/lstate.c	/^static void init_registry (lua_State *L, global_State *g) {$/;"	f	file:
-init_service	lualib/skynet.lua	/^local function init_service(start)$/;"	f
+init_service	lualib/skynet.lua	/^local function init_service(start) --初始化服务$/;"	f
 init_system	lualib/snax/interface.lua	/^	local function init_system(t, name, f)$/;"	f
-init_template	lualib/skynet.lua	/^local function init_template(start)$/;"	f
+init_template	lualib/skynet.lua	/^local function init_template(start) --初始化模版$/;"	f
 init_winsock	lualib-src/lua-bson.c	/^init_winsock() {$/;"	f	file:
 initb	3rd/lua/lauxlib.h	/^  char initb[LUAL_BUFFERSIZE];  \/* initial buffer *\/$/;"	m	struct:luaL_Buffer
 initblock	3rd/lua-md5/md5lib.c	/^static int initblock (lua_State *L, const char *seed, int lseed, char *block) {$/;"	f	file:
@@ -5185,7 +5185,7 @@ intmax_t	3rd/jemalloc/include/msvc_compat/stdint.h	/^typedef int64_t   intmax_t;
 intptr_t	3rd/jemalloc/include/msvc_compat/stdint.h	/^   typedef _W64 signed int   intptr_t;$/;"	t
 intptr_t	3rd/jemalloc/include/msvc_compat/stdint.h	/^   typedef signed __int64    intptr_t;$/;"	t
 intro	3rd/lpeg/lpeg.html	/^<h2><a name="intro">Introduction<\/a><\/h2>$/;"	a
-invalid_stream	lualib-src/lua-seri.c	313;"	d	file:
+invalid_stream	lualib-src/lua-seri.c	316;"	d	file:
 invalid_stream_line	lualib-src/lua-seri.c	/^invalid_stream_line(lua_State *L, struct read_block *rb, int line) {$/;"	f	file:
 invalidateTMcache	3rd/lua/ltable.h	18;"	d
 invertjump	3rd/lua/lcode.c	/^static void invertjump (FuncState *fs, expdesc *e) {$/;"	f	file:
@@ -8019,7 +8019,7 @@ skipcomment	3rd/lua/lauxlib.c	/^static int skipcomment (LoadF *lf, int *cp) {$/;
 skipnoopstat	3rd/lua/lparser.c	/^static void skipnoopstat (LexState *ls) {$/;"	f	file:
 skynet.abort	lualib/skynet.lua	/^function skynet.abort()$/;"	f
 skynet.address	lualib/skynet.lua	/^function skynet.address(addr)$/;"	f
-skynet.call	lualib/skynet.lua	/^function skynet.call(addr, typename, ...)$/;"	f
+skynet.call	lualib/skynet.lua	/^function skynet.call(addr, typename, ...)--阻塞发送消息$/;"	f
 skynet.dispatch	lualib/skynet.lua	/^function skynet.dispatch(typename, func)$/;"	f
 skynet.dispatch_unknown_request	lualib/skynet.lua	/^function skynet.dispatch_unknown_request(unknown)$/;"	f
 skynet.dispatch_unknown_response	lualib/skynet.lua	/^function skynet.dispatch_unknown_response(unknown)$/;"	f
@@ -8027,12 +8027,12 @@ skynet.endless	lualib/skynet.lua	/^function skynet.endless()$/;"	f
 skynet.error	lualib/skynet.lua	/^function skynet.error(...)$/;"	f
 skynet.exit	lualib/skynet.lua	/^function skynet.exit()$/;"	f
 skynet.filter	lualib/skynet.lua	/^function skynet.filter(f ,start_func)$/;"	f
-skynet.fork	lualib/skynet.lua	/^function skynet.fork(func,...)$/;"	f
+skynet.fork	lualib/skynet.lua	/^function skynet.fork(func,...) --创建一个新的协程$/;"	f
 skynet.forward_type	lualib/skynet.lua	/^function skynet.forward_type(map, start_func)$/;"	f
 skynet.getenv	lualib/skynet.lua	/^function skynet.getenv(key)$/;"	f
 skynet.harbor	lualib/skynet.lua	/^function skynet.harbor(addr)$/;"	f
 skynet.info_func	lualib/skynet/debug.lua	/^function skynet.info_func(func)$/;"	f
-skynet.init	lualib/skynet.lua	/^function skynet.init(f, name)$/;"	f
+skynet.init	lualib/skynet.lua	/^function skynet.init(f, name) --初始化$/;"	f
 skynet.kill	lualib/skynet.lua	/^function skynet.kill(name)$/;"	f
 skynet.launch	lualib/skynet.lua	/^function skynet.launch(...)$/;"	f
 skynet.localname	lualib/skynet.lua	/^function skynet.localname(name)$/;"	f
@@ -8054,12 +8054,12 @@ skynet.self	lualib/skynet.lua	/^function skynet.self()$/;"	f
 skynet.send	lualib/skynet.lua	/^function skynet.send(addr, typename, ...) --非阻塞发送消息$/;"	f
 skynet.setenv	lualib/skynet.lua	/^function skynet.setenv(key, value)$/;"	f
 skynet.sleep	lualib/skynet.lua	/^function skynet.sleep(ti)$/;"	f
-skynet.start	lualib/skynet.lua	/^function skynet.start(start_func)$/;"	f
+skynet.start	lualib/skynet.lua	/^function skynet.start(start_func)  --注册启动函数$/;"	f
 skynet.starttime	lualib/skynet.lua	/^function skynet.starttime()$/;"	f
 skynet.task	lualib/skynet.lua	/^function skynet.task(ret)$/;"	f
 skynet.term	lualib/skynet.lua	/^function skynet.term(service)$/;"	f
 skynet.time	lualib/skynet.lua	/^function skynet.time()$/;"	f
-skynet.timeout	lualib/skynet.lua	/^function skynet.timeout(ti, func)$/;"	f
+skynet.timeout	lualib/skynet.lua	/^function skynet.timeout(ti, func)--注册定时器 非阻塞API$/;"	f
 skynet.uniqueservice	lualib/skynet.lua	/^function skynet.uniqueservice(global, ...)$/;"	f
 skynet.wait	lualib/skynet.lua	/^function skynet.wait()$/;"	f
 skynet.wakeup	lualib/skynet.lua	/^function skynet.wakeup(co)$/;"	f

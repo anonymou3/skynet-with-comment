@@ -212,17 +212,17 @@ timer_create_timer() {
 
 int
 skynet_timeout(uint32_t handle, int time, int session) {
-	if (time == 0) {
+	if (time == 0) {//如果传入的时间为0 则不需要添加定时器，直接发消息
 		struct skynet_message message;
 		message.source = 0;
 		message.session = session;
 		message.data = NULL;
 		message.sz = PTYPE_RESPONSE << HANDLE_REMOTE_SHIFT;
 
-		if (skynet_context_push(handle, &message)) {
+		if (skynet_context_push(handle, &message)) {//向自己发一个消息
 			return -1;
 		}
-	} else {
+	} else {//传入的时间不为空，则需要添加一个定时器，等待定时器到时，再发消息
 		struct timer_event event;
 		event.handle = handle;
 		event.session = session;

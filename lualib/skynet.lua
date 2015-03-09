@@ -44,15 +44,15 @@ function skynet.register_protocol(class) --注册新的消息类别，传入的c
 	proto[id] = class --通过id也可以索引到该
 end
 
-local session_id_coroutine = {}
-local session_coroutine_id = {}
-local session_coroutine_address = {}
+local session_id_coroutine = {} --会话->协程表
+local session_coroutine_id = {} --协程->会话表 
+local session_coroutine_address = {} --协程->消息源表
 local session_response = {}
 
-local wakeup_session = {}
-local sleep_session = {}
+local wakeup_session = {} --唤醒会话表
+local sleep_session = {} --睡眠会话表
 
-local watching_service = {} --监视服务
+local watching_service = {} --监视服务表
 local watching_session = {} --监视会话表：会话为key,服务为value
 local dead_service = {} --死亡服务
 local error_queue = {} --错误队列
@@ -97,30 +97,35 @@ end
 
 -- coroutine reuse
 
-local coroutine_pool = {}	--协程池
+local coroutine_pool = {}	--协程池 保存当前没有任务执行的协程
 local coroutine_yield = coroutine.yield --起个别名，同样提升性能
 local coroutine_count = 0   --协程数目
 
-local function co_create(f)
-	local co = table.remove(coroutine_pool)
-	if co == nil then
+local function co_create(f) --创建协程
+	local co = table.remove(coroutine_pool) --取出表(协程池)中最后一个元素(协程)
+	if co == nil then --取到的协程为空
 		local print = print
-		co = coroutine.create(function(...)
-			f(...)
-			while true do
-				f = nil
-				coroutine_pool[#coroutine_pool+1] = co
-				f = coroutine_yield "EXIT"
-				f(coroutine_yield())
+		co = coroutine.create(function(...) --创建协程 哪里第一次resume协程？？因为协程创建后是挂起状态，即不自动运行
+			f(...) --执行任务
+			while true do --执行完任务后
+				f = nil --置空原来的任务
+				coroutine_pool[#coroutine_pool+1] = co --将协程保存在协程池中
+				f = coroutine_yield "EXIT" --挂起协程，恢复时，得到的是新的任务
+				f(coroutine_yield())--执行新任务前，还要挂起一下，以此来获取新任务参数
 			end
 		end)
-		coroutine_count = coroutine_count + 1
-		if coroutine_count > 1024 then
-			skynet.error("May overload, create 1024 task")
-			coroutine_count = 0
+		coroutine_count = coroutine_count + 1 --增加协程数计数器
+		if coroutine_count > 1024 then --协程数超过1024
+			skynet.error("May overload, create 1024 task") --可能超载了
+			coroutine_count = 0 --清空协程数计数器 只清空不做其他处理么？
 		end
-	else
-		coroutine.resume(co, f)
+	else --取到的协程不为空，使用协程池内的协程执行任务（其实是函数，这里形象点说成任务）
+		coroutine.resume(co, f)--恢复协程，传入新任务
+		--原来协程阻塞在" f = coroutine_yield "EXIT" "
+		--resume后，f得到了新的值
+		--然后阻塞在" f(coroutine_yield()) "
+		--当返回了co，在外面调用coroutine.resume(co,...)
+		--阻塞在" f(coroutine_yield()) "的协程将继续执行，...将作为参数传入f
 	end
 	return co
 end
@@ -150,7 +155,7 @@ local function release_watching(address)
 end
 
 -- suspend is local function
-function suspend(co, result, command, param, size)
+function suspend(co, result, command, param, size) --当协程执行完当前请求时，将协程放入协程池 挂起
 	if not result then
 		local session = session_coroutine_id[co]
 		if session then -- coroutine may fork by others (session is nil)
@@ -243,13 +248,13 @@ function suspend(co, result, command, param, size)
 	dispatch_error_queue()
 end
 
-function skynet.timeout(ti, func)
-	local session = c.command("TIMEOUT",tostring(ti))
+function skynet.timeout(ti, func)--注册定时器 非阻塞API
+	local session = c.command("TIMEOUT",tostring(ti)) --调用C库的执行命令函数(命令为注册定时器)
 	assert(session)
-	session = tonumber(session)
-	local co = co_create(func)
-	assert(session_id_coroutine[session] == nil)
-	session_id_coroutine[session] = co
+	session = tonumber(session) --将会话串转为数字
+	local co = co_create(func) --创建一个协程,此时创建的协程并没有运行
+	assert(session_id_coroutine[session] == nil) --当前会话上没有对应的协程
+	session_id_coroutine[session] = co --保存协程
 end
 
 function skynet.sleep(ti)
@@ -445,10 +450,10 @@ function skynet.wakeup(co)
 	end
 end
 
-function skynet.dispatch(typename, func)
-	local p = assert(proto[typename],tostring(typename))
-	assert(p.dispatch == nil, tostring(typename))
-	p.dispatch = func
+function skynet.dispatch(typename, func) --注册消息处理函数
+	local p = assert(proto[typename],tostring(typename)) --获取消息类别
+	assert(p.dispatch == nil, tostring(typename)) --该消息类别还没有注册消息处理函数
+	p.dispatch = func --注册消息处理函数
 end
 
 local function unknown_request(session, address, msg, sz, prototype)
@@ -478,41 +483,43 @@ local fork_queue = {} --创建的协程队列
 local tunpack = table.unpack
 
 function skynet.fork(func,...) --创建一个新的协程
-	local args = { ... }
-	local co = co_create(function()
+	local args = { ... } --所有的参数
+	local co = co_create(function() --创建协程
 		func(tunpack(args))
 	end)
-	table.insert(fork_queue, co)
+	table.insert(fork_queue, co) --插入fork队列
 end
 
 local function raw_dispatch_message(prototype, msg, sz, session, source, ...)
 	-- skynet.PTYPE_RESPONSE = 1, read skynet.h
-	if prototype == 1 then -- 响应的消息
-		local co = session_id_coroutine[session]
-		if co == "BREAK" then
+	if prototype == 1 then -- 响应的消息（自己先发请求，等待响应，此时会挂起相应的协程）
+		local co = session_id_coroutine[session] --取出session对应的协程
+		if co == "BREAK" then --？？
 			session_id_coroutine[session] = nil
-		elseif co == nil then
-			unknown_response(session, source, msg, sz)
+		elseif co == nil then --协程为空
+			unknown_response(session, source, msg, sz) -- 未知的响应消息
 		else
-			session_id_coroutine[session] = nil
-			suspend(co, coroutine.resume(co, true, msg, sz))
+			session_id_coroutine[session] = nil --置空
+			suspend(co, coroutine.resume(co, true, msg, sz)) --恢复正在等待响应的协程
 		end
-	else
-		local p = assert(proto[prototype], prototype)
-		local f = p.dispatch
-		if f then
-			local ref = watching_service[source]
+	else --其他服务发送来的请求
+		local p = assert(proto[prototype], prototype) --取得对应的消息类别
+		local f = p.dispatch --取得消息处理函数
+		if f then --取得了消息处理函数
+			local ref = watching_service[source] --根据消息来源取得引用数
 			if ref then
-				watching_service[source] = ref + 1
+				watching_service[source] = ref + 1 --增加引用数
 			else
-				watching_service[source] = 1
+				watching_service[source] = 1 --设置引用数为1
 			end
-			local co = co_create(f)
-			session_coroutine_id[co] = session
-			session_coroutine_address[co] = source
-			suspend(co, coroutine.resume(co, session,source, p.unpack(msg,sz, ...)))
-		else
-			unknown_request(session, source, msg, sz, proto[prototype])
+			local co = co_create(f) --创建一个新的协程
+			session_coroutine_id[co] = session --保存会话
+			session_coroutine_address[co] = source --保存消息源
+			suspend(co, coroutine.resume(co, session,source, p.unpack(msg,sz, ...)))--恢复协程
+			--如果是新建的协程，则将参数通过resume直接传入主函数
+			--如果是从协程池取出的，协程先resume一次获取到消息处理函数，然后在这里再resume一次获取到具体的消息
+		else --没有找到对应的消息处理函数
+			unknown_request(session, source, msg, sz, proto[prototype]) --未知请求
 		end
 	end
 end
@@ -602,40 +609,40 @@ do
 	}
 end
 
-local init_func = {}
+local init_func = {} --初始化函数表
 
-function skynet.init(f, name)
-	assert(type(f) == "function")
-	if init_func == nil then
-		f()
-	else
-		if name == nil then
-			table.insert(init_func, f)
+function skynet.init(f, name) --注册初始化函数，这些函数会在调用启动函数前被调用
+	assert(type(f) == "function") --传入的f必须是函数
+	if init_func == nil then --如果初始化函数表为空
+		f() --直接调用传入的函数
+	else --初始化函数表不为空
+		if name == nil then --如果名字为空
+			table.insert(init_func, f) --直接插入
 		else
-			assert(init_func[name] == nil)
-			init_func[name] = f
+			assert(init_func[name] == nil) --名字不为空，判断没有该名字对应的函数
+			init_func[name] = f --插入函数，key为名字
 		end
 	end
 end
 
-local function init_all()
-	local funcs = init_func
-	init_func = nil
-	for k,v in pairs(funcs) do
-		v()
+local function init_all() --初始化所有
+	local funcs = init_func --引用初始化函数表
+	init_func = nil --释放引用，所以当该函数执行完 init_func指向的表会自动释放掉
+	for k,v in pairs(funcs) do --遍历初始化函数表
+		v() --执行函数
 	end
 end
 
-local function init_template(start)
-	init_all()
-	init_func = {}
-	start()
-	init_all()
+local function init_template(start) --初始化模版
+	init_all() --初始化所有
+	init_func = {} --重新设置初始化函数表
+	start() --调用启动函数
+	init_all() --再初始化所有一次？？？
 end
 
 local function init_service(start) --初始化服务
 	local ok, err = xpcall(init_template, debug.traceback, start)
-	if not ok then
+	if not ok then 
 		skynet.error("init service failed: " .. tostring(err))
 		skynet.send(".launcher","lua", "ERROR")
 		skynet.exit()
