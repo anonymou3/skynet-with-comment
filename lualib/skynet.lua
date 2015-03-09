@@ -155,7 +155,7 @@ local function release_watching(address)
 end
 
 -- suspend is local function
-function suspend(co, result, command, param, size) --当协程执行完当前请求时，将协程放入协程池 挂起
+function suspend(co, result, command, param, size) --当协程执行完当前请求或者调用了阻塞API(会yield自己)时，将协程放入协程池 挂起
 	if not result then
 		local session = session_coroutine_id[co]
 		if session then -- coroutine may fork by others (session is nil)
@@ -526,10 +526,10 @@ end
 
 local function dispatch_message(...) --派发消息回调
 	local succ, err = pcall(raw_dispatch_message,...) --调用原始的派发消息函数
-	while true do
-		local key,co = next(fork_queue)
-		if co == nil then
-			break
+	while true do --死循环
+		local key,co = next(fork_queue)--从fork队列取出一个协程
+		if co == nil then--没有协程
+			break--跳出循环
 		end
 		fork_queue[key] = nil
 		local fork_succ, fork_err = pcall(suspend,co,coroutine.resume(co))
