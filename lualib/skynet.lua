@@ -155,26 +155,29 @@ local function release_watching(address)
 end
 
 -- suspend is local function
-function suspend(co, result, command, param, size) --当协程执行完当前请求或者调用了阻塞API(会yield自己)时，将协程放入协程池 挂起
-	if not result then
-		local session = session_coroutine_id[co]
-		if session then -- coroutine may fork by others (session is nil)
-			local addr = session_coroutine_address[co]
-			if session ~= 0 then
+function suspend(co, result, command, param, size) --当协程执行完当前请求或者调用了阻塞API(会yield自己)时
+	--result：协程yield或者协程主函数返回时的第一个参数
+	--command,param,size 后续参数
+	if not result then --如果result不为true
+		local session = session_coroutine_id[co] --取出协程对应的会话
+		if session then -- coroutine may fork by others (session is nil) --会话不为空
+			--注意这里：Lua将false和nil看作是false，其他所有都是true
+			local addr = session_coroutine_address[co] --取出协程对应的消息源
+			if session ~= 0 then --如果消息不等于0，代表消息是通过skynet.call发送的
 				-- only call response error
-				c.send(addr, skynet.PTYPE_ERROR, session, "")
+				c.send(addr, skynet.PTYPE_ERROR, session, "") --向消息源发送一条出错消息
 			end
-			session_coroutine_id[co] = nil
-			session_coroutine_address[co] = nil
+			session_coroutine_id[co] = nil --置空
+			session_coroutine_address[co] = nil --置空
 		end
-		error(debug.traceback(co,tostring(command)))
+		error(debug.traceback(co,tostring(command))) --报错
 	end
-	if command == "CALL" then
-		session_id_coroutine[param] = co
-	elseif command == "SLEEP" then
+	if command == "CALL" then --协程因skynet.call挂起，此时param为session
+		session_id_coroutine[param] = co --会话->协程
+	elseif command == "SLEEP" then --协程因skynet.sleep或skynet.wait挂起
 		session_id_coroutine[param] = co
 		sleep_session[co] = param
-	elseif command == "RETURN" then
+	elseif command == "RETURN" then --协程因skynet.ret挂起
 		local co_session = session_coroutine_id[co]
 		local co_address = session_coroutine_address[co]
 		if param == nil or session_response[co] then
@@ -189,7 +192,7 @@ function suspend(co, result, command, param, size) --当协程执行完当前请
 			ret = false
 		end
 		return suspend(co, coroutine.resume(co, ret))
-	elseif command == "RESPONSE" then
+	elseif command == "RESPONSE" then --协程因skynet.response挂起
 		local co_session = session_coroutine_id[co]
 		local co_address = session_coroutine_address[co]
 		if session_response[co] then
@@ -231,17 +234,17 @@ function suspend(co, result, command, param, size) --当协程执行完当前请
 		watching_service[co_address] = watching_service[co_address] + 1
 		session_response[co] = response
 		return suspend(co, coroutine.resume(co, response))
-	elseif command == "EXIT" then
+	elseif command == "EXIT" then --协程执行完当前任务
 		-- coroutine exit
 		local address = session_coroutine_address[co]
 		release_watching(address)
 		session_coroutine_id[co] = nil
 		session_coroutine_address[co] = nil
 		session_response[co] = nil
-	elseif command == "QUIT" then
+	elseif command == "QUIT" then --协程因skynet.exit挂起
 		-- service exit
 		return
-	else
+	else --未知命令
 		error("Unknown command : " .. command .. "\n" .. debug.traceback(co))
 	end
 	dispatch_wakeup()
@@ -517,7 +520,7 @@ local function raw_dispatch_message(prototype, msg, sz, session, source, ...)
 			session_coroutine_address[co] = source --保存消息源
 			suspend(co, coroutine.resume(co, session,source, p.unpack(msg,sz, ...)))--恢复协程
 			--如果是新建的协程，则将参数通过resume直接传入主函数
-			--如果是从协程池取出的，协程先resume一次获取到消息处理函数，然后在这里再resume一次获取到具体的消息
+			--如果是从协程池取出的，协程先resume一次获取到消息处理函数（co_create内的else分支），然后在这里再resume一次获取到具体的参数
 		else --没有找到对应的消息处理函数
 			unknown_request(session, source, msg, sz, proto[prototype]) --未知请求
 		end
@@ -627,7 +630,7 @@ end
 
 local function init_all() --初始化所有
 	local funcs = init_func --引用初始化函数表
-	init_func = nil --释放引用，所以当该函数执行完 init_func指向的表会自动释放掉
+	init_func = nil --释放引用，init_func指向的表会自动释放掉
 	for k,v in pairs(funcs) do --遍历初始化函数表
 		v() --执行函数
 	end
@@ -635,9 +638,9 @@ end
 
 local function init_template(start) --初始化模版
 	init_all() --初始化所有
-	init_func = {} --重新设置初始化函数表
+	init_func = {} --重新设置初始化函数表,因为init_all()会释放init_func
 	start() --调用启动函数
-	init_all() --再初始化所有一次？？？
+	init_all() --再初始化所有一次,why??
 end
 
 local function init_service(start) --初始化服务
