@@ -47,15 +47,15 @@ end
 local session_id_coroutine = {} --会话->协程表
 local session_coroutine_id = {} --协程->会话表 
 local session_coroutine_address = {} --协程->消息源表
-local session_response = {}
+local session_response = {} --
 
-local wakeup_session = {} --唤醒会话表
-local sleep_session = {} --睡眠会话表
+local wakeup_session = {} --
+local sleep_session = {} --
 
-local watching_service = {} --监视服务表
-local watching_session = {} --监视会话表：会话为key,服务为value
-local dead_service = {} --死亡服务
-local error_queue = {} --错误队列
+local watching_service = {} --消息源->引用数表
+local watching_session = {} --会话->服务表
+local dead_service = {} --
+local error_queue = {} --
 
 -- suspend is function
 local suspend
@@ -101,16 +101,23 @@ local coroutine_pool = {}	--协程池 保存当前没有任务执行的协程
 local coroutine_yield = coroutine.yield --起个别名，同样提升性能
 local coroutine_count = 0   --协程数目
 
-local function co_create(f) --创建协程
+local function co_create(f) --创建协程或者从协程池拿出一个协程
+	--什么时候调用co_create:
+	--1:skynet.timeout
+	--2:skynet.fork
+	--3:raw_dispatch_message,其他服务发送来的请求
 	local co = table.remove(coroutine_pool) --取出表(协程池)中最后一个元素(协程)
 	if co == nil then --取到的协程为空
 		local print = print
-		co = coroutine.create(function(...) --创建协程 哪里第一次resume协程？？因为协程创建后是挂起状态，即不自动运行
+		co = coroutine.create(function(...) --创建协程 哪里第一次resume协程？(在raw_dispatch_message)因为协程创建后是挂起状态，即不自动运行
 			f(...) --执行任务
 			while true do --执行完任务后
-				f = nil --置空原来的任务
+				f = nil --释放原来的任务
 				coroutine_pool[#coroutine_pool+1] = co --将协程保存在协程池中
-				f = coroutine_yield "EXIT" --挂起协程，恢复时，得到的是新的任务
+				f = coroutine_yield "EXIT" --挂起协程，恢复时，得到的是新的任务。
+				--这样的效果就是调用者不知道得到的协程到底是新建的还是从协程池里取出的
+				--因为从调用者看来，使用的方式都是一样：调用co_create得到一个协程，然后调用一次resume传入参数
+
 				f(coroutine_yield())--执行新任务前，还要挂起一下，以此来获取新任务参数
 			end
 		end)
@@ -125,7 +132,7 @@ local function co_create(f) --创建协程
 		--resume后，f得到了新的值
 		--然后阻塞在" f(coroutine_yield()) "
 		--当返回了co，在外面调用coroutine.resume(co,...)
-		--阻塞在" f(coroutine_yield()) "的协程将继续执行，...将作为参数传入f
+		--阻塞在" f(coroutine_yield()) "的协程将继续执行，...将作为参数传入f，f得以执行（执行新的任务）
 	end
 	return co
 end
@@ -155,6 +162,8 @@ local function release_watching(address)
 end
 
 -- suspend is local function
+-- coroutine.resume一般是包含在suspend函数内的
+-- 因此在协程挂起后，可以做一些统筹的工作
 function suspend(co, result, command, param, size) --当协程执行完当前请求或者调用了阻塞API(会yield自己)时
 	--result：协程yield或者协程主函数返回时的第一个参数
 	--command,param,size 后续参数
@@ -173,7 +182,7 @@ function suspend(co, result, command, param, size) --当协程执行完当前请
 		error(debug.traceback(co,tostring(command))) --报错
 	end
 	if command == "CALL" then --协程因skynet.call挂起，此时param为session
-		session_id_coroutine[param] = co --会话->协程
+		session_id_coroutine[param] = co --保存协程（会在分发响应消息时取出协程恢复运行）
 	elseif command == "SLEEP" then --协程因skynet.sleep或skynet.wait挂起
 		session_id_coroutine[param] = co
 		sleep_session[co] = param
@@ -261,7 +270,7 @@ function skynet.timeout(ti, func)--注册定时器 非阻塞API
 end
 
 function skynet.sleep(ti)
-	local session = c.command("TIMEOUT",tostring(ti))
+	local session = c.command("TIMEOUT",tostring(ti))--向框架注册一个定时器
 	assert(session)
 	session = tonumber(session)
 	local succ, ret = coroutine_yield("SLEEP", session)
@@ -410,9 +419,9 @@ skynet.unpack = assert(c.unpack)
 skynet.tostring = assert(c.tostring)
 
 local function yield_call(service, session)
-	watching_session[session] = service --会话为key,服务为value
+	watching_session[session] = service --保存服务
 	local succ, msg, sz = coroutine_yield("CALL", session)--挂起该协程
-	watching_session[session] = nil --该协程恢复(resume)执行，去掉监视
+	watching_session[session] = nil --该协程恢复(resume)执行，去掉监视（在哪恢复的？在raw_dispatch_message的if prototype == 1分支）
 	assert(succ, debug.traceback()) --如果失败了，打印堆栈
 	return msg,sz --返回消息，消息大小
 end
@@ -509,7 +518,7 @@ local function raw_dispatch_message(prototype, msg, sz, session, source, ...)
 		local p = assert(proto[prototype], prototype) --取得对应的消息类别
 		local f = p.dispatch --取得消息处理函数
 		if f then --取得了消息处理函数
-			local ref = watching_service[source] --根据消息来源取得引用数
+			local ref = watching_service[source] --根据消息源取得引用数
 			if ref then
 				watching_service[source] = ref + 1 --增加引用数
 			else
