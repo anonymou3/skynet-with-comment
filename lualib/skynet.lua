@@ -50,7 +50,7 @@ local session_coroutine_address = {} --协程->消息源表
 local session_response = {} --
 
 local wakeup_session = {} --
-local sleep_session = {} --
+local sleep_session = {} --协程->会话表（协程休眠时使用）
 
 local watching_service = {} --消息源->引用数表
 local watching_session = {} --会话->服务表
@@ -184,8 +184,8 @@ function suspend(co, result, command, param, size) --当协程执行完当前请
 	if command == "CALL" then --协程因skynet.call挂起，此时param为session
 		session_id_coroutine[param] = co --保存协程（会在分发响应消息时取出协程恢复运行）
 	elseif command == "SLEEP" then --协程因skynet.sleep或skynet.wait挂起
-		session_id_coroutine[param] = co
-		sleep_session[co] = param
+		session_id_coroutine[param] = co --保存会话
+		sleep_session[co] = param --保存参数(实际上是会话)
 	elseif command == "RETURN" then --协程因skynet.ret挂起
 		local co_session = session_coroutine_id[co]
 		local co_address = session_coroutine_address[co]
@@ -269,12 +269,12 @@ function skynet.timeout(ti, func)--注册定时器 非阻塞API
 	session_id_coroutine[session] = co --保存协程
 end
 
-function skynet.sleep(ti)
+function skynet.sleep(ti) --休眠ti个单位时间
 	local session = c.command("TIMEOUT",tostring(ti))--向框架注册一个定时器
 	assert(session)
 	session = tonumber(session)
-	local succ, ret = coroutine_yield("SLEEP", session)
-	sleep_session[coroutine.running()] = nil
+	local succ, ret = coroutine_yield("SLEEP", session) --挂起协程
+	sleep_session[coroutine.running()] = nil --协程恢复执行
 	assert(succ, ret)
 	if ret == "BREAK" then
 		return "BREAK"
