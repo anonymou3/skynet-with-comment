@@ -80,7 +80,7 @@ local function launch_service(service, ...)
 	return inst
 end
 
-function command.LAUNCH(_, service, ...)
+function command.LAUNCH(_, service, ...) --接收到启动消息
 	launch_service(service, ...)
 	return NORET
 end
@@ -117,7 +117,7 @@ function command.LAUNCHOK(address)
 end
 
 -- for historical reasons, launcher support text command (for C service)
-
+-- 出于历史原因，launcher支持文本命令(用于C服务)
 skynet.register_protocol {
 	name = "text",
 	id = skynet.PTYPE_TEXT,

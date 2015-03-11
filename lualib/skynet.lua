@@ -359,8 +359,8 @@ function skynet.localname(name)
 	end
 end
 
-function skynet.launch(...)
-	local addr = c.command("LAUNCH", table.concat({...}," "))
+function skynet.launch(...) --启动一个服务
+	local addr = c.command("LAUNCH", table.concat({...}," ")) --将参数用空格连接起来(返回的是字符串)
 	if addr then
 		return string_to_handle(addr)
 	end
@@ -578,8 +578,8 @@ local function dispatch_message(...) --派发消息回调
 	assert(succ, tostring(err))
 end
 
-function skynet.newservice(name, ...)
-	return skynet.call(".launcher", "lua" , "LAUNCH", "snlua", name, ...)
+function skynet.newservice(name, ...) --启动一个LUA服务
+	return skynet.call(".launcher", "lua" , "LAUNCH", "snlua", name, ...) --给launcher服务发送消息(同步)
 end
 
 function skynet.uniqueservice(global, ...)

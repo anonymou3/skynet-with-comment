@@ -629,16 +629,16 @@ static struct command_func cmd_funcs[] = {
 	{ "TIMEOUT", cmd_timeout },//注册定时器
 	{ "REG", cmd_reg },//注册命令
 	{ "QUERY", cmd_query },
-	{ "NAME", cmd_name },
+	{ "NAME", cmd_name },//命名服务
 	{ "NOW", cmd_now },
 	{ "EXIT", cmd_exit },//退出命令
 	{ "KILL", cmd_kill },
-	{ "LAUNCH", cmd_launch },
+	{ "LAUNCH", cmd_launch },//启动一个上下文
 	{ "GETENV", cmd_getenv },//获取环境变量
 	{ "SETENV", cmd_setenv },//设置环境变量
 	{ "STARTTIME", cmd_starttime },
 	{ "ENDLESS", cmd_endless },
-	{ "ABORT", cmd_abort },
+	{ "ABORT", cmd_abort },//中止所有服务
 	{ "MONITOR", cmd_monitor },
 	{ "MQLEN", cmd_mqlen },
 	{ "LOGON", cmd_logon },

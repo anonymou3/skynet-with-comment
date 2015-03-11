@@ -106,6 +106,7 @@ skynet_handle_retire(uint32_t handle) {
 	return ret;
 }
 
+//回收所有句柄 最终导致的效果就是，所有的服务全部被释放，工作线程退出
 void 
 skynet_handle_retireall() {
 	struct handle_storage *s = H;

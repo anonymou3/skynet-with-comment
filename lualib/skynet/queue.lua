@@ -8,6 +8,7 @@ function skynet.queue()
 	local current_thread
 	local ref = 0
 	local thread_queue = {}
+
 	return function(f, ...)
 		local thread = coroutine.running()
 		if current_thread and current_thread ~= thread then
@@ -28,6 +29,7 @@ function skynet.queue()
 		end
 		assert(ok,err)
 	end
+	
 end
 
 return skynet.queue
