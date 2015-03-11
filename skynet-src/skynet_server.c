@@ -407,7 +407,7 @@ cmd_timeout(struct skynet_context * context, const char * param) {
 	char * session_ptr = NULL;//没用？
 	int ti = strtol(param, &session_ptr, 10);//取出传入的时间值
 	int session = skynet_context_newsession(context);//新建一个会话
-	skynet_timeout(context->handle, ti, session);
+	skynet_timeout(context->handle, ti, session);//注册一个定时器
 	sprintf(context->result, "%d", session);//将会话写入上下文的result域
 	return context->result;//返回result
 }

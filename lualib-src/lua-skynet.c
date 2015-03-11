@@ -124,9 +124,9 @@ _command(lua_State *L) {
 
 static int
 _genid(lua_State *L) {
-	struct skynet_context * context = lua_touserdata(L, lua_upvalueindex(1));
-	int session = skynet_send(context, 0, 0, PTYPE_TAG_ALLOCSESSION , 0 , NULL, 0);
-	lua_pushinteger(L, session);
+	struct skynet_context * context = lua_touserdata(L, lua_upvalueindex(1));//获取上下文
+	int session = skynet_send(context, 0, 0, PTYPE_TAG_ALLOCSESSION , 0 , NULL, 0);//skynet_context_newsession不是更简单，这样在内部其实调用的还是skynet_context_newsession
+	lua_pushinteger(L, session);//压入会话
 	return 1;
 }
 
@@ -187,11 +187,9 @@ _send(lua_State *L) {
 		void * msg = lua_touserdata(L,4);//获取消息的C指针
 		int size = luaL_checkinteger(L,5);//获取消息的长度
 		if (dest_string) {//如果目标是字符串地址
-			//不需要拷贝消息数据
-			session = skynet_sendname(context, 0, dest_string, type | PTYPE_TAG_DONTCOPY, session, msg, size);
+			session = skynet_sendname(context, 0, dest_string, type | PTYPE_TAG_DONTCOPY, session, msg, size);//不需要拷贝消息数据
 		} else {//如果目标是数字地址
-			//不需要拷贝消息数据
-			session = skynet_send(context, 0, dest, type | PTYPE_TAG_DONTCOPY, session, msg, size);
+			session = skynet_send(context, 0, dest, type | PTYPE_TAG_DONTCOPY, session, msg, size);//不需要拷贝消息数据
 		}
 		break;
 	}
@@ -294,15 +292,15 @@ lpackstring(lua_State *L) {
 
 static int
 ltrash(lua_State *L) {
-	int t = lua_type(L,1);
+	int t = lua_type(L,1);//取得第一个参数的类型
 	switch (t) {
-	case LUA_TSTRING: {
-		break;
+	case LUA_TSTRING: {//如果是字符串
+		break;//不处理
 	}
-	case LUA_TLIGHTUSERDATA: {
-		void * msg = lua_touserdata(L,1);
-		luaL_checkinteger(L,2);
-		skynet_free(msg);
+	case LUA_TLIGHTUSERDATA: {//如果是轻量级用户数据
+		void * msg = lua_touserdata(L,1);//取得指针
+		luaL_checkinteger(L,2);//取得内存块大小
+		skynet_free(msg);//释放内存
 		break;
 	}
 	default:
@@ -318,17 +316,17 @@ luaopen_skynet_core(lua_State *L) {
 	
 	luaL_Reg l[] = {//函数名->函数 映射表
 		{ "send" , _send }, //发送消息函数
-		{ "genid", _genid },
+		{ "genid", _genid },//生成一个唯一 session 号
 		{ "redirect", _redirect },
 		{ "command" , _command },//执行命令
 		{ "error", _error },//报错
 		{ "tostring", _tostring },
 		{ "harbor", _harbor },
-		{ "pack", _luaseri_pack },//skynet.pack调用该函数
-		{ "unpack", _luaseri_unpack },//skynet.unpack调用该函数
+		{ "pack", _luaseri_pack },//skynet.pack调用该函数，序列化LUA对象为C块(内存块)
+		{ "unpack", _luaseri_unpack },//skynet.unpack调用该函数，反序列化C块为LUA对象
 		{ "packstring", lpackstring },
-		{ "trash" , ltrash },
-		{ "callback", _callback },
+		{ "trash" , ltrash },//回收消息的内存占用
+		{ "callback", _callback },//重新设置上下文的回调函数(消息派发)
 		{ NULL, NULL },
 	};
 	

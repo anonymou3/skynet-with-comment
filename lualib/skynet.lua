@@ -47,15 +47,15 @@ end
 local session_id_coroutine = {} --会话->协程表
 local session_coroutine_id = {} --协程->会话表 
 local session_coroutine_address = {} --协程->消息源表
-local session_response = {} --
+local session_response = {} --协程->是否回应表
 
-local wakeup_session = {} --
+local wakeup_session = {} --协程->是否唤醒表
 local sleep_session = {} --协程->会话表（协程休眠时使用）
 
 local watching_service = {} --消息源->引用数表
 local watching_session = {} --会话->服务表
-local dead_service = {} --
-local error_queue = {} --
+local dead_service = {} --消息源->是否挂掉表
+local error_queue = {} --错误队列(保存了出错的会话)
 
 -- suspend is function
 local suspend
@@ -67,19 +67,21 @@ end
 ----- monitor exit
 
 local function dispatch_error_queue()
-	local session = table.remove(error_queue,1)
-	if session then
-		local co = session_id_coroutine[session]
+	local session = table.remove(error_queue,1)--从错误队列中取出会话
+	if session then --会话有效
+		local co = session_id_coroutine[session] --取出协程
 		session_id_coroutine[session] = nil
-		return suspend(co, coroutine.resume(co, false))
+		return suspend(co, coroutine.resume(co, false)) --恢复协程执行
 	end
 end
 
-local function _error_dispatch(error_session, error_source)
-	if error_session == 0 then
+local function _error_dispatch(error_session, error_source) --错误消息派发函数
+	if error_session == 0 then --会话为0
 		-- service is down
 		--  Don't remove from watching_service , because user may call dead service
-		if watching_service[error_source] then
+		-- 服务已经挂了
+		-- 不要从watching_service中移除，因为用户可能会调用死亡的服务
+		if watching_service[error_source] then 
 			dead_service[error_source] = true
 		end
 		for session, srv in pairs(watching_session) do
@@ -89,6 +91,7 @@ local function _error_dispatch(error_session, error_source)
 		end
 	else
 		-- capture an error for error_session
+		-- 从错误会话中捕获错误
 		if watching_session[error_session] then
 			table.insert(error_queue, error_session)
 		end
@@ -96,7 +99,7 @@ local function _error_dispatch(error_session, error_source)
 end
 
 -- coroutine reuse
-
+-- 协程重用
 local coroutine_pool = {}	--协程池 保存当前没有任务执行的协程
 local coroutine_yield = coroutine.yield --起个别名，同样提升性能
 local coroutine_count = 0   --协程数目
@@ -137,26 +140,26 @@ local function co_create(f) --创建协程或者从协程池拿出一个协程
 	return co
 end
 
-local function dispatch_wakeup()
-	local co = next(wakeup_session)
+local function dispatch_wakeup() --唤醒协程队列
+	local co = next(wakeup_session) --取出key
 	if co then
-		wakeup_session[co] = nil
-		local session = sleep_session[co]
-		if session then
-			session_id_coroutine[session] = "BREAK"
-			return suspend(co, coroutine.resume(co, true, "BREAK"))
+		wakeup_session[co] = nil --置空
+		local session = sleep_session[co] --获得会话
+		if session then --会话合法
+			session_id_coroutine[session] = "BREAK" --设置打断标志
+			return suspend(co, coroutine.resume(co, true, "BREAK")) --恢复协程执行
 		end
 	end
 end
 
-local function release_watching(address)
-	local ref = watching_service[address]
-	if ref then
-		ref = ref - 1
-		if ref > 0 then
-			watching_service[address] = ref
+local function release_watching(address) --释放引用数
+	local ref = watching_service[address] --获取当前引用数
+	if ref then --如果不为空
+		ref = ref - 1 --自减
+		if ref > 0 then --如果大于0
+			watching_service[address] = ref --设置为当前值
 		else
-			watching_service[address] = nil
+			watching_service[address] = nil --小于等于0则直接置空
 		end
 	end
 end
@@ -183,81 +186,99 @@ function suspend(co, result, command, param, size) --当协程执行完当前请
 	end
 	if command == "CALL" then --协程因skynet.call挂起，此时param为session
 		session_id_coroutine[param] = co --保存协程（会在分发响应消息时取出协程恢复运行）
+
+
 	elseif command == "SLEEP" then --协程因skynet.sleep或skynet.wait挂起
 		session_id_coroutine[param] = co --保存会话
 		sleep_session[co] = param --保存参数(实际上是会话)
+
+
 	elseif command == "RETURN" then --协程因skynet.ret挂起
-		local co_session = session_coroutine_id[co]
-		local co_address = session_coroutine_address[co]
-		if param == nil or session_response[co] then
-			error(debug.traceback(co))
+		local co_session = session_coroutine_id[co] --获取会话
+		local co_address = session_coroutine_address[co] --获取消息源
+		if param == nil or session_response[co] then --参数为空或者会话已经回应了
+			error(debug.traceback(co))--报错
 		end
-		session_response[co] = true
+		session_response[co] = true --设置回应标志，表示该会话已经回应
 		local ret
-		if not dead_service[co_address] then
-			ret = c.send(co_address, skynet.PTYPE_RESPONSE, co_session, param, size) ~= nil
-		elseif size == nil then
-			c.trash(param, size)
-			ret = false
+		if not dead_service[co_address] then --如果消息源没有挂
+			ret = c.send(co_address, skynet.PTYPE_RESPONSE, co_session, param, size) ~= nil --回应消息
+			--返回值不为空，代表发送成功
+		elseif size == nil then --消息源挂了 并且消息大小为空
+			c.trash(param, size)--回收消息的内存占用
+			ret = false 
 		end
-		return suspend(co, coroutine.resume(co, ret))
+		return suspend(co, coroutine.resume(co, ret)) --继续恢复协程执行，表面上看skynet.ret好像没有阻塞，实际上还是发生了一次阻塞动作（挂起）
+	
+
 	elseif command == "RESPONSE" then --协程因skynet.response挂起
-		local co_session = session_coroutine_id[co]
-		local co_address = session_coroutine_address[co]
-		if session_response[co] then
-			error(debug.traceback(co))
+		local co_session = session_coroutine_id[co] --获取会话
+		local co_address = session_coroutine_address[co] --获取消息源
+		if session_response[co] then --如果该会话已经回应了
+			error(debug.traceback(co)) --报错
 		end
-		local f = param
+		local f = param --该参数实际上是打包函数，默认是skynet.pack
+
+		--定义一个闭包
 		local function response(ok, ...)
-			if ok == "TEST" then
-				if dead_service[co_address] then
-					release_watching(co_address)
-					f = false
+
+			if ok == "TEST" then --如果OK传入的是"TEST",得到回应地址(消息源)的有效性
+				if dead_service[co_address] then --如果消息源挂了
+					release_watching(co_address) --释放引用数
+					f = false --
 					return false
-				else
-					return true
+				else --消息源正常
+					return true 
 				end
 			end
-			if not f then
-				if f == false then
-					f = nil
-					return false
+
+			if not f then --如果打包函数为空
+				if f == false then --如果是false
+					f = nil --置空
+					return false --返回false
 				end
-				error "Can't response more than once"
+				--因为调用一次闭包后，f就被设置为nil了，所以不是false,就是nil了，也就是调用了多次
+				error "Can't response more than once" --不能回应多次
 			end
 
 			local ret
-			if not dead_service[co_address] then
-				if ok then
-					ret = c.send(co_address, skynet.PTYPE_RESPONSE, co_session, f(...)) ~= nil
+			if not dead_service[co_address] then --如果消息源没有挂掉
+				if ok then --如果传入的是true
+					ret = c.send(co_address, skynet.PTYPE_RESPONSE, co_session, f(...)) ~= nil --回应消息
 				else
-					ret = c.send(co_address, skynet.PTYPE_ERROR, co_session, "") ~= nil
+					ret = c.send(co_address, skynet.PTYPE_ERROR, co_session, "") ~= nil --给请求者抛出一个异常
 				end
 			else
 				ret = false
 			end
-			release_watching(co_address)
-			f = nil
+			release_watching(co_address) --释放引用数
+			f = nil --置空打包函数
 			return ret
 		end
-		watching_service[co_address] = watching_service[co_address] + 1
-		session_response[co] = response
-		return suspend(co, coroutine.resume(co, response))
-	elseif command == "EXIT" then --协程执行完当前任务
+
+		watching_service[co_address] = watching_service[co_address] + 1 --增加引用数
+		session_response[co] = response --保存闭包
+		return suspend(co, coroutine.resume(co, response)) --恢复协程执行，返回闭包
+
+
+	elseif command == "EXIT" then --协程执行完当前任务退出，此时协程已经进入协程池
 		-- coroutine exit
-		local address = session_coroutine_address[co]
-		release_watching(address)
-		session_coroutine_id[co] = nil
-		session_coroutine_address[co] = nil
-		session_response[co] = nil
+		local address = session_coroutine_address[co] --获取消息源
+		release_watching(address) --释放引用
+		session_coroutine_id[co] = nil --置空会话
+		session_coroutine_address[co] = nil --置空消息源
+		session_response[co] = nil --置空是否响应
+
 	elseif command == "QUIT" then --协程因skynet.exit挂起
 		-- service exit
 		return
+
 	else --未知命令
 		error("Unknown command : " .. command .. "\n" .. debug.traceback(co))
 	end
-	dispatch_wakeup()
-	dispatch_error_queue()
+
+	dispatch_wakeup() --调度唤醒协程
+	dispatch_error_queue() --调度错误队列
 end
 
 function skynet.timeout(ti, func)--注册定时器 非阻塞API
@@ -285,10 +306,10 @@ function skynet.yield()
 	return skynet.sleep("0")
 end
 
-function skynet.wait()
-	local session = c.genid()
-	coroutine_yield("SLEEP", session)
-	local co = coroutine.running()
+function skynet.wait() --挂起协程
+	local session = c.genid() --生成一个session
+	coroutine_yield("SLEEP", session) --挂起协程
+	local co = coroutine.running()--协程恢复
 	sleep_session[co] = nil
 	session_id_coroutine[session] = nil
 end
@@ -451,11 +472,11 @@ function skynet.response(pack)
 	return coroutine_yield("RESPONSE", pack)
 end
 
-function skynet.retpack(...)
+function skynet.retpack(...) --skynet.ret(skynet.pack(...))简写
 	return skynet.ret(skynet.pack(...))
 end
 
-function skynet.wakeup(co)
+function skynet.wakeup(co) --唤醒一个协程
 	if sleep_session[co] and wakeup_session[co] == nil then
 		wakeup_session[co] = true
 		return true
@@ -506,7 +527,7 @@ local function raw_dispatch_message(prototype, msg, sz, session, source, ...)
 	-- skynet.PTYPE_RESPONSE = 1, read skynet.h
 	if prototype == 1 then -- 响应的消息（自己先发请求，等待响应，此时会挂起相应的协程）
 		local co = session_id_coroutine[session] --取出session对应的协程
-		if co == "BREAK" then --？？
+		if co == "BREAK" then --协程被wakeup
 			session_id_coroutine[session] = nil
 		elseif co == nil then --协程为空
 			unknown_response(session, source, msg, sz) -- 未知的响应消息
@@ -516,8 +537,8 @@ local function raw_dispatch_message(prototype, msg, sz, session, source, ...)
 		end
 	else --其他服务发送来的请求
 		local p = assert(proto[prototype], prototype) --取得对应的消息类别
-		local f = p.dispatch --取得消息处理函数
-		if f then --取得了消息处理函数
+		local f = p.dispatch --取得消息派发函数
+		if f then --取得了消息派发函数
 			local ref = watching_service[source] --根据消息源取得引用数
 			if ref then
 				watching_service[source] = ref + 1 --增加引用数
