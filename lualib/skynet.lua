@@ -60,7 +60,7 @@ local error_queue = {} --错误队列(保存了出错的会话)
 -- suspend is function
 local suspend
 
-local function string_to_handle(str)
+local function string_to_handle(str) --字符串转换为数字句柄
 	return tonumber("0x" .. string.sub(str , 2))
 end
 
@@ -359,10 +359,10 @@ function skynet.localname(name)
 	end
 end
 
-function skynet.launch(...) --启动一个服务
+function skynet.launch(...) --启动一个服务,通过调用C库
 	local addr = c.command("LAUNCH", table.concat({...}," ")) --将参数用空格连接起来(返回的是字符串)
 	if addr then
-		return string_to_handle(addr)
+		return string_to_handle(addr)--返回数字句柄
 	end
 end
 
@@ -578,8 +578,8 @@ local function dispatch_message(...) --派发消息回调
 	assert(succ, tostring(err))
 end
 
-function skynet.newservice(name, ...) --启动一个LUA服务
-	return skynet.call(".launcher", "lua" , "LAUNCH", "snlua", name, ...) --给launcher服务发送消息(同步)
+function skynet.newservice(name, ...) --启动一个LUA服务,实际上是给launcher发送消息实现的
+	return skynet.call(".launcher", "lua" , "LAUNCH", "snlua", name, ...) 
 end
 
 function skynet.uniqueservice(global, ...)

@@ -104,7 +104,7 @@ skynet_current_handle(void) {
 }
 
 static void
-id_to_hex(char * str, uint32_t id) {
+id_to_hex(char * str, uint32_t id) { //将id转化为十六进制的字符串
 	int i;
 	static char hex[16] = { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
 	str[0] = ':';
@@ -502,14 +502,14 @@ cmd_launch(struct skynet_context * context, const char * param) {
 	char tmp[sz+1];
 	strcpy(tmp,param);
 	char * args = tmp;
-	char * mod = strsep(&args, " \t\r\n");
-	args = strsep(&args, "\r\n");
-	struct skynet_context * inst = skynet_context_new(mod,args);
+	char * mod = strsep(&args, " \t\r\n");//模块名
+	args = strsep(&args, "\r\n");//参数
+	struct skynet_context * inst = skynet_context_new(mod,args);//创建上下文
 	if (inst == NULL) {
 		return NULL;
 	} else {
 		id_to_hex(context->result, inst->handle);
-		return context->result;
+		return context->result;//返回字符串(句柄的十六进制)
 	}
 }
 

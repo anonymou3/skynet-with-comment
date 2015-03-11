@@ -2,9 +2,10 @@ local skynet = require "skynet"
 local core = require "skynet.core"
 local string = string
 
-local services = {}
-local command = {}
+local services = {} --句柄->服务名+参数
+local command = {} --
 local instance = {} -- for confirm (function command.LAUNCH / command.ERROR / command.LAUNCHOK)
+--句柄->响应闭包
 
 local function handle_to_address(handle)
 	return tonumber("0x" .. string.sub(handle , 2))
@@ -68,16 +69,16 @@ end
 
 local function launch_service(service, ...)
 	local param = table.concat({...}, " ")
-	local inst = skynet.launch(service, param)
-	local response = skynet.response()
-	if inst then
-		services[inst] = service .. " " .. param
-		instance[inst] = response
+	local inst = skynet.launch(service, param) --启动服务
+	local response = skynet.response()--这里为什么创建一个闭包呢？
+	if inst then --启动成功
+		services[inst] = service .. " " .. param --保存服务名 参数
+		instance[inst] = response --保存闭包
 	else
-		response(false)
+		response(false) --启动失败 抛出异常
 		return
 	end
-	return inst
+	return inst --返回句柄
 end
 
 function command.LAUNCH(_, service, ...) --接收到启动消息
@@ -138,7 +139,7 @@ skynet.dispatch("lua", function(session, address, cmd , ...)
 	local f = command[cmd]
 	if f then
 		local ret = f(address, ...)
-		if ret ~= NORET then
+		if ret ~= NORET then 
 			skynet.ret(skynet.pack(ret))
 		end
 	else
