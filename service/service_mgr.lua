@@ -1,3 +1,4 @@
+--管理UniqueService
 local skynet = require "skynet"
 local snax = require "snax"
 

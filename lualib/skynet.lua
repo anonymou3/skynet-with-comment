@@ -582,7 +582,7 @@ function skynet.newservice(name, ...) --启动一个LUA服务,实际上是给lau
 	return skynet.call(".launcher", "lua" , "LAUNCH", "snlua", name, ...) 
 end
 
-function skynet.uniqueservice(global, ...)
+function skynet.uniqueservice(global, ...) --启动一个唯一的LUA服务，如果global等于true,则是全局唯一的
 	if global == true then
 		return assert(skynet.call(".service", "lua", "GLAUNCH", ...))
 	else
@@ -590,7 +590,7 @@ function skynet.uniqueservice(global, ...)
 	end
 end
 
-function skynet.queryservice(global, ...)
+function skynet.queryservice(global, ...) --查询服务
 	if global == true then
 		return assert(skynet.call(".service", "lua", "GQUERY", ...))
 	else

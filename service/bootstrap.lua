@@ -1,5 +1,4 @@
 --引导服务
-
 local skynet = require "skynet"
 local harbor = require "skynet.harbor"
 
@@ -14,7 +13,7 @@ skynet.start(function()
 
 	if harbor_id == 0 then --harbor配置为0，代表单节点网络
 		assert(standalone ==  nil) --单节点网络下不能配置standalone
-		standalone = true --单节点当然也是独立的(master节点)
+		standalone = true --设置标志为true,以启动datacenterd
 		skynet.setenv("standalone", "true") --设置到环境中
 
 		local ok, slave = pcall(skynet.newservice, "cdummy")--启动cdummy服务，拦截对外广播的全局名字变更
@@ -37,7 +36,8 @@ skynet.start(function()
 		skynet.name(".cslave", slave)--命名slave服务
 	end
 
-	--单节点网络会启动该服务，多节点网络在节点是master的时候会启动该服务
+	--单节点网络会启动该服务
+	--多节点网络master节点会启动该服务
 	if standalone then --单节点也需要启动datacentered服务
 		local datacenter = skynet.newservice "datacenterd"
 		skynet.name("DATACENTER", datacenter)
@@ -45,6 +45,6 @@ skynet.start(function()
 
 	skynet.newservice "service_mgr" --管理UniqueService的服务
 
-	pcall(skynet.newservice,skynet.getenv "start" or "main") --启动用户定义的main服务
+	pcall(skynet.newservice,skynet.getenv "start" or "main") --启动main服务
 	skynet.exit() --bootstrap服务退出
 end)

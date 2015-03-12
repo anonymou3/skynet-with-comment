@@ -1,3 +1,5 @@
+--封装调用数据中心服务
+
 local skynet = require "skynet"
 
 local datacenter = {}

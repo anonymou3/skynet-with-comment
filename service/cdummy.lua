@@ -1,3 +1,4 @@
+--伪slave服务
 local skynet = require "skynet"
 
 local globalname = {}
