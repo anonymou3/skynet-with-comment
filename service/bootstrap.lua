@@ -25,7 +25,7 @@ skynet.start(function()
 
 	else --多节点网络
 		if standalone then --如果是master节点
-			if not pcall(skynet.newservice,"cmaster") then --启动cmaster服务，做节点调度
+			if not pcall(skynet.newservice,"cmaster") then --启动cmaster服务，做节点调度,协调组网
 				skynet.abort()
 			end
 		end
