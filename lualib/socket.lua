@@ -165,9 +165,9 @@ local function connect(id, func)
 	end
 end
 
-function socket.open(addr, port)
-	local id = driver.connect(addr,port)
-	return connect(id)
+function socket.open(addr, port)--建立一个 TCP 连接
+	local id = driver.connect(addr,port) --调用C库连接
+	return connect(id)--
 end
 
 function socket.bind(os_fd)

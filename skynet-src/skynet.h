@@ -16,9 +16,9 @@
 #define PTYPE_CLIENT 3
 #define PTYPE_SYSTEM 4
 #define PTYPE_HARBOR 5
-#define PTYPE_SOCKET 6
+#define PTYPE_SOCKET 6 //socket(网络)消息类别
 // read lualib/skynet.lua examples/simplemonitor.lua
-#define PTYPE_ERROR 7	
+#define PTYPE_ERROR 7	//错误消息类别
 // read lualib/skynet.lua lualib/mqueue.lua lualib/snax.lua
 #define PTYPE_RESERVED_QUEUE 8
 #define PTYPE_RESERVED_DEBUG 9

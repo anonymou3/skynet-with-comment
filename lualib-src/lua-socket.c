@@ -438,7 +438,7 @@ address_port(lua_State *L, char *tmp, const char * addr, int port_index, int *po
 static int
 lconnect(lua_State *L) {
 	size_t sz = 0;
-	const char * addr = luaL_checklstring(L,1,&sz);
+	const char * addr = luaL_checklstring(L,1,&sz);//获取地址字符串及大小
 	char tmp[sz];
 	int port = 0;
 	const char * host = address_port(L, tmp, addr, 2, &port);
@@ -446,7 +446,7 @@ lconnect(lua_State *L) {
 		return luaL_error(L, "Invalid port");
 	}
 	struct skynet_context * ctx = lua_touserdata(L, lua_upvalueindex(1));
-	int id = skynet_socket_connect(ctx, host, port);
+	int id = skynet_socket_connect(ctx, host, port);//调用skynet_socket_connect进行连接
 	lua_pushinteger(L, id);
 
 	return 1;
@@ -639,9 +639,9 @@ luaopen_socketdriver(lua_State *L) {
 		{ "unpack", lunpack },
 		{ NULL, NULL },
 	};
-	luaL_newlib(L,l);
+	luaL_newlib(L,l);//创建一张表，将列表 l 的函数注册进去
 	luaL_Reg l2[] = {
-		{ "connect", lconnect },
+		{ "connect", lconnect },//建立连接
 		{ "close", lclose },
 		{ "listen", llisten },
 		{ "send", lsend },
@@ -655,13 +655,13 @@ luaopen_socketdriver(lua_State *L) {
 		{ "udp_address", ludp_address },
 		{ NULL, NULL },
 	};
-	lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");
+	lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");//获取上下文
 	struct skynet_context *ctx = lua_touserdata(L,-1);
 	if (ctx == NULL) {
 		return luaL_error(L, "Init skynet context first");
 	}
 
-	luaL_setfuncs(L,l2,1);
+	luaL_setfuncs(L,l2,1);//将l2内的函数注册进栈顶的表内，并且有一个上值(context)
 
 	return 1;
 }

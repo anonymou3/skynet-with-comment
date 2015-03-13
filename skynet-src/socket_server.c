@@ -1312,11 +1312,11 @@ open_request(struct socket_server *ss, struct request_package *req, uintptr_t op
 
 int 
 socket_server_connect(struct socket_server *ss, uintptr_t opaque, const char * addr, int port) {
-	struct request_package request;
-	int len = open_request(ss, &request, opaque, addr, port);
+	struct request_package request;//请求包
+	int len = open_request(ss, &request, opaque, addr, port);//组织请求包
 	if (len < 0)
 		return -1;
-	send_request(ss, &request, 'O', sizeof(request.u.open) + len);
+	send_request(ss, &request, 'O', sizeof(request.u.open) + len);//发送请求包
 	return request.u.open.id;
 }
 
