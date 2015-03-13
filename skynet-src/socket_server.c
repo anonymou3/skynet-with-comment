@@ -48,7 +48,6 @@
 #define MAX_UDP_PACKAGE 65535
 
 //写缓冲数据结构定义
-
 struct write_buffer {
 	struct write_buffer * next; // 发送缓冲区构成一个链表
 	void *buffer;
@@ -282,7 +281,7 @@ socket_server_create() {
 		fprintf(stderr, "socket-server: create event pool failed.\n");
 		return NULL;
 	}
-	if (pipe(fd)) {//建立管道
+	if (pipe(fd)) {//建立管道，管道用于控制命令的传输
 		//fd[0]为管道里的读取端
 		//fd[1]为管道里的写入端
 		sp_release(efd);//释放socket poll
@@ -873,7 +872,7 @@ block_readpipe(int pipefd, void *buffer, int sz) {
 			return;
 		}
 		// must atomic read from a pipe
-		assert(n == sz);//读取的字节数一定要于传入的字节数(sz)相等
+		assert(n == sz);//读取的字节数一定要与传入的字节数(sz)相等
 		return;
 	}
 }
@@ -946,9 +945,26 @@ ctrl_cmd(struct socket_server *ss, struct socket_message *result) {
 	block_readpipe(fd, header, sizeof(header));//阻塞从管道读头部
 	int type = header[0];//消息类型
 	int len = header[1];//消息长度
-	block_readpipe(fd, buffer, len);//阻塞从管道读取消息数据
+	block_readpipe(fd, buffer, len);//阻塞从管道读取指定长度的消息数据
 	// ctrl command only exist in local fd, so don't worry about endian.
 	// 控制命令仅存在于本地fd,所以不用担心大小端的问题
+	//以下copy自文件上方数据结构定义
+	/*
+	The first byte is TYPE(第一个字节是类型)，第二个字节是消息长度
+	
+	S Start socket
+	B Bind socket
+	L Listen socket
+	K Close socket
+	O Connect to (Open)
+	X Exit
+	D Send package (high)
+	P Send package (low)
+	A Send UDP package
+	T Set opt
+	U Create UDP socket
+	C set udp address
+	*/
 	switch (type) {
 	case 'S':
 		return start_socket(ss,(struct request_start *)buffer, result);
