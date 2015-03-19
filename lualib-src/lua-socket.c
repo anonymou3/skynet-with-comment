@@ -400,54 +400,58 @@ lunpack(lua_State *L) {
 static const char *
 address_port(lua_State *L, char *tmp, const char * addr, int port_index, int *port) {
 	const char * host;
-	if (lua_isnoneornil(L,port_index)) {
-		host = strchr(addr, '[');
-		if (host) {
+	if (lua_isnoneornil(L,port_index)) {//端口的索引(位于lua_State)不正常，端口在传入的addr内
+		host = strchr(addr, '[');//查找addr中第一次出现']'的位置
+		if (host) {//如果存在
 			// is ipv6
-			++host;
-			const char * sep = strchr(addr,']');
-			if (sep == NULL) {
+			//ipv6地址
+			++host;//偏移指针
+			const char * sep = strchr(addr,']');//查找addr中第一次出现']'的位置
+			if (sep == NULL) {//没有找到对称的']'
 				luaL_error(L, "Invalid address %s.",addr);
 			}
-			memcpy(tmp, host, sep-host);
-			tmp[sep-host] = '\0';
-			host = tmp;
-			sep = strchr(sep + 1, ':');
-			if (sep == NULL) {
-				luaL_error(L, "Invalid address %s.",addr);
+			memcpy(tmp, host, sep-host);//拷贝出地址
+			tmp[sep-host] = '\0';//加一个字符串结尾
+			host = tmp;//host指向临时缓冲
+			sep = strchr(sep + 1, ':');//查找字符':'
+			if (sep == NULL) {//没有找到':'
+				luaL_error(L, "Invalid address %s.",addr);//非法地址
 			}
-			*port = strtoul(sep+1,NULL,10);
+			*port = strtoul(sep+1,NULL,10);//':'后的字符串为端口，将字符串转化为端口
 		} else {
 			// is ipv4
-			const char * sep = strchr(addr,':');
-			if (sep == NULL) {
-				luaL_error(L, "Invalid address %s.",addr);
+			//ipv4地址
+			const char * sep = strchr(addr,':');//找到字符':'
+			if (sep == NULL) {//找不到
+				luaL_error(L, "Invalid address %s.",addr);//非法地址
 			}
-			memcpy(tmp, addr, sep-addr);
-			tmp[sep-addr] = '\0';
-			host = tmp;
-			*port = strtoul(sep+1,NULL,10);
+			memcpy(tmp, addr, sep-addr);//拷贝出地址
+			tmp[sep-addr] = '\0';//加上结尾
+			host = tmp;//host指向临时缓冲
+			*port = strtoul(sep+1,NULL,10);//':'后的字符串为端口，将字符串转化为端口
 		}
-	} else {
-		host = addr;
-		*port = luaL_optinteger(L,port_index, 0);
+	} else {//端口索引正常
+		host = addr;//addr即为主机地址
+		*port = luaL_optinteger(L,port_index, 0);//从lua_State内取出端口号
 	}
-	return host;
+	return host;//返回主机地址
 }
 
 static int
 lconnect(lua_State *L) {
 	size_t sz = 0;
-	const char * addr = luaL_checklstring(L,1,&sz);//获取地址字符串及大小
-	char tmp[sz];
-	int port = 0;
+	const char * addr = luaL_checklstring(L,1,&sz);//获取地址字符串并将字符串大小存入size
+	char tmp[sz];//建立sz大小缓冲区
+	int port = 0;//端口
+	//addr中可能会包含端口号
+	//或者端口号在lua_State的索引2处
 	const char * host = address_port(L, tmp, addr, 2, &port);
 	if (port == 0) {
 		return luaL_error(L, "Invalid port");
 	}
-	struct skynet_context * ctx = lua_touserdata(L, lua_upvalueindex(1));
+	struct skynet_context * ctx = lua_touserdata(L, lua_upvalueindex(1));//从上值中获取上下文
 	int id = skynet_socket_connect(ctx, host, port);//调用skynet_socket_connect进行连接
-	lua_pushinteger(L, id);
+	lua_pushinteger(L, id);//压栈返回值ID
 
 	return 1;
 }
@@ -656,7 +660,7 @@ luaopen_socketdriver(lua_State *L) {
 		{ NULL, NULL },
 	};
 	lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");//获取上下文
-	struct skynet_context *ctx = lua_touserdata(L,-1);
+	struct skynet_context *ctx = lua_touserdata(L,-1);//从用户数据中获取上下文的C指针
 	if (ctx == NULL) {
 		return luaL_error(L, "Init skynet context first");
 	}

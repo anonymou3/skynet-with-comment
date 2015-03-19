@@ -1,6 +1,6 @@
 //核心库， 封装 skynet 给 lua 使用
 #include "skynet.h"
-#include "lua-seri.h"
+#include "lua-seri.h"//序列化库
 
 #define KNRM  "\x1B[0m"
 #define KRED  "\x1B[31m"
@@ -281,8 +281,8 @@ _harbor(lua_State *L) {
 }
 
 static int
-lpackstring(lua_State *L) {
-	_luaseri_pack(L);
+lpackstring(lua_State *L) {//pack字符串
+	_luaseri_pack(L);//
 	char * str = (char *)lua_touserdata(L, -2);
 	int sz = lua_tointeger(L, -1);
 	lua_pushlstring(L, str, sz);

@@ -32,8 +32,8 @@
 
 //块数据结构定义
 struct block {
-	struct block * next;
-	char buffer[BLOCK_SIZE];
+	struct block * next;//形成链式结构
+	char buffer[BLOCK_SIZE];//存储数据缓冲区
 };
 
 //写块
@@ -297,10 +297,10 @@ pack_one(lua_State *L, struct write_block *b, int index, int depth) {
 		luaL_error(L, "Unsupport type %s to serialize", lua_typename(L, type));
 	}
 }
-
+//from:从栈上何处开始打包，0为打包所有参数
 static void
-pack_from(lua_State *L, struct write_block *b, int from) {
-	int n = lua_gettop(L) - from;
+pack_from(lua_State *L, struct write_block *b, int from) {//打包参数
+	int n = lua_gettop(L) - from;//
 	int i;
 	for (i=1;i<=n;i++) {
 		pack_one(L, b , from + i, 0);
@@ -538,7 +538,7 @@ _luaseri_pack(lua_State *L) {	//打包函数
 	temp.next = NULL;	//置空next域
 	struct write_block wb; //定义写块
 	wb_init(&wb, &temp);//写块初始化
-	pack_from(L,&wb,0);
+	pack_from(L,&wb,0);//
 	assert(wb.head == &temp);
 	seri(L, &temp, wb.len);
 

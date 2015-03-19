@@ -1,3 +1,5 @@
+--组网
+--负责同步 skynet 网络中的全局可见的服务名字
 local skynet = require "skynet"
 local socket = require "socket"
 
