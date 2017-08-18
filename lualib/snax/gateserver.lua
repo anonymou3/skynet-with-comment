@@ -115,6 +115,7 @@ function gateserver.start(handler)
 		close_fd(fd)
 	end
 
+	-- 注册socket类消息处理
 	skynet.register_protocol {
 		name = "socket",
 		id = skynet.PTYPE_SOCKET,	-- PTYPE_SOCKET = 6
@@ -130,6 +131,7 @@ function gateserver.start(handler)
 	}
 
 	skynet.start(function()
+		--  注册lua类消息处理
 		skynet.dispatch("lua", function (_, address, cmd, ...)
 			local f = CMD[cmd]
 			if f then
