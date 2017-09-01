@@ -1395,14 +1395,14 @@ do_bind(const char *host, int port, int protocol, int *family) {
 		return -1;
 	}
 	*family = ai_list->ai_family;
-	fd = socket(*family, ai_list->ai_socktype, 0);
+	fd = socket(*family, ai_list->ai_socktype, 0);//创建socket
 	if (fd < 0) {
 		goto _failed_fd;
 	}
 	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (void *)&reuse, sizeof(int))==-1) {
 		goto _failed;
 	}
-	status = bind(fd, (struct sockaddr *)ai_list->ai_addr, ai_list->ai_addrlen);
+	status = bind(fd, (struct sockaddr *)ai_list->ai_addr, ai_list->ai_addrlen);//命名socket
 	if (status != 0)
 		goto _failed;
 
@@ -1418,11 +1418,11 @@ _failed_fd:
 static int
 do_listen(const char * host, int port, int backlog) {
 	int family = 0;
-	int listen_fd = do_bind(host, port, IPPROTO_TCP, &family);
+	int listen_fd = do_bind(host, port, IPPROTO_TCP, &family); //创建、命名socket
 	if (listen_fd < 0) {
 		return -1;
 	}
-	if (listen(listen_fd, backlog) == -1) {
+	if (listen(listen_fd, backlog) == -1) {//监听socket
 		close(listen_fd);
 		return -1;
 	}
