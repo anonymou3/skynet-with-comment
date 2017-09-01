@@ -88,9 +88,9 @@ struct socket_server {
 	int sendctrl_fd;	//写入控制文件描述符
 	int checkctrl;		//是否检查控制
 	poll_fd event_fd;	//事件池文件描述符
-	int alloc_id;		//应用层分配id用的
+	int alloc_id;		//应用层分配id用的,得到id再hash得到slot的索引
 	int event_n;		//事件数
-	int event_index;	//事件索引
+	int event_index;	//事件索引x
 	struct socket_object_interface soi;		//套接字对象接口
 	struct event ev[MAX_EVENT];		//存储已准备好读写的事件	MAX_EVENT:64
 	struct socket slot[MAX_SOCKET];//槽，用于存储套接字	MAX_SOCKET:65536
@@ -241,22 +241,23 @@ socket_keepalive(int fd) {
 	setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (void *)&keepalive , sizeof(keepalive));  
 }
 
+//预留一个ID
 static int
 reserve_id(struct socket_server *ss) {
 	int i;
 	for (i=0;i<MAX_SOCKET;i++) {
-		int id = __sync_add_and_fetch(&(ss->alloc_id), 1);
+		int id = __sync_add_and_fetch(&(ss->alloc_id), 1);//无锁自增
 		if (id < 0) {
 			id = __sync_and_and_fetch(&(ss->alloc_id), 0x7fffffff);
 		}
-		struct socket *s = &ss->slot[HASH_ID(id)];
+		struct socket *s = &ss->slot[HASH_ID(id)];//得到槽内的socket
 		if (s->type == SOCKET_TYPE_INVALID) {
-			if (__sync_bool_compare_and_swap(&s->type, SOCKET_TYPE_INVALID, SOCKET_TYPE_RESERVE)) {
-				s->id = id;
-				s->fd = -1;
+			if (__sync_bool_compare_and_swap(&s->type, SOCKET_TYPE_INVALID, SOCKET_TYPE_RESERVE)) {//重置类型
+				s->id = id;//设置id
+				s->fd = -1;//清空fd
 				return id;
 			} else {
-				// retry
+				// retry 重试
 				--i;
 			}
 		}
