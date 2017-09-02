@@ -1,4 +1,4 @@
-//网络模块
+//具体的网络实现层 kqueue
 #ifndef poll_socket_kqueue_h
 #define poll_socket_kqueue_h
 

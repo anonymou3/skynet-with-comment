@@ -1,4 +1,4 @@
-//网络模块
+//网络接口层定义,也可以叫做封装层
 #ifndef socket_poll_h
 #define socket_poll_h
 
@@ -8,7 +8,7 @@
 
 typedef int poll_fd;//poll文件描述符
 
-//事件数据结构定义
+//事件数据结构定义(封装epoll kqueue)
 struct event {
 	void * s;//用户数据
 	bool read;//是否可读

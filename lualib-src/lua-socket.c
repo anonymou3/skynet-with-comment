@@ -469,7 +469,7 @@ llisten(lua_State *L) {
 	const char * host = luaL_checkstring(L,1);
 	int port = luaL_checkinteger(L,2);
 	int backlog = luaL_optinteger(L,3,BACKLOG);
-	struct skynet_context * ctx = lua_touserdata(L, lua_upvalueindex(1));
+	struct skynet_context * ctx = lua_touserdata(L, lua_upvalueindex(1));//skynet上下文
 	int id = skynet_socket_listen(ctx, host,port,backlog);//这里是C启动socket监听的入口
 	//从这里->skynet_socket.c->socket_server.c
 	if (id < 0) {

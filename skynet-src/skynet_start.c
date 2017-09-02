@@ -68,7 +68,7 @@ _socket(void *p) {
 	struct monitor * m = p;//获取到监视者们
 	skynet_initthread(THREAD_SOCKET);//初始化线程私有数据
 	for (;;) {//死循环
-		int r = skynet_socket_poll();
+		int r = skynet_socket_poll();//处理socket循环
 		if (r==0)//SOCKET_EXIT的情况下
 			break;//跳出死循环
 		if (r<0) {//返回值小于0的情况下

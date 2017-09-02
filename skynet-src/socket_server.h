@@ -5,10 +5,10 @@
 #include <stdint.h>
 
 #define SOCKET_DATA 0
-#define SOCKET_CLOSE 1
+#define SOCKET_CLOSE 1　	//关闭
 #define SOCKET_OPEN 2
 #define SOCKET_ACCEPT 3
-#define SOCKET_ERROR 4
+#define SOCKET_ERROR 4　//出错
 #define SOCKET_EXIT 5
 #define SOCKET_UDP 6
 
@@ -17,8 +17,9 @@ struct socket_server;
 //socket消息结构定义
 struct socket_message {
 	int id;
-	uintptr_t opaque;
+	uintptr_t opaque;//请求方服务地址
 	int ud;	// for accept, ud is listen id ; for data, ud is size of data 
+			//ud userdata ,在用于accept时，ud代表的是监听id;在用于数据时，ud代表的是数据大小
 	char * data;
 };
 

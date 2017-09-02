@@ -17,14 +17,16 @@
 #include <string.h>
 
 #define MAX_INFO 128
+
 // MAX_SOCKET will be 2^MAX_SOCKET_P
 //连接总数不超过2^16=65536
-#define MAX_SOCKET_P 16
-#define MAX_EVENT 64
-#define MIN_READ_BUFFER 64
+#define MAX_SOCKET_P 16　　　　　　　//最大socket数的指数
+
+#define MAX_EVENT 64　　　　　　　　//最大事件数　　　
+#define MIN_READ_BUFFER 64　　　　//最小读缓冲大小
 #define SOCKET_TYPE_INVALID 0 	//无效的socket
 #define SOCKET_TYPE_RESERVE 1 	//预留已经被申请 即将被使用
-#define SOCKET_TYPE_PLISTEN 2 	//listen fd但是未加入epoll管理
+#define SOCKET_TYPE_PLISTEN 2 	//listen fd但是未加入epoll管理（加入epoll管理：调用sp_add）
 #define SOCKET_TYPE_LISTEN 3 	//监听到套接字已经加入epoll管理
 #define SOCKET_TYPE_CONNECTING 4 	//尝试连接的socket fd
 #define SOCKET_TYPE_CONNECTED 5 	//已经建立连接的socket 主动conn或者被动accept的套接字 已经加入epoll管理
@@ -32,18 +34,18 @@
 #define SOCKET_TYPE_PACCEPT 7 		//accept返回的fd 未加入epoll
 #define SOCKET_TYPE_BIND 8 			//其他类型的fd 如 stdin stdout等
 
-#define MAX_SOCKET (1<<MAX_SOCKET_P)
+#define MAX_SOCKET (1<<MAX_SOCKET_P)　//最大socket数
 
-#define PRIORITY_HIGH 0
-#define PRIORITY_LOW 1
+#define PRIORITY_HIGH 0	//高优先级
+#define PRIORITY_LOW 1　//低优先级
 
 #define HASH_ID(id) (((unsigned)id) % MAX_SOCKET)
 
-#define PROTOCOL_TCP 0
-#define PROTOCOL_UDP 1
-#define PROTOCOL_UDPv6 2
+#define PROTOCOL_TCP 0			//TCP
+#define PROTOCOL_UDP 1			//UDP
+#define PROTOCOL_UDPv6 2		//UDP ipv6
 
-#define UDP_ADDRESS_SIZE 19	// ipv6 128bit + port 16bit + 1 byte type
+#define UDP_ADDRESS_SIZE 19	// ipv6 128bit + port 16bit + 1 byte type  16+2+1=19
 
 #define MAX_UDP_PACKAGE 65535
 
@@ -60,7 +62,7 @@ struct write_buffer {
 #define SIZEOF_TCPBUFFER (offsetof(struct write_buffer, udp_address[0]))
 #define SIZEOF_UDPBUFFER (sizeof(struct write_buffer))
 
-//写缓冲区列表数据结构定义
+//写缓冲区列表 数据结构定义
 struct wb_list {
 	struct write_buffer * head;//头
 	struct write_buffer * tail;//尾
@@ -74,8 +76,8 @@ struct socket {
 	int64_t wb_size;		//发送缓冲区未发送的数据
 	int fd;					//对应内核分配的fd
 	int id;					//应用层维护的一个与fd对应的id 实际上是在socket池中的id
-	uint16_t protocol;		//协议
-	uint16_t type;	//socket类型或者状态
+	uint16_t protocol;		//协议类型
+	uint16_t type;			//socket类型或者状态
 	union {
 		int size;	//下一次read操作要分配的缓冲区大小?
 		uint8_t udp_address[UDP_ADDRESS_SIZE];
@@ -84,19 +86,22 @@ struct socket {
 
 //socket服务器数据结构定义
 struct socket_server {
+	//管道相关，用于控制命令的传输
 	int recvctrl_fd;	//读取控制文件描述符
 	int sendctrl_fd;	//写入控制文件描述符
 	int checkctrl;		//是否检查控制
+
+
 	poll_fd event_fd;	//事件池文件描述符
 	int alloc_id;		//应用层分配id用的,得到id再hash得到slot的索引
 	int event_n;		//事件数
 	int event_index;	//事件索引x
 	struct socket_object_interface soi;		//套接字对象接口
-	struct event ev[MAX_EVENT];		//存储已准备好读写的事件	MAX_EVENT:64
-	struct socket slot[MAX_SOCKET];//槽，用于存储套接字	MAX_SOCKET:65536
+	struct event ev[MAX_EVENT];		//存储已准备好读写的应用层事件	MAX_EVENT:64
+	struct socket slot[MAX_SOCKET];//槽，用于存储应用层套接字	MAX_SOCKET:65536
 	char buffer[MAX_INFO];		//缓冲区	MAX_INFO:128
 	uint8_t udpbuffer[MAX_UDP_PACKAGE];	//udp缓冲区		MAX_UDP_PACKAGE:65535
-	fd_set rfds;	//用于select的描述符集
+	fd_set rfds;	//select的描述符集，用于判断管道是否有控制命令
 };
 
 // 以下结构用于控制包体结构
@@ -271,6 +276,7 @@ clear_wb_list(struct wb_list *list) {
 	list->tail = NULL;//设置尾为空
 }
 
+//创建socket服务器
 struct socket_server * 
 socket_server_create() {
 	int i;
@@ -303,7 +309,7 @@ socket_server_create() {
 	ss->event_fd = efd;//事件池文件描述符
 	ss->recvctrl_fd = fd[0];//管道读取端fd
 	ss->sendctrl_fd = fd[1];//管道写入端fd
-	ss->checkctrl = 1;//是否检查控制，默认为false
+	ss->checkctrl = 1;//是否检查控制，默认为true
 
 	for (i=0;i<MAX_SOCKET;i++) {
 		struct socket *s = &ss->slot[i];//取存储套接字槽的地址
@@ -379,21 +385,22 @@ check_wb_list(struct wb_list *s) {
 
 static struct socket *
 new_fd(struct socket_server *ss, int id, int fd, int protocol, uintptr_t opaque, bool add) {
-	struct socket * s = &ss->slot[HASH_ID(id)];
-	assert(s->type == SOCKET_TYPE_RESERVE);
+	struct socket * s = &ss->slot[HASH_ID(id)];//取出应用层socket,之前通过reserve_id已经预留了
+	assert(s->type == SOCKET_TYPE_RESERVE);//预留的类型必然是SOCKET_TYPE_RESERVE
 
-	if (add) {
+	if (add) {//是否添加到事件池中
 		if (sp_add(ss->event_fd, fd, s)) {
 			s->type = SOCKET_TYPE_INVALID;
 			return NULL;
 		}
 	}
 
-	s->id = id;
-	s->fd = fd;
-	s->protocol = protocol;
-	s->p.size = MIN_READ_BUFFER;
-	s->opaque = opaque;
+	//设置应用层socket相关字段
+	s->id = id;//应用层id
+	s->fd = fd;//内核id
+	s->protocol = protocol;//协议类型
+	s->p.size = MIN_READ_BUFFER;//设置最小读缓冲大小
+	s->opaque = opaque;//请求方服务地址
 	s->wb_size = 0;
 	check_wb_list(&s->high);
 	check_wb_list(&s->low);
@@ -757,15 +764,15 @@ send_socket(struct socket_server *ss, struct request_send * request, struct sock
 
 static int
 listen_socket(struct socket_server *ss, struct request_listen * request, struct socket_message *result) {
-	int id = request->id;
-	int listen_fd = request->fd;
+	int id = request->id;//上层ID
+	int listen_fd = request->fd;//内核fd
 	struct socket *s = new_fd(ss, id, listen_fd, PROTOCOL_TCP, request->opaque, false);
 	if (s == NULL) {
 		goto _failed;
 	}
-	s->type = SOCKET_TYPE_PLISTEN;
+	s->type = SOCKET_TYPE_PLISTEN;//设置类型为监听
 	return -1;
-_failed:
+_failed://失败处理
 	close(listen_fd);
 	result->opaque = request->opaque;
 	result->id = id;
@@ -839,7 +846,7 @@ start_socket(struct socket_server *ss, struct request_start *request, struct soc
 			s->type = SOCKET_TYPE_INVALID;//设置类型为无效
 			return SOCKET_ERROR;//返回出错
 		}
-		s->type = (s->type == SOCKET_TYPE_PACCEPT) ? SOCKET_TYPE_CONNECTED : SOCKET_TYPE_LISTEN;//重置设置状态
+		s->type = (s->type == SOCKET_TYPE_PACCEPT) ? SOCKET_TYPE_CONNECTED : SOCKET_TYPE_LISTEN;//重置设置状态,如果是待接收，则设置为已连接，如果是待监听，则设置为监听
 		s->opaque = request->opaque;//
 		result->data = "start";
 		return SOCKET_OPEN;
@@ -878,12 +885,13 @@ block_readpipe(int pipefd, void *buffer, int sz) {
 	}
 }
 
+//检查管道中是否有命令
 static int
 has_cmd(struct socket_server *ss) {
 	struct timeval tv = {0,0};//select立即返回
 	int retval;
 
-	FD_SET(ss->recvctrl_fd, &ss->rfds);//将fd加入set集合
+	FD_SET(ss->recvctrl_fd, &ss->rfds);//将读fd加入set集合
 
 	retval = select(ss->recvctrl_fd+1, &ss->rfds, NULL, NULL, &tv);
 	if (retval == 1) {//描述符就绪
@@ -1180,7 +1188,7 @@ report_accept(struct socket_server *ss, struct socket *s, struct socket_message 
 
 static inline void 
 clear_closed_event(struct socket_server *ss, struct socket_message * result, int type) {
-	if (type == SOCKET_CLOSE || type == SOCKET_ERROR) {
+	if (type == SOCKET_CLOSE || type == SOCKET_ERROR) {//如果是关闭或者出错
 		int id = result->id;
 		int i;
 		for (i=ss->event_index; i<ss->event_n; i++) {
@@ -1196,18 +1204,20 @@ clear_closed_event(struct socket_server *ss, struct socket_message * result, int
 }
 
 // return type
+//返回类型
+//socket服务器循环
 int 
 socket_server_poll(struct socket_server *ss, struct socket_message * result, int * more) {
 	for (;;) {//死循环
 		if (ss->checkctrl) {//如果检查控制
 			if (has_cmd(ss)) {//是否有命令
 				int type = ctrl_cmd(ss, result);//读控制命令
-				if (type != -1) {//有效的控制命令
+				if (type != -1) {//类型不为－１
 					clear_closed_event(ss, result, type);
 					return type;//返回类型
-				} else
+				} else//类型为－１，继续处理
 					continue;
-			} else {//如果没有命令，设置检查控制flag为false
+			} else {//如果没有命令，设置检查控制flag为false，也就是说每次跳出for循环之前，都会先把现有的命令处理完
 				ss->checkctrl = 0;
 			}
 		}
@@ -1275,12 +1285,16 @@ socket_server_poll(struct socket_server *ss, struct socket_message * result, int
 	}
 }
 
+//向socket server发送请求
 static void
 send_request(struct socket_server *ss, struct request_package *request, char type, int len) {
+	//组装数据
 	request->header[6] = (uint8_t)type;
 	request->header[7] = (uint8_t)len;
+
+	//发送数据
 	for (;;) {
-		int n = write(ss->sendctrl_fd, &request->header[6], len+2);
+		int n = write(ss->sendctrl_fd, &request->header[6], len+2);//写入管道，管道也是一种独立的文件，网络也是
 		if (n<0) {
 			if (errno != EINTR) {
 				fprintf(stderr, "socket-server : send ctrl command error %s.\n", strerror(errno));
@@ -1432,20 +1446,23 @@ do_listen(const char * host, int port, int backlog) {
 
 int 
 socket_server_listen(struct socket_server *ss, uintptr_t opaque, const char * addr, int port, int backlog) {
+
+	//监听完socket，就把命令发到socket server，然后等待异步回应
 	int fd = do_listen(addr, port, backlog);
 	if (fd < 0) {
 		return -1;
 	}
 	struct request_package request;
 	int id = reserve_id(ss);
-	if (id < 0) {
+	if (id < 0) 
+	{		
 		close(fd);
 		return id;
 	}
-	request.u.listen.opaque = opaque;
-	request.u.listen.id = id;
-	request.u.listen.fd = fd;
-	send_request(ss, &request, 'L', sizeof(request.u.listen));
+	request.u.listen.opaque = opaque;//请求方服务句柄（地址）
+	request.u.listen.id = id;//内部预留的socket ID
+	request.u.listen.fd = fd;//监听生成的fd 
+	send_request(ss, &request, 'L', sizeof(request.u.listen));//发送监听请求
 	return id;
 }
 
