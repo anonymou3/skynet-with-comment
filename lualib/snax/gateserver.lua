@@ -39,8 +39,8 @@ function gateserver.start(handler)
 		maxclient = conf.maxclient or 1024
 		nodelay = conf.nodelay
 		skynet.error(string.format("Listen on %s:%d", address, port))
-		socket = socketdriver.listen(address, port)--这里是lua启动socket监听的入口
-		socketdriver.start(socket)
+		socket = socketdriver.listen(address, port)--这里是lua启动socket监听的入口  lua-socket.c
+		socketdriver.start(socket)--
 		if handler.open then
 			return handler.open(source, conf)
 		end

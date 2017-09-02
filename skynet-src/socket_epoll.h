@@ -65,8 +65,12 @@ sp_write(int efd, int sock, void *ud, bool enable) {
 	epoll_ctl(efd, EPOLL_CTL_MOD, sock, &ev);
 }
 
+
+//等待事件产生，类似select
 static int 
 sp_wait(int efd, struct event *e, int max) {
+	//e为一个数组指针
+
 	struct epoll_event ev[max];//定义一个事件数组
 	int n = epoll_wait(efd , ev, max, -1);//等待事件
 	int i;

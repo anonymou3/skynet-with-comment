@@ -665,7 +665,7 @@ luaopen_socketdriver(lua_State *L) {
 		return luaL_error(L, "Init skynet context first");
 	}
 
-	luaL_setfuncs(L,l2,1);//将l2内的函数注册进栈顶的表内，并且有一个上值(context)
+	luaL_setfuncs(L,l2,1);//将l2内的函数注册进栈顶的表内，并且有一个上值(context)：l2中的函数能够访问到上值
 
 	return 1;
 }

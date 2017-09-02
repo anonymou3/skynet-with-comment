@@ -12,7 +12,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-static struct socket_server * SOCKET_SERVER = NULL;
+static struct socket_server * SOCKET_SERVER = NULL;//全局只有一个
 
 void 
 skynet_socket_init() {
@@ -156,7 +156,7 @@ skynet_socket_close(struct skynet_context *ctx, int id) {
 
 void 
 skynet_socket_start(struct skynet_context *ctx, int id) {
-	uint32_t source = skynet_context_handle(ctx);
+	uint32_t source = skynet_context_handle(ctx);//获取服务对应的地址
 	socket_server_start(SOCKET_SERVER, source, id);
 }
 

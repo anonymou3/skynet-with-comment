@@ -10,9 +10,9 @@ typedef int poll_fd;//poll文件描述符
 
 //事件数据结构定义
 struct event {
-	void * s;
-	bool read;
-	bool write;
+	void * s;//用户数据
+	bool read;//是否可读
+	bool write;//是否可写
 };
 
 //sp:socket poll

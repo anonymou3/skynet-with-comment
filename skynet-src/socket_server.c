@@ -160,7 +160,7 @@ struct request_udp {
 };
 
 /*
-	The first byte is TYPE
+	The first byte is TYPE  第一个字节为类型
 
 	S Start socket
 	B Bind socket
@@ -1464,6 +1464,8 @@ socket_server_bind(struct socket_server *ss, uintptr_t opaque, int fd) {
 
 void 
 socket_server_start(struct socket_server *ss, uintptr_t opaque, int id) {
+
+	//opaque为调用方的地址，id为listen返回的id
 	struct request_package request;
 	request.u.start.id = id;
 	request.u.start.opaque = opaque;
