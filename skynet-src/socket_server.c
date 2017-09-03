@@ -383,6 +383,7 @@ check_wb_list(struct wb_list *s) {
 	assert(s->tail == NULL);
 }
 
+//新建fd,实际为设置上层socket的一些字段而已
 static struct socket *
 new_fd(struct socket_server *ss, int id, int fd, int protocol, uintptr_t opaque, bool add) {
 	struct socket * s = &ss->slot[HASH_ID(id)];//取出应用层socket,之前通过reserve_id已经预留了
@@ -770,7 +771,7 @@ listen_socket(struct socket_server *ss, struct request_listen * request, struct 
 	if (s == NULL) {
 		goto _failed;
 	}
-	s->type = SOCKET_TYPE_PLISTEN;//设置类型为监听
+	s->type = SOCKET_TYPE_PLISTEN;//设置类型为待监听
 	return -1;
 _failed://失败处理
 	close(listen_fd);
@@ -830,28 +831,38 @@ bind_socket(struct socket_server *ss, struct request_bind *request, struct socke
 //启动socket
 static int
 start_socket(struct socket_server *ss, struct request_start *request, struct socket_message *result) {
-	int id = request->id;//取出请求内的ID
+	int id = request->id;//取出请求内的上层socket id
+
 	//设置result的数据
 	result->id = id;
 	result->opaque = request->opaque;
 	result->ud = 0;
 	result->data = NULL;
-	struct socket *s = &ss->slot[HASH_ID(id)];//取出socket
+
+
+	struct socket *s = &ss->slot[HASH_ID(id)];//取出上层socket
+
 	if (s->type == SOCKET_TYPE_INVALID || s->id !=id) {//如果socket的状态为无效 或者ID不匹配
 		return SOCKET_ERROR;//返回出错
 	}
-	if (s->type == SOCKET_TYPE_PACCEPT || s->type == SOCKET_TYPE_PLISTEN) {//未加入poll
-		if (sp_add(ss->event_fd, s->fd, s)) {//加入poll
+
+	if (s->type == SOCKET_TYPE_PACCEPT || s->type == SOCKET_TYPE_PLISTEN) {//待接受或者待监听（未加入poll）
+
+		if (sp_add(ss->event_fd, s->fd, s)) {//加入poll　　userdata存储的是socket本身
 			//加入poll失败
 			s->type = SOCKET_TYPE_INVALID;//设置类型为无效
 			return SOCKET_ERROR;//返回出错
 		}
+
 		s->type = (s->type == SOCKET_TYPE_PACCEPT) ? SOCKET_TYPE_CONNECTED : SOCKET_TYPE_LISTEN;//重置设置状态,如果是待接收，则设置为已连接，如果是待监听，则设置为监听
 		s->opaque = request->opaque;//
+
 		result->data = "start";
 		return SOCKET_OPEN;
+
 	} else if (s->type == SOCKET_TYPE_CONNECTED) {
 		s->opaque = request->opaque;
+
 		result->data = "transfer";
 		return SOCKET_OPEN;
 	}
@@ -957,6 +968,8 @@ ctrl_cmd(struct socket_server *ss, struct socket_message *result) {
 	block_readpipe(fd, buffer, len);//阻塞从管道读取指定长度的消息数据
 	// ctrl command only exist in local fd, so don't worry about endian.
 	// 控制命令仅存在于本地fd,所以不用担心大小端的问题
+
+
 	//以下copy自文件上方数据结构定义
 	/*
 	The first byte is TYPE(第一个字节是类型)，第二个字节是消息长度
@@ -974,6 +987,8 @@ ctrl_cmd(struct socket_server *ss, struct socket_message *result) {
 	U Create UDP socket
 	C set udp address
 	*/
+
+	//根据命令类型进行相应的处理
 	switch (type) {
 	case 'S':
 		return start_socket(ss,(struct request_start *)buffer, result);
@@ -1186,6 +1201,7 @@ report_accept(struct socket_server *ss, struct socket *s, struct socket_message 
 	return 1;
 }
 
+//清理已关闭事件
 static inline void 
 clear_closed_event(struct socket_server *ss, struct socket_message * result, int type) {
 	if (type == SOCKET_CLOSE || type == SOCKET_ERROR) {//如果是关闭或者出错
@@ -1196,7 +1212,7 @@ clear_closed_event(struct socket_server *ss, struct socket_message * result, int
 			struct socket *s = e->s;
 			if (s) {
 				if (s->type == SOCKET_TYPE_INVALID && s->id == id) {
-					e->s = NULL;
+					e->s = NULL;//置空userdata
 				}
 			}
 		}
@@ -1212,28 +1228,30 @@ socket_server_poll(struct socket_server *ss, struct socket_message * result, int
 		if (ss->checkctrl) {//如果检查控制
 			if (has_cmd(ss)) {//是否有命令
 				int type = ctrl_cmd(ss, result);//读控制命令
-				if (type != -1) {//类型不为－１
+				if (type != -1) {//返回了类型
 					clear_closed_event(ss, result, type);
 					return type;//返回类型
-				} else//类型为－１，继续处理
+				} else//返回为－１，继续处理命令
 					continue;
-			} else {//如果没有命令，设置检查控制flag为false，也就是说每次跳出for循环之前，都会先把现有的命令处理完
+			} else {//如果没有命令，设置检查控制flag为false
 				ss->checkctrl = 0;
 			}
 		}
+		//刚开始两者都为0,或者已经处理完ＩＯ事件
 		if (ss->event_index == ss->event_n) {
-			ss->event_n = sp_wait(ss->event_fd, ss->ev, MAX_EVENT);
-			ss->checkctrl = 1;
+			ss->event_n = sp_wait(ss->event_fd, ss->ev, MAX_EVENT);//等待事件产生
+			ss->checkctrl = 1;//设置检查控制flag为true
 			if (more) {
 				*more = 0;
 			}
-			ss->event_index = 0;
+			ss->event_index = 0;//设置事件处理
 			if (ss->event_n <= 0) {
 				ss->event_n = 0;
 				return -1;
 			}
 		}
-		struct event *e = &ss->ev[ss->event_index++];
+		//处理ＩＯ事件
+		struct event *e = &ss->ev[ss->event_index++];//取出一个已准备好事件
 		struct socket *s = e->s;
 		if (s == NULL) {
 			// dispatch pipe message at beginning
@@ -1285,7 +1303,7 @@ socket_server_poll(struct socket_server *ss, struct socket_message * result, int
 	}
 }
 
-//向socket server发送请求
+//向socket server发送请求，通过管道
 static void
 send_request(struct socket_server *ss, struct request_package *request, char type, int len) {
 	//组装数据

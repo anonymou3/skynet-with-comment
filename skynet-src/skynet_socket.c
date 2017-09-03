@@ -99,10 +99,10 @@ skynet_socket_poll() {
 		break;
 	default:
 		skynet_error(NULL, "Unknown socket message type %d.",type);
-		return -1;
+		return -1;//返回－１会检查是否跳出socket循环
 	}
 	if (more) {
-		return -1;
+		return -1;//返回－１会检查是否跳出socket循环
 	}
 	return 1;
 }
