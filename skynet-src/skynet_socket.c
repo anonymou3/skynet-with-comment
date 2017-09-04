@@ -141,7 +141,7 @@ skynet_socket_listen(struct skynet_context *ctx, const char *host, int port, int
 int 
 skynet_socket_connect(struct skynet_context *ctx, const char *host, int port) {
 	uint32_t source = skynet_context_handle(ctx);//获取上下文句柄
-	return socket_server_connect(SOCKET_SERVER, source, host, port);//调用socket server
+	return socket_server_connect(SOCKET_SERVER, source, host, port);//发起一个 TCP 连接
 }
 
 int 

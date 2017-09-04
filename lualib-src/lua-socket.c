@@ -645,7 +645,7 @@ luaopen_socketdriver(lua_State *L) {
 	};
 	luaL_newlib(L,l);//创建一张表，将列表 l 的函数注册进去
 	luaL_Reg l2[] = {
-		{ "connect", lconnect },//建立连接
+		{ "connect", lconnect },//建立连接，主动连接
 		{ "close", lclose },
 		{ "listen", llisten },
 		{ "send", lsend },

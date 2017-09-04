@@ -29,7 +29,7 @@
 #define SOCKET_TYPE_PLISTEN 2 	//listen fd但是未加入epoll管理（加入epoll管理：调用sp_add）
 #define SOCKET_TYPE_LISTEN 3 	//监听到套接字已经加入epoll管理
 #define SOCKET_TYPE_CONNECTING 4 	//尝试连接的socket fd
-#define SOCKET_TYPE_CONNECTED 5 	//已经建立连接的socket 主动conn或者被动accept的套接字 已经加入epoll管理
+#define SOCKET_TYPE_CONNECTED 5 	//已经建立连接的socket 主动conn（SOCKET_TYPE_CONNECTING）或者被动accept（SOCKET_TYPE_PACCEPT）的套接字 已经加入epoll管理
 #define SOCKET_TYPE_HALFCLOSE 6 	//已经在应用层关闭了fd 但是数据还没有发送完 还没有close
 #define SOCKET_TYPE_PACCEPT 7 		//accept返回的fd 未加入epoll
 #define SOCKET_TYPE_BIND 8 			//其他类型的fd 如 stdin stdout等
@@ -398,7 +398,7 @@ new_fd(struct socket_server *ss, int id, int fd, int protocol, uintptr_t opaque,
 
 	//设置应用层socket相关字段
 	s->id = id;//应用层id
-	s->fd = fd;//内核id
+	s->fd = fd;//内核fd
 	s->protocol = protocol;//协议类型
 	s->p.size = MIN_READ_BUFFER;//设置最小读缓冲大小
 	s->opaque = opaque;//请求方服务地址
@@ -412,48 +412,60 @@ new_fd(struct socket_server *ss, int id, int fd, int protocol, uintptr_t opaque,
 static int
 open_socket(struct socket_server *ss, struct request_open * request, struct socket_message *result) {
 	int id = request->id;
+
+	//设置result
 	result->opaque = request->opaque;
 	result->id = id;
 	result->ud = 0;
 	result->data = NULL;
+
 	struct socket *ns;
 	int status;
 	struct addrinfo ai_hints;
 	struct addrinfo *ai_list = NULL;
 	struct addrinfo *ai_ptr = NULL;
+
+	//设置端口
 	char port[16];
 	sprintf(port, "%d", request->port);
+
 	memset(&ai_hints, 0, sizeof( ai_hints ) );
+
 	ai_hints.ai_family = AF_UNSPEC;
 	ai_hints.ai_socktype = SOCK_STREAM;
 	ai_hints.ai_protocol = IPPROTO_TCP;
 
+
+	//getaddrinfo提供独立于协议的名称解析，它的作用是将网址和服务，转换为IP地址和端口号的。
+	//比如说，当我们输入一个http://www.baidu.com之类的网址，getaddrinfo函数就会去DNS服务器上查找对应的IP地址，以及http服务所对应的端口号。
+	//因为一个网址往往对应多个IP地址，所以getaddrinfo得输出参数res是一个addrinfo结构体类型的链表指针，而每个addrinfo都包含一个sockaddr结构体。
+	//这些sockaddr结构体随后可由套接口函数直接使用，去尝试进行连接。
 	status = getaddrinfo( request->host, port, &ai_hints, &ai_list );
 	if ( status != 0 ) {
 		goto _failed;
 	}
 	int sock= -1;
 	for (ai_ptr = ai_list; ai_ptr != NULL; ai_ptr = ai_ptr->ai_next ) {
-		sock = socket( ai_ptr->ai_family, ai_ptr->ai_socktype, ai_ptr->ai_protocol );
+		sock = socket( ai_ptr->ai_family, ai_ptr->ai_socktype, ai_ptr->ai_protocol );//建立socket
 		if ( sock < 0 ) {
 			continue;
 		}
 		socket_keepalive(sock);
 		sp_nonblocking(sock);
-		status = connect( sock, ai_ptr->ai_addr, ai_ptr->ai_addrlen);
+		status = connect( sock, ai_ptr->ai_addr, ai_ptr->ai_addrlen);//连接服务器
 		if ( status != 0 && errno != EINPROGRESS) {
 			close(sock);
 			sock = -1;
 			continue;
 		}
-		break;
+		break;//连接成功则跳出循环，其他的不连接
 	}
 
 	if (sock < 0) {
 		goto _failed;
 	}
 
-	ns = new_fd(ss, id, sock, PROTOCOL_TCP, request->opaque, true);
+	ns = new_fd(ss, id, sock, PROTOCOL_TCP, request->opaque, true);//加入了epoll
 	if (ns == NULL) {
 		close(sock);
 		goto _failed;
@@ -998,7 +1010,7 @@ ctrl_cmd(struct socket_server *ss, struct socket_message *result) {
 		return listen_socket(ss,(struct request_listen *)buffer, result);
 	case 'K':
 		return close_socket(ss,(struct request_close *)buffer, result);
-	case 'O':
+	case 'O'://打开一个socket请求
 		return open_socket(ss, (struct request_open *)buffer, result);
 	case 'X':
 		result->opaque = 0;
@@ -1244,7 +1256,7 @@ socket_server_poll(struct socket_server *ss, struct socket_message * result, int
 			if (more) {
 				*more = 0;
 			}
-			ss->event_index = 0;//设置事件处理
+			ss->event_index = 0;//设置已处理事件索引
 			if (ss->event_n <= 0) {
 				ss->event_n = 0;
 				return -1;
@@ -1252,11 +1264,14 @@ socket_server_poll(struct socket_server *ss, struct socket_message * result, int
 		}
 		//处理ＩＯ事件
 		struct event *e = &ss->ev[ss->event_index++];//取出一个已准备好事件
-		struct socket *s = e->s;
+		struct socket *s = e->s;//取出用户数据 （上层socket）
 		if (s == NULL) {
 			// dispatch pipe message at beginning
+			//分发开头处的管道命令
 			continue;
 		}
+
+		//根据socket类型进行处理
 		switch (s->type) {
 		case SOCKET_TYPE_CONNECTING:
 			return report_connect(ss, s, result);
@@ -1269,7 +1284,7 @@ socket_server_poll(struct socket_server *ss, struct socket_message * result, int
 			fprintf(stderr, "socket-server: invalid socket\n");
 			break;
 		default:
-			if (e->read) {
+			if (e->read) {//可读
 				int type;
 				if (s->protocol == PROTOCOL_TCP) {
 					type = forward_message_tcp(ss, s, result);
@@ -1291,7 +1306,7 @@ socket_server_poll(struct socket_server *ss, struct socket_message * result, int
 				clear_closed_event(ss, result, type);
 				return type;
 			}
-			if (e->write) {
+			if (e->write) {//可写
 				int type = send_buffer(ss, s, result);
 				if (type == -1)
 					break;
@@ -1331,9 +1346,11 @@ open_request(struct socket_server *ss, struct request_package *req, uintptr_t op
 		fprintf(stderr, "socket-server : Invalid addr %s.\n",addr);
 		return -1;
 	}
-	int id = reserve_id(ss);
+	int id = reserve_id(ss);//预留一个  socket id 
 	if (id < 0)
 		return -1;
+
+	//设置相应字段
 	req->u.open.opaque = opaque;
 	req->u.open.id = id;
 	req->u.open.port = port;
