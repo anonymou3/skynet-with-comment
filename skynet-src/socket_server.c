@@ -450,8 +450,11 @@ open_socket(struct socket_server *ss, struct request_open * request, struct sock
 		if ( sock < 0 ) {
 			continue;
 		}
+
 		socket_keepalive(sock);
-		sp_nonblocking(sock);
+		sp_nonblocking(sock);//非阻塞模式
+
+
 		status = connect( sock, ai_ptr->ai_addr, ai_ptr->ai_addrlen);//连接服务器
 		if ( status != 0 && errno != EINPROGRESS) {
 			close(sock);
@@ -465,23 +468,26 @@ open_socket(struct socket_server *ss, struct request_open * request, struct sock
 		goto _failed;
 	}
 
-	ns = new_fd(ss, id, sock, PROTOCOL_TCP, request->opaque, true);//加入了epoll
+	ns = new_fd(ss, id, sock, PROTOCOL_TCP, request->opaque, true);//加入了epoll,异步connect
 	if (ns == NULL) {
 		close(sock);
 		goto _failed;
 	}
 
-	if(status == 0) {
-		ns->type = SOCKET_TYPE_CONNECTED;
+	if(status == 0) {//连接成功
+		ns->type = SOCKET_TYPE_CONNECTED;//设置状态为已连接
+
+		//
 		struct sockaddr * addr = ai_ptr->ai_addr;
 		void * sin_addr = (ai_ptr->ai_family == AF_INET) ? (void*)&((struct sockaddr_in *)addr)->sin_addr : (void*)&((struct sockaddr_in6 *)addr)->sin6_addr;
 		if (inet_ntop(ai_ptr->ai_family, sin_addr, ss->buffer, sizeof(ss->buffer))) {
 			result->data = ss->buffer;
 		}
+		
 		freeaddrinfo( ai_list );
 		return SOCKET_OPEN;
-	} else {
-		ns->type = SOCKET_TYPE_CONNECTING;
+	} else {//连接不能马上建立成功
+		ns->type = SOCKET_TYPE_CONNECTING; //设置状态为连接中
 		sp_write(ss->event_fd, ns->fd, ns, true);
 	}
 
@@ -1234,6 +1240,7 @@ clear_closed_event(struct socket_server *ss, struct socket_message * result, int
 // return type
 //返回类型
 //socket服务器循环
+//上层的API调用会转变为命令发送到管道，socket server则从管道读取命令进行处理
 int 
 socket_server_poll(struct socket_server *ss, struct socket_message * result, int * more) {
 	for (;;) {//死循环
