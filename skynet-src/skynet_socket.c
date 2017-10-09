@@ -31,6 +31,7 @@ skynet_socket_free() {
 }
 
 // mainloop thread
+//向请求方投递消息处理结果
 static void
 forward_message(int type, bool padding, struct socket_message * result) {
 	struct skynet_socket_message *sm;
