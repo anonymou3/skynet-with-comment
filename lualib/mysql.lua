@@ -29,9 +29,9 @@ local tonumber = tonumber
 local    new_tab = function (narr, nrec) return {} end
 
 
-local _M = { _VERSION = '0.13' }
+local _M = { _VERSION = '0.13' } 
 -- constants
-
+-- 常量定义
 local STATE_CONNECTED = 1
 local STATE_COMMAND_SENT = 2
 
@@ -43,7 +43,7 @@ local SERVER_MORE_RESULTS_EXISTS = 8
 local FULL_PACKET_SIZE = 16777215
 
 
-local mt = { __index = _M }
+local mt = { __index = _M } --元表
 
 
 -- mysql field value type converters
@@ -686,28 +686,34 @@ end
 
 function _M.connect( opts)
 
-    local self = setmetatable( {}, mt)
+    local self = setmetatable( {}, mt)--设置元表
 
+    --设置最大包大小
     local max_packet_size = opts.max_packet_size
     if not max_packet_size then
         max_packet_size = 1024 * 1024 -- default 1 MB
     end
     self._max_packet_size = max_packet_size
+
+
     self.compact = opts.compact_arrays
 
 
-    local database = opts.database or ""
-    local user = opts.user or ""
-    local password = opts.password or ""
+    local database = opts.database or "" --数据库名称
+    local user = opts.user or ""--帐号
+    local password = opts.password or ""--密码
 
+    --新建skynet channel
+    --工作在模式1下
     local channel = socketchannel.channel {
         host = opts.host,
         port = opts.port or 3306,
-        auth = _mysql_login(self,user,password,database ),
+        auth = _mysql_login(self,user,password,database ), -- 验证函数
     }
     -- try connect first only once
+    -- 尝试连接一次
     channel:connect(true)
-    self.sockchannel = channel
+    self.sockchannel = channel--保存channel
 
 
     return self
