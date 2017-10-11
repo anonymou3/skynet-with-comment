@@ -6,10 +6,13 @@ local socketdriver = require "socketdriver"
 -- { host = "", port = , auth = function(so) , response = function(so) session, data }
 
 local socket_channel = {} --socket channel模块
-local channel = {}-- socket channel 父类
-local channel_socket = {}
-local channel_meta = { __index = channel }--socket channel元表
-local channel_socket_meta = {
+
+local channel = {}-- channel 父类
+local channel_meta = { __index = channel }--channel元表
+
+
+local channel_socket = {} -- socket父类
+local channel_socket_meta = { -- socket元表
 	__index = channel_socket,
 	__gc = function(cs)
 		local fd = cs[1]
@@ -43,9 +46,9 @@ function socket_channel.channel(desc)
 		__nodelay = desc.nodelay,
 	}
 
-	return setmetatable(c, channel_meta)--设置元表
+	return setmetatable(c, channel_meta)--设置channel元表
 end
-
+--关闭channel socket
 local function close_channel_socket(self)
 	if self.__sock then
 		local so = self.__sock
@@ -54,25 +57,27 @@ local function close_channel_socket(self)
 		pcall(socket.close,so[1])
 	end
 end
-
+--唤醒所有挂起协程
 local function wakeup_all(self, errmsg)
-	if self.__response then
-		for k,co in pairs(self.__thread) do
-			self.__thread[k] = nil
-			self.__result[co] = socket_error
-			self.__result_data[co] = errmsg
-			skynet.wakeup(co)
+	if self.__response then--会话模式
+		for k,co in pairs(self.__thread) do --遍历所有协程
+			self.__thread[k] = nil --置空
+			self.__result[co] = socket_error --设置error
+			self.__result_data[co] = errmsg --设置error msg
+			skynet.wakeup(co) --唤醒协程
 		end
 	else
+		--遍历所有response
 		for i = 1, #self.__request do
-			self.__request[i] = nil
+			self.__request[i] = nil--置空
 		end
+		--遍历所有协程
 		for i = 1, #self.__thread do
-			local co = self.__thread[i]
-			self.__thread[i] = nil
-			self.__result[co] = socket_error
-			self.__result_data[co] = errmsg
-			skynet.wakeup(co)
+			local co = self.__thread[i] --获取协程
+			self.__thread[i] = nil--置空
+			self.__result[co] = socket_error--设置error
+			self.__result_data[co] = errmsg --设置error msg
+			skynet.wakeup(co)--唤醒协程
 		end
 	end
 end
@@ -80,27 +85,29 @@ end
 
 
 local function dispatch_by_session(self)
-	local response = self.__response
+	local response = self.__response--取得响应处理函数
 	-- response() return session
 	while self.__sock do
-		local ok , session, result_ok, result_data = pcall(response, self.__sock)
-		if ok and session then
-			local co = self.__thread[session]
-			self.__thread[session] = nil
+		local ok , session, result_ok, result_data = pcall(response, self.__sock)--调用响应处理函数，在响应处理函数内读取数据，并进行协议解析
+		if ok and session then --调用成功
+			local co = self.__thread[session]--获取会话标识对应挂起的协程
+			self.__thread[session] = nil--置空
 			if co then
-				self.__result[co] = result_ok
-				self.__result_data[co] = result_data
-				skynet.wakeup(co)
+				--将结果存入到表中：__result表和__result_data表
+				self.__result[co] = result_ok --包是否解析正确
+				self.__result_data[co] = result_data--回应内容
+				skynet.wakeup(co)--唤醒挂起的协程
 			else
-				skynet.error("socket: unknown session :", session)
+				skynet.error("socket: unknown session :", session)--报错，未知的会话
 			end
-		else
-			close_channel_socket(self)
+		else--调用失败
+			close_channel_socket(self)--关闭连接
+			--设置出错信息
 			local errormsg
 			if session ~= socket_error then
 				errormsg = session
 			end
-			wakeup_all(self, errormsg)
+			wakeup_all(self, errormsg)--唤醒所有挂起的协程
 		end
 	end
 end
@@ -110,38 +117,43 @@ local function pop_response(self)
 end
 
 local function push_response(self, response, co)
-	if self.__response then
+	if self.__response then --会话模式
 		-- response is session
-		self.__thread[response] = co
-	else
+		-- response 是会话标识
+		self.__thread[response] = co -- {会话-->协程} 表
+	else --顺序模式
 		-- response is a function, push it to __request
-		table.insert(self.__request, response)
-		table.insert(self.__thread, co)
+		-- response是一个函数，push到__request
+		table.insert(self.__request, response)--push函数
+		table.insert(self.__thread, co)--push协程
 	end
 end
 
 local function dispatch_by_order(self)
 	while self.__sock do
-		local func, co = pop_response(self)
-		if func == nil then
-			if not socket.block(self.__sock[1]) then
+		local func, co = pop_response(self)--弹出一个响应处理函数
+		if func == nil then --如果处理函数是空的
+			if not socket.block(self.__sock[1]) then --等待socket可读
 				close_channel_socket(self)
 				wakeup_all(self)
 			end
 		else
-			local ok, result_ok, result_data = pcall(func, self.__sock)
-			if ok then
+			local ok, result_ok, result_data = pcall(func, self.__sock)--调用处理函数
+			if ok then--调用成功
+				--保存数据
 				self.__result[co] = result_ok
 				self.__result_data[co] = result_data
-				skynet.wakeup(co)
-			else
-				close_channel_socket(self)
+				skynet.wakeup(co)--唤醒挂起的协程
+			else--调用失败
+				close_channel_socket(self)--关闭连接
+				--设置出错信息
 				local errmsg
 				if result_ok ~= socket_error then
 					errmsg = result_ok
 				end
 				self.__result[co] = socket_error
 				self.__result_data[co] = errmsg
+				--唤醒所有协程
 				skynet.wakeup(co)
 				wakeup_all(self, errmsg)
 			end
@@ -200,7 +212,7 @@ local function connect_once(self)
 		socketdriver.nodelay(fd)
 	end
 
-	self.__sock = setmetatable( {fd} , channel_socket_meta )--设置__sock字段
+	self.__sock = setmetatable( {fd} , channel_socket_meta )--设置__sock元表
 
 	skynet.fork(dispatch_function(self), self)--fork一个协程做派发
 
@@ -316,38 +328,51 @@ function channel:connect(once)
 end
 
 local function wait_for_response(self, response)
-	local co = coroutine.running()
-	push_response(self, response, co)
-	skynet.wait()
+	local co = coroutine.running()--获取当前运行的协程
+	push_response(self, response, co)--保存当前协程以及响应处理函数（或者是会话标识）
+	skynet.wait()--挂起当前协程
 
-	local result = self.__result[co]
-	self.__result[co] = nil
-	local result_data = self.__result_data[co]
-	self.__result_data[co] = nil
+	local result = self.__result[co]--获取结果
+	self.__result[co] = nil--置空
+	local result_data = self.__result_data[co]--获取结果数据
+	self.__result_data[co] = nil--置空
 
 	if result == socket_error then
 		error(socket_error)
 	else
-		assert(result, result_data)
+		assert(result, result_data)--断言判断result
 		return result_data
 	end
 end
 
 -- 发起请求
+-- 在模式1(顺序模式)下：
+-- request--->请求包
+-- response--->响应处理函数
+
+--在模式2（会话模式）下：
+--request--->请求包
+--response--->session
+
 function channel:request(request, response)
+	--发起请求前会检查连接，如果没有连接，则尝试连接一次
 	assert(block_connect(self, true))	-- connect once
 
-	if not socket.write(self.__sock[1], request) then
-		close_channel_socket(self)
-		wakeup_all(self)
-		error(socket_error)
+	if not socket.write(self.__sock[1], request) then--发送数据
+
+		--发送失败
+		close_channel_socket(self) --关闭连接
+		wakeup_all(self)--唤醒所有挂起的协程
+		error(socket_error)--抛错
 	end
 
+	--没有响应处理函数，直接返回
 	if response == nil then
 		-- no response
 		return
 	end
 
+	--等待响应
 	return wait_for_response(self, response)
 end
 
@@ -381,7 +406,7 @@ end
 channel_meta.__gc = channel.close
 
 local function wrapper_socket_function(f)
-	return function(self, ...)
+	return function(self, ...)--self指的是__sock
 		local result = f(self[1], ...)
 		if not result then
 			error(socket_error)
