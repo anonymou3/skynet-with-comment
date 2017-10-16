@@ -4,6 +4,7 @@ local xpcall = xpcall
 local traceback = debug.traceback
 local table = table
 
+--每次调用skynet.queue都会创建一个闭包，即一个队列
 function skynet.queue()
 	local current_thread
 	local ref = 0
