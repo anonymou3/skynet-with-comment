@@ -70,8 +70,9 @@ local function wrapper(handle, name, type)
 		}, meta)
 end
 
-local handle_cache = setmetatable( {} , { __mode = "kv" } )
+local handle_cache = setmetatable( {} , { __mode = "kv" } )--弱引用，key和value都同时生效，任意一个起作用时都会导致table的字段被删除
 
+--原生的创建服务
 function snax.rawnewservice(name, ...)
 	local t = snax.interface(name)
 	local handle = skynet.newservice("snaxd", name)
@@ -93,7 +94,7 @@ function snax.bind(handle, type)
 	handle_cache[handle] = ret
 	return ret
 end
-
+--创建服务
 function snax.newservice(name, ...)
 	local handle = snax.rawnewservice(name, ...)
 	return snax.bind(handle, name)

@@ -1,11 +1,13 @@
 local function getupvaluetable(u, func, unique)
 	i = 1
 	while true do
-		local name, value = debug.getupvalue(func, i)
+
+		local name, value = debug.getupvalue(func, i)--取上值
 		if name == nil then
 			return
 		end
-		local t = type(value)
+		local t = type(value) --取上值的类型
+
 		if t == "table" then
 			u[name] = value
 		elseif t == "function" then
@@ -14,11 +16,13 @@ local function getupvaluetable(u, func, unique)
 				getupvaluetable(u, value, unique)
 			end
 		end
+		
 		i=i+1
 	end
 end
 
 return function(source, filename , ...)
+
 	if filename then
 		filename = "@" .. filename
 	else
@@ -33,12 +37,15 @@ return function(source, filename , ...)
 		end
 		table.insert(output, table.concat(value, "\t"))
 	end
+
+
 	local u = {}
 	local unique = {}
-	local funcs = { ... }
+	local funcs = { ... }--传入的函数集合，服务的
 	for k, func in ipairs(funcs) do
 		getupvaluetable(u, func, unique)
 	end
+
 	local p = {}
 	local proto = u.proto
 	if proto then
@@ -51,6 +58,7 @@ return function(source, filename , ...)
 			end
 		end
 	end
+
 	local env = setmetatable( { print = print , _U = u, _P = p}, { __index = _ENV })
 	local func, err = load(source, filename, "bt", env)
 	if not func then

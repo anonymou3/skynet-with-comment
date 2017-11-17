@@ -1,6 +1,7 @@
 local skynet = require "skynet"
 
 return function (name , G, loader)
+	--loadfile 只编译，不运行
 	loader = loader or loadfile
 	local mainfunc
 
@@ -22,6 +23,7 @@ return function (name , G, loader)
 		return setmetatable({}, { __newindex = count })
 	end
 
+	--断言判断
 	do
 		assert(getmetatable(G) == nil)
 		assert(G.init == nil)

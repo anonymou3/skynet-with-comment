@@ -4,12 +4,12 @@ local snax_interface = require "snax.interface"
 local profile = require "profile"
 local snax = require "snax"
 
-local snax_name = tostring(...)
+local snax_name = tostring(...) --从参数中取出服务名称
 local func, pattern = snax_interface(snax_name, _ENV)
 local snax_path = pattern:sub(1,pattern:find("?", 1, true)-1) .. snax_name ..  "/"
 package.path = snax_path .. "?.lua;" .. package.path
 
-SERVICE_NAME = snax_name
+SERVICE_NAME = snax_name --服务名
 SERVICE_PATH = snax_path
 
 local profile_table = {}

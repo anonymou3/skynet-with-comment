@@ -47,7 +47,7 @@ function dbgcmd.EXIT()
 	skynet.exit()
 end
 
-function dbgcmd.RUN(source, filename)
+function dbgcmd.RUN(source, filename) --文件内容，文件名
 	local inject = require "skynet.inject"
 	local output = inject(source, filename , export.dispatch, skynet.register_protocol)
 	collectgarbage "collect"

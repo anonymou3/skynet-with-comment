@@ -4,7 +4,7 @@ local core = require "skynet.core"
 local socket = require "socket"
 local snax = require "snax"
 
-local port = tonumber(...)
+local port = tonumber(...) --监听端口
 local COMMAND = {}
 
 local function format_table(t)
@@ -73,25 +73,27 @@ local function docmd(cmdline, print)
 	end
 end
 
+--终端主循环
 local function console_main_loop(stdin, print)
 	socket.lock(stdin)
 	print("Welcome to skynet console")
 	while true do
-		local cmdline = socket.readline(stdin, "\n")
+		local cmdline = socket.readline(stdin, "\n") --读取一行命令
 		if not cmdline then
 			break
 		end
 		if cmdline ~= "" then
-			docmd(cmdline, print)
+			docmd(cmdline, print) --执行命令
 		end
 	end
 	socket.unlock(stdin)
 end
 
 skynet.start(function()
-	local listen_socket = socket.listen ("127.0.0.1", port)
+	local listen_socket = socket.listen ("127.0.0.1", port)--开始监听端口
 	skynet.error("Start debug console at 127.0.0.1 " .. port)
-	socket.start(listen_socket , function(id, addr)
+
+	socket.start(listen_socket , function(id, addr)--开始接受连接
 		local function print(...)
 			local t = { ... }
 			for k,v in ipairs(t) do
@@ -100,8 +102,8 @@ skynet.start(function()
 			socket.write(id, table.concat(t,"\t"))
 			socket.write(id, "\n")
 		end
-		socket.start(id)
-		skynet.fork(console_main_loop, id , print)
+		socket.start(id)--开始接受数据
+		skynet.fork(console_main_loop, id , print)--fork一个协程运行主循环
 	end)
 end)
 
@@ -164,8 +166,9 @@ function COMMAND.service()
 end
 
 local function adjust_address(address)
-	if address:sub(1,1) ~= ":" then
-		address = bit32.replace( tonumber("0x" .. address), skynet.harbor(skynet.self()), 24, 8)
+	if address:sub(1,1) ~= ":" then--服务地址不是:0000000d形式
+		--skynet.self() debug_console自己的地址
+		address = bit32.replace( tonumber("0x" .. address), skynet.harbor(skynet.self()), 24, 8) --需要把地址的服务节点地址替换成debug_console所在节点
 	end
 	return address
 end
@@ -175,13 +178,14 @@ function COMMAND.exit(address)
 end
 
 function COMMAND.inject(address, filename)
-	address = adjust_address(address)
-	local f = io.open(filename, "rb")
+	address = adjust_address(address)--调整地址
+	local f = io.open(filename, "rb")--打开文件
 	if not f then
 		return "Can't open " .. filename
 	end
-	local source = f:read "*a"
+	local source = f:read "*a"--读取文件内容
 	f:close()
+	--skynet.lua注入了debug框架，所以服务可以接收debug类型的消息
 	return skynet.call(address, "debug", "RUN", source, filename)
 end
 

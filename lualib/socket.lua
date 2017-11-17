@@ -7,7 +7,7 @@ local assert = assert
 
 local socket = {}	-- api
 local buffer_pool = {}	-- store all message buffer object
-local socket_pool = setmetatable( -- store all socket object
+local socket_pool = setmetatable( -- store all socket object  存储所有socket对象
 	{},
 	{ __gc = function(p)
 		for id,v in pairs(p) do
@@ -326,6 +326,9 @@ function socket.listen(host, port, backlog)
 	return driver.listen(host, port, backlog)--调用lua-socket.c导出的接口
 end
 
+--锁住socket
+--第一个调用改API的会继续运行
+--后面调用的协程会被睡眠
 function socket.lock(id)
 	local s = socket_pool[id]
 	assert(s)
@@ -343,6 +346,7 @@ function socket.lock(id)
 	end
 end
 
+--解锁socket
 function socket.unlock(id)
 	local s = socket_pool[id]
 	assert(s)
