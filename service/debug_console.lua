@@ -185,7 +185,7 @@ function COMMAND.inject(address, filename)
 	end
 	local source = f:read "*a"--读取文件内容
 	f:close()
-	--skynet.lua注入了debug框架，所以服务可以接收debug类型的消息
+	--skynet.lua注入了debug框架，所以所有服务可以都接收debug类型的消息
 	return skynet.call(address, "debug", "RUN", source, filename)
 end
 
